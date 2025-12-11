@@ -1,0 +1,124 @@
+<!-- pages/games.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games - GameHub</title>
+  <link rel="stylesheet" href="../css/games.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <a class="nav-brand" href="games.html">PlayHub</a>
+      <div class="nav-menu">
+        <a href="games.html" class="nav-link" aria-current="page">Games</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <span id="username">User</span>
+          <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
+          <button class="btn-logout" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="games-container">
+    <div class="welcome-section">
+      <h1>Welcome back, <span id="welcomeUsername">Player</span>!</h1>
+      <p>Choose a game and challenge yourself</p>
+
+      <div class="user-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="totalGamesPlayed">0</span>
+          <span class="stat-label">Games Played</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="totalScore">0</span>
+          <span class="stat-label">Total Score</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="bestStreak">0</span>
+          <span class="stat-label">Best Streak</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="games-grid">
+      <div class="game-card" id="memoryCard">
+        <div class="game-icon">&#127922;</div>
+        <h3>Memory Match</h3>
+        <p>Test your memory by matching pairs of cards. Choose your difficulty level and beat your best time!</p>
+        <div class="game-stats">
+          <div class="game-stat">
+            <div class="game-stat-value" id="memoryPlayed">0</div>
+            <div class="game-stat-label">Played</div>
+          </div>
+          <div class="game-stat">
+            <div class="game-stat-value" id="memoryBest">--</div>
+            <div class="game-stat-label">Best Score</div>
+          </div>
+        </div>
+        <button class="btn-play" onclick="window.location.href='game1.html'">Play Now</button>
+      </div>
+
+      <div class="game-card" id="wordleCard">
+        <div class="game-icon">&#128214;</div>
+        <h3>Wordle</h3>
+        <p>Guess the 5-letter word in 6 tries. Each guess gives you clues about the correct letters and positions.</p>
+        <div class="game-stats">
+          <div class="game-stat">
+            <div class="game-stat-value" id="wordlePlayed">0</div>
+            <div class="game-stat-label">Played</div>
+          </div>
+          <div class="game-stat">
+            <div class="game-stat-value" id="wordleWins">0</div>
+            <div class="game-stat-label">Wins</div>
+          </div>
+        </div>
+        <button class="btn-play" onclick="window.location.href='game2.html'">Play Now</button>
+      </div>
+
+      <div class="game-card coming-soon">
+        <span class="coming-soon-badge">Coming Soon</span>
+        <div class="game-icon">&#127919;</div>
+        <h3>Target Practice</h3>
+        <p>Click on moving targets before time runs out. Improve your reaction time and accuracy!</p>
+        <div class="game-stats">
+          <div class="game-stat">
+            <div class="game-stat-value">--</div>
+            <div class="game-stat-label">Played</div>
+          </div>
+          <div class="game-stat">
+            <div class="game-stat-value">--</div>
+            <div class="game-stat-label">High Score</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card coming-soon">
+        <span class="coming-soon-badge">Coming Soon</span>
+        <div class="game-icon">&#129504;</div>
+        <h3>Puzzle Master</h3>
+        <p>Solve challenging puzzles and brain teasers. Multiple difficulty levels available!</p>
+        <div class="game-stats">
+          <div class="game-stat">
+            <div class="game-stat-value">--</div>
+            <div class="game-stat-label">Played</div>
+          </div>
+          <div class="game-stat">
+            <div class="game-stat-value">--</div>
+            <div class="game-stat-label">High Score</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/darkmode.js"></script>
+  <script src="../js/games.js"></script>
+</body>
+</html>

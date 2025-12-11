@@ -1,0 +1,81 @@
+<!-- pages/game2.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle - PlayHub</title>
+    <link rel="stylesheet" href="../css/game2.css">
+</head>
+<body>
+    <nav class="game-nav">
+        <div class="nav-content">
+            <a class="nav-brand" href="games.html">PlayHub</a>
+            <div class="nav-actions">
+                <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
+                <button class="btn-back" onclick="window.location.href='games.html'">Back to Games</button>
+            </div>
+        </div>
+    </nav>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>📝 Wordle</h1>
+            <p>Guess the 5-letter word in 6 tries</p>
+        </div>
+
+        <div class="game-controls">
+            <div class="game-info">
+                <div class="info-box">
+                    <div class="info-value" id="attemptsDisplay">0/6</div>
+                    <div class="info-label">Attempts</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-value" id="streakDisplay">0</div>
+                    <div class="info-label">Streak</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-new-game" id="newGameBtn">New Game</button>
+                <button class="btn-back" onclick="window.location.href='games.html'">Back</button>
+            </div>
+        </div>
+
+        <div class="wordle-board" id="wordleBoard"></div>
+
+        <div class="message" id="message"></div>
+
+        <div class="keyboard" id="keyboard"></div>
+    </div>
+
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">🎉 Congratulations!</h2>
+            <p id="modalMessage">You guessed the word!</p>
+            <div class="word-reveal" id="wordReveal">WORD</div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="finalAttempts">0</div>
+                    <div class="modal-stat-label">Attempts</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="finalStreak">0</div>
+                    <div class="modal-stat-label">Current Streak</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="totalWins">0</div>
+                    <div class="modal-stat-label">Total Wins</div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-play-again" id="playAgainBtn">Play Again</button>
+                <button class="btn-modal btn-menu" onclick="window.location.href='games.html'">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/game2.js"></script>
+</body>
+</html>

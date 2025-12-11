@@ -1,0 +1,94 @@
+<!-- pages/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - PlayHub</title>
+  <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <a class="nav-brand" href="games.html">PlayHub</a>
+      <div class="nav-menu">
+        <a href="games.html" class="nav-link">Games</a>
+        <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+        <a href="profile.html" class="nav-link" aria-current="page">Profile</a>
+        <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="profile-container">
+    <section class="profile-header">
+      <div class="profile-avatar-large" id="avatar">U</div>
+      <div class="profile-info">
+        <div class="profile-username" id="display-name">User</div>
+        <div class="profile-email">Username: <span id="current-username">---</span></div>
+        <div class="profile-meta">
+          <div class="meta-item"><strong>Member since:</strong> <span id="member-since">--</span></div>
+          <div class="meta-item"><strong>Sessions:</strong> <span id="total-sessions">0</span></div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <div class="control-row">
+          <input type="text" id="display-name-input" placeholder="New display name" maxlength="24">
+          <button class="btn primary" id="save-display-name" type="button">Save</button>
+        </div>
+        <div class="control-row">
+          <button class="btn ghost" id="sign-out" type="button">Sign out</button>
+          <button class="btn danger" id="reset-progress" type="button" title="Deletes your local scores">Reset all progress</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value" id="best-game1">0</div>
+        <div class="stat-label">Best score (Game 1)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value" id="sum-game1">0</div>
+        <div class="stat-label">Total points (Game 1)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🕹️</div>
+        <div class="stat-value" id="games-played">0</div>
+        <div class="stat-label">Games played</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value" id="totalSessionsCard">0</div>
+        <div class="stat-label">Sessions</div>
+      </div>
+    </section>
+
+    <section class="recent-games">
+      <div class="section-title">Recent Results</div>
+      <div class="table-wrapper">
+        <table class="results-table" aria-label="Recent game results">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Game</th>
+              <th>Difficulty</th>
+              <th>Score</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="recent-tbody">
+            <tr><td colspan="5" class="muted">No games yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/darkmode.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
+</html>
