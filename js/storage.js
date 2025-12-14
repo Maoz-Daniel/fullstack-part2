@@ -1,6 +1,21 @@
 // js/storage.js - LocalStorage management functions
 // Purpose: Handle all data persistence operations
 
+// Shared base keys for per-user Game 1 stats
+const GAME1_LS_KEYS = {
+    BEST_SCORE: 'game1_bestScore',
+    TOTAL_POINTS: 'game1_totalPoints',
+    TOTAL_MISSES: 'game1_totalMisses',
+    GAMES_PLAYED: 'game1_gamesPlayed',
+    SESSIONS: 'game1_sessions',
+    RECENT_RESULTS: 'game1_recentResults',
+    LAST_DIFFICULTY: 'game1_lastDifficulty'
+};
+
+function getGame1Key(keyName, username) {
+    return `${keyName}_${username}`;
+}
+
 // Initialize storage structure if it doesn't exist
 function initializeStorage() {
     if (!localStorage.getItem('gameHub_users')) {
@@ -12,6 +27,90 @@ function initializeStorage() {
     if (!localStorage.getItem('gameHub_scores')) {
         localStorage.setItem('gameHub_scores', JSON.stringify([]));
     }
+}
+
+function ensureGame1DefaultsForUser(username) {
+    if (!username) return;
+    const defaults = [
+        { base: GAME1_LS_KEYS.BEST_SCORE, fallback: 0 },
+        { base: GAME1_LS_KEYS.TOTAL_POINTS, fallback: 0 },
+        { base: GAME1_LS_KEYS.TOTAL_MISSES, fallback: 0 },
+        { base: GAME1_LS_KEYS.GAMES_PLAYED, fallback: 0 },
+        { base: GAME1_LS_KEYS.SESSIONS, fallback: 0 },
+        { base: GAME1_LS_KEYS.RECENT_RESULTS, fallback: [] },
+        { base: GAME1_LS_KEYS.LAST_DIFFICULTY, fallback: 'medium' }
+    ];
+
+    defaults.forEach(({ base, fallback }) => {
+        const userKey = getGame1Key(base, username);
+        if (localStorage.getItem(userKey) === null) {
+            const legacy = localStorage.getItem(base);
+            if (legacy !== null) {
+                localStorage.setItem(userKey, legacy);
+            } else {
+                localStorage.setItem(userKey, JSON.stringify(fallback));
+            }
+        }
+    });
+}
+
+function readJson(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed === undefined ? fallback : parsed;
+    } catch {
+        return fallback;
+    }
+}
+
+function writeJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getActiveUsername() {
+    try {
+        if (typeof getCurrentSession === 'function') {
+            const session = getCurrentSession();
+            if (session?.username) return session.username;
+        }
+    } catch (_) {
+        /* ignore */
+    }
+    return localStorage.getItem('currentUser') || 'Guest';
+}
+
+// Game 1 stat helpers (per user)
+function getGame1NumberForUser(baseKey, username, fallback = 0) {
+    const key = getGame1Key(baseKey, username);
+    const val = readJson(key, fallback);
+    const num = Number(val);
+    if (Number.isNaN(num)) return fallback;
+    return num;
+}
+
+function setGame1NumberForUser(baseKey, username, value) {
+    const key = getGame1Key(baseKey, username);
+    writeJson(key, value);
+}
+
+function incrementGame1NumberForUser(baseKey, username, amount = 1) {
+    const current = getGame1NumberForUser(baseKey, username, 0);
+    const next = current + amount;
+    setGame1NumberForUser(baseKey, username, next);
+    return next;
+}
+
+function getGame1RecentResultsForUser(username) {
+    const key = getGame1Key(GAME1_LS_KEYS.RECENT_RESULTS, username);
+    const results = readJson(key, []);
+    return Array.isArray(results) ? results : [];
+}
+
+function saveGame1RecentResultsForUser(username, results) {
+    const key = getGame1Key(GAME1_LS_KEYS.RECENT_RESULTS, username);
+    writeJson(key, results);
 }
 
 // User Management Functions
@@ -114,3 +213,7 @@ function getTopScores(gameName, limit = 10) {
 
 // Initialize storage on load
 initializeStorage();
+const bootstrapUsername = getActiveUsername();
+if (bootstrapUsername) {
+    ensureGame1DefaultsForUser(bootstrapUsername);
+}

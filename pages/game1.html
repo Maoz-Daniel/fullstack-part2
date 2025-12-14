@@ -1,87 +1,91 @@
-<!-- pages/game1.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Match - GameHub</title>
+    <title>Game 1 - Catch the Falling Objects</title>
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/game1.css">
 </head>
 <body>
-    <nav class="game-nav">
-        <div class="nav-content">
-            <a class="nav-brand" href="games.html">PlayHub</a>
+    <header class="game-navbar">
+        <div class="nav-inner">
+            <a href="games.html" class="brand">PlayHub</a>
             <div class="nav-actions">
-                <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
-                <button class="btn-back" onclick="window.location.href='games.html'">Back to Games</button>
+                <a href="games.html" class="back-link">← Back to Games</a>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="game-container">
-        <div class="game-header">
-            <h1>🃏 Memory Match</h1>
-            <p>Find all matching pairs of cards!</p>
+    <main>
+        <div class="game-container">
+            <!-- Difficulty Selector -->
+            <div class="difficulty-selector" id="difficultySelector">
+                <h2>Select Difficulty</h2>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+                    <button class="difficulty-btn active" data-difficulty="medium">Medium</button>
+                    <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                </div>
+                <button class="start-btn" id="startBtn">Start Game</button>
+            </div>
+
+            <!-- Countdown Display -->
+            <div class="countdown-display" id="countdownDisplay">
+                <div class="countdown-number" id="countdownNumber">3</div>
+            </div>
+
+            <!-- Game Info Panel -->
+            <div class="game-info" id="gameInfo">
+                <div class="info-item">
+                    <span class="info-label">Score:</span>
+                    <span class="info-value" id="scoreDisplay">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Missed:</span>
+                    <span class="info-value" id="missedDisplay">0 / 10</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Best:</span>
+                    <span class="info-value" id="bestScoreDisplay">0</span>
+                </div>
+            </div>
+
+            <!-- Game Area -->
+            <div class="game-area" id="gameArea">
+                <div class="player" id="player"></div>
+            </div>
+
+            <!-- Game Over Panel -->
+            <div class="game-over-panel" id="gameOverPanel">
+                <h2>Game Over!</h2>
+                <div class="game-over-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Final Score:</span>
+                        <span class="stat-value" id="finalScore">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Best Score:</span>
+                        <span class="stat-value" id="finalBestScore">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Points:</span>
+                        <span class="stat-value" id="totalCatches">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Misses:</span>
+                        <span class="stat-value" id="totalMisses">0</span>
+                    </div>
+                </div>
+                <div class="game-over-buttons">
+                    <button class="play-again-btn" id="playAgainBtn">Play Again</button>
+                    <button class="back-games-btn" id="backGamesBtn">Back to Games</button>
+                </div>
+            </div>
         </div>
-
-        <div class="game-controls">
-            <div class="difficulty-selector">
-                <button class="btn-difficulty active" data-difficulty="easy">Easy (3x2)</button>
-                <button class="btn-difficulty" data-difficulty="medium">Medium (4x4)</button>
-                <button class="btn-difficulty" data-difficulty="hard">Hard (5x4)</button>
-            </div>
-
-            <div class="game-stats">
-                <div class="stat-box">
-                    <div class="stat-box-value" id="timeDisplay">0:00</div>
-                    <div class="stat-box-label">Time</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-box-value" id="movesDisplay">0</div>
-                    <div class="stat-box-label">Moves</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-box-value" id="pairsDisplay">0/0</div>
-                    <div class="stat-box-label">Pairs</div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-start" id="startBtn">Start Game</button>
-                <button class="btn-back" onclick="window.location.href='games.html'">Back</button>
-            </div>
-        </div>
-
-        <div class="cards-grid" id="cardsGrid"></div>
-    </div>
-
-    <div class="game-over-modal" id="gameOverModal">
-        <div class="modal-content">
-            <h2>🎉 Congratulations!</h2>
-            <p>You completed the game!</p>
-            <div class="modal-stats">
-                <div class="modal-stat">
-                    <div class="modal-stat-value" id="finalTime">0:00</div>
-                    <div class="modal-stat-label">Time</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="modal-stat-value" id="finalMoves">0</div>
-                    <div class="modal-stat-label">Moves</div>
-                </div>
-                <div class="modal-stat">
-                    <div class="modal-stat-value" id="finalScore">0</div>
-                    <div class="modal-stat-label">Score</div>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-modal btn-play-again" id="playAgainBtn">Play Again</button>
-                <button class="btn-modal btn-menu" onclick="window.location.href='games.html'">Main Menu</button>
-            </div>
-        </div>
-    </div>
+    </main>
 
     <script src="../js/storage.js"></script>
-    <script src="../js/darkmode.js"></script>
     <script src="../js/game1.js"></script>
 </body>
 </html>

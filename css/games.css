@@ -204,6 +204,8 @@ body.dark-mode {
 .game-stats {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 16px;
     margin-top: 20px;
     padding-top: 20px;
     border-top: 2px solid #f0f0f0;
@@ -211,6 +213,7 @@ body.dark-mode {
 
 .game-stat {
     text-align: center;
+    min-width: 120px;
 }
 
 .game-stat-value {

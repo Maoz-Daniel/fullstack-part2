@@ -1,151 +1,136 @@
-/* leaderboards.js
- * Aggregates results from localStorage across all users,
- * ranks them, and renders Top N tables.
- * Expects a table body with id="lb-tbody" and filter controls.
+/* leaderboard.js
+ * Reads leaderboard_users from localStorage and renders rankings.
  */
 
 (function () {
   "use strict";
 
-  const LS_KEYS = {
-    USERS: "users",             // array of {id, username, displayName, createdAt}
-    GAME_RESULTS: "gameResults" // array of {userId, gameId, score, difficulty, durationSec, timestamp}
+  const GAME1_KEYS = window.GAME1_LS_KEYS || {
+    BEST_SCORE: "game1_bestScore",
+    TOTAL_POINTS: "game1_totalPoints",
+    TOTAL_MISSES: "game1_totalMisses",
+    GAMES_PLAYED: "game1_gamesPlayed",
+    SESSIONS: "game1_sessions",
+    RECENT_RESULTS: "game1_recentResults",
+    LAST_DIFFICULTY: "game1_lastDifficulty"
   };
 
-  // ------- Data helpers -------
-  function getUsers() {
+  const contentEl = document.querySelector("#leaderboardContent");
+  const headerTitleEl = document.querySelector("#leaderboardGameName");
+  const refreshBtn = document.querySelector("#lb-refresh");
+
+  function readJson(key, fallback) {
     try {
-      return JSON.parse(localStorage.getItem(LS_KEYS.USERS)) || [];
+      const raw = localStorage.getItem(key);
+      if (raw === null) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed ?? fallback;
     } catch {
-      return [];
+      return fallback;
     }
   }
 
-  function getResults() {
-    try {
-      return JSON.parse(localStorage.getItem(LS_KEYS.GAME_RESULTS)) || [];
-    } catch {
-      return [];
-    }
-  }
-
-  function userMap() {
-    const map = new Map();
-    for (const u of getUsers()) map.set(u.id, u);
-    return map;
-  }
-
-  // ------- DOM refs -------
-  const $ = (s) => document.querySelector(s);
-  const tbody = $("#lb-tbody");
-  const gameSel = $("#lb-game");
-  const difficultySel = $("#lb-difficulty");
-  const sortSel = $("#lb-sort");
-  const limitSel = $("#lb-limit");
-  const refreshBtn = $("#lb-refresh");
-
-  // ------- Logic -------
-  function computeRows() {
-    const all = getResults();
-    const uMap = userMap();
-
-    const game = (gameSel?.value || "game1").toLowerCase();
-    const diff = (difficultySel?.value || "all").toLowerCase();
-    const sortKey = (sortSel?.value || "best").toLowerCase();
-    const limit = parseInt(limitSel?.value || "10", 10) || 10;
-
-    // filter
-    const filtered = all.filter(r => {
-      if (r.gameId !== game) return false;
-      if (diff !== "all" && (r.difficulty || "medium") !== diff) return false;
-      return true;
-    });
-
-    // aggregate by user
-    const agg = new Map();
-    for (const r of filtered) {
-      const cur = agg.get(r.userId) || { userId: r.userId, best: -Infinity, sum: 0, count: 0, lastTs: 0 };
-      cur.best = Math.max(cur.best, r.score);
-      cur.sum += r.score;
-      cur.count += 1;
-      cur.lastTs = Math.max(cur.lastTs, r.timestamp || 0);
-      agg.set(r.userId, cur);
-    }
-
-    let rows = Array.from(agg.values()).map(a => {
-      const u = uMap.get(a.userId);
-      return {
-        userId: a.userId,
-        name: (u?.displayName || u?.username || "Unknown"),
-        best: a.best === -Infinity ? 0 : a.best,
-        sum: a.sum,
-        count: a.count,
-        lastTs: a.lastTs
-      };
-    });
-
-    // sort
-    if (sortKey === "best") {
-      rows.sort((a, b) => b.best - a.best || b.sum - a.sum || b.count - a.count);
-    } else if (sortKey === "sum") {
-      rows.sort((a, b) => b.sum - a.sum || b.best - a.best);
-    } else if (sortKey === "recent") {
-      rows.sort((a, b) => b.lastTs - a.lastTs);
-    }
-
-    return rows.slice(0, limit);
-  }
-
-  function fmtDate(ts) {
-    if (!ts) return "—";
+  function formatDate(ts) {
+    if (!ts) return "--";
     const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return "--";
     return d.toLocaleDateString() + " " + d.toLocaleTimeString();
   }
 
-  function render() {
-    if (!tbody) return;
-    const rows = computeRows();
-    tbody.innerHTML = "";
+  function keyFor(baseKey, username) {
+    if (typeof getGame1Key === "function") return getGame1Key(baseKey, username);
+    return `${baseKey}_${username}`;
+  }
 
-    if (rows.length === 0) {
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.colSpan = 5;
-      td.textContent = "No scores yet";
-      td.className = "muted";
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-      return;
+  function getNumber(baseKey, username) {
+    if (typeof getGame1NumberForUser === "function") {
+      return getGame1NumberForUser(baseKey, username, 0);
     }
+    const raw = readJson(keyFor(baseKey, username), 0);
+    const num = Number(raw);
+    return Number.isNaN(num) ? 0 : num;
+  }
 
-    rows.forEach((r, idx) => {
-      const tr = document.createElement("tr");
+  function getRecent(username) {
+    if (typeof getGame1RecentResultsForUser === "function") {
+      return getGame1RecentResultsForUser(username);
+    }
+    const data = readJson(keyFor(GAME1_KEYS.RECENT_RESULTS, username), []);
+    return Array.isArray(data) ? data : [];
+  }
 
-      const rankTd = document.createElement("td");
-      rankTd.textContent = String(idx + 1);
+  function getLastPlayed(username) {
+    const results = getRecent(username);
+    if (!results.length) return null;
+    return results[0].date || results[0].timestamp || null;
+  }
 
-      const nameTd = document.createElement("td");
-      nameTd.textContent = r.name;
+  function ensureDefaults(username) {
+    if (typeof ensureGame1DefaultsForUser === "function") {
+      ensureGame1DefaultsForUser(username);
+    }
+  }
 
-      const bestTd = document.createElement("td");
-      bestTd.textContent = String(r.best);
+  function computeRows() {
+    const users = typeof getAllUsers === "function" ? getAllUsers() : [];
+    const rows = [];
 
-      const sumTd = document.createElement("td");
-      sumTd.textContent = String(r.sum);
+    users.forEach((u) => {
+      const username = u.username;
+      ensureDefaults(username);
+      const bestScore = getNumber(GAME1_KEYS.BEST_SCORE, username);
+      const totalPoints = getNumber(GAME1_KEYS.TOTAL_POINTS, username);
+      const lastPlayed = getLastPlayed(username);
 
-      const lastTd = document.createElement("td");
-      lastTd.textContent = fmtDate(r.lastTs);
+      if (bestScore > 0 || totalPoints > 0 || lastPlayed) {
+        rows.push({
+          username,
+          bestScore,
+          totalPoints,
+          lastPlayed
+        });
+      }
+    });
 
-      tr.append(rankTd, nameTd, bestTd, sumTd, lastTd);
-      tbody.appendChild(tr);
+    return rows.sort((a, b) => {
+      if (b.bestScore !== a.bestScore) return b.bestScore - a.bestScore;
+      if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+      return a.username.localeCompare(b.username);
     });
   }
 
-  refreshBtn?.addEventListener("click", render);
-  gameSel?.addEventListener("change", render);
-  difficultySel?.addEventListener("change", render);
-  sortSel?.addEventListener("change", render);
-  limitSel?.addEventListener("change", render);
+  function renderLeaderboard() {
+    if (!contentEl) return;
+    const rows = computeRows();
+    if (headerTitleEl) headerTitleEl.textContent = "Game 1 - Top Scores";
 
-  document.addEventListener("DOMContentLoaded", render);
+    if (rows.length === 0) {
+      contentEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">*</div>
+          <p>No scores yet. Play a game to appear here.</p>
+        </div>
+      `;
+      return;
+    }
+
+    contentEl.innerHTML = rows.map((row, idx) => {
+      const rank = idx + 1;
+      return `
+        <div class="leaderboard-row">
+          <div class="rank">${rank}</div>
+          <div class="player-info">
+            <div class="player-avatar">${row.username.charAt(0).toUpperCase()}</div>
+            <div class="player-name">${row.username}</div>
+          </div>
+          <div class="games">${row.bestScore}</div>
+          <div class="score">${row.totalPoints}</div>
+          <div class="date">${formatDate(row.lastPlayed)}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  document.addEventListener("DOMContentLoaded", renderLeaderboard);
+  refreshBtn?.addEventListener("click", renderLeaderboard);
 })();

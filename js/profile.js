@@ -1,241 +1,249 @@
 /* profile.js
- * Loads current user, shows stats and recent results,
- * supports editing display name, sign-out, and resetting progress.
+ * Renders the profile page with Game 1 statistics from localStorage.
+ * Stats are kept in the shared GAME1_LS_KEYS map so every page uses the same keys.
  */
 
 (function () {
   "use strict";
 
-  const LS_KEYS = {
-    USERS: "users", // array of {id, username, displayName, createdAt}
-    CURRENT_USER_ID: "currentUserId",
-    GAME_RESULTS: "gameResults" // array of {userId, gameId, score, difficulty, durationSec, timestamp}
+  const GAME1_KEYS = window.GAME1_LS_KEYS || {
+    BEST_SCORE: "game1_bestScore",
+    TOTAL_POINTS: "game1_totalPoints",
+    TOTAL_MISSES: "game1_totalMisses",
+    LAST_DIFFICULTY: "game1_lastDifficulty",
+    GAMES_PLAYED: "game1_gamesPlayed",
+    SESSIONS: "game1_sessions",
+    RECENT_RESULTS: "game1_recentResults"
   };
 
-  // ------------- helpers -------------
-  const $ = (s) => document.querySelector(s);
+  const els = {
+    currentUsername: document.querySelector("#current-username"),
+    avatar: document.querySelector("#avatar"),
+    displayName: document.querySelector("#display-name"),
+    memberSince: document.querySelector("#member-since"),
+    totalSessions: document.querySelector("#total-sessions"),
+    totalSessionsCard: document.querySelector("#totalSessionsCard"),
+    bestGame1: document.querySelector("#best-game1"),
+    sumGame1: document.querySelector("#sum-game1"),
+    gamesPlayed: document.querySelector("#games-played"),
+    recentTbody: document.querySelector("#recent-tbody"),
+    displayNameInput: document.querySelector("#display-name-input"),
+    saveDisplayBtn: document.querySelector("#save-display-name"),
+    signOutBtn: document.querySelector("#sign-out"),
+    resetBtn: document.querySelector("#reset-progress")
+  };
 
-  function getUsers() {
+  function currentUsername() {
+    if (typeof getActiveUsername === "function") {
+      return getActiveUsername();
+    }
     try {
-      return JSON.parse(localStorage.getItem(LS_KEYS.USERS)) || [];
+      const raw = localStorage.getItem("gameHub_currentSession");
+      if (raw) {
+        const session = JSON.parse(raw);
+        if (session?.username) return session.username;
+      }
     } catch {
-      return [];
+      /* ignore */
+    }
+    return "Guest";
+  }
+
+  function readJson(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed ?? fallback;
+    } catch {
+      return fallback;
     }
   }
 
-  function saveUsers(arr) {
-    localStorage.setItem(LS_KEYS.USERS, JSON.stringify(arr));
+  function writeJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
   }
 
-  function getCurrentUserId() {
-    return localStorage.getItem(LS_KEYS.CURRENT_USER_ID);
-  }
-
-  function setCurrentUserId(id) {
-    localStorage.setItem(LS_KEYS.CURRENT_USER_ID, id);
-  }
-
-  function getResults() {
-    try {
-      return JSON.parse(localStorage.getItem(LS_KEYS.GAME_RESULTS)) || [];
-    } catch {
-      return [];
+  function keyFor(baseKey, username) {
+    if (typeof getGame1Key === "function") {
+      return getGame1Key(baseKey, username);
     }
+    return `${baseKey}_${username}`;
   }
 
-  function saveResults(arr) {
-    localStorage.setItem(LS_KEYS.GAME_RESULTS, JSON.stringify(arr));
+  function ensureGameDefaults(username) {
+    if (typeof ensureGame1DefaultsForUser === "function") {
+      ensureGame1DefaultsForUser(username);
+      return;
+    }
+
+    const defaults = {
+      [keyFor(GAME1_KEYS.BEST_SCORE, username)]: 0,
+      [keyFor(GAME1_KEYS.TOTAL_POINTS, username)]: 0,
+      [keyFor(GAME1_KEYS.TOTAL_MISSES, username)]: 0,
+      [keyFor(GAME1_KEYS.LAST_DIFFICULTY, username)]: "medium",
+      [keyFor(GAME1_KEYS.GAMES_PLAYED, username)]: 0,
+      [keyFor(GAME1_KEYS.SESSIONS, username)]: 0,
+      [keyFor(GAME1_KEYS.RECENT_RESULTS, username)]: []
+    };
+
+    Object.entries(defaults).forEach(([key, value]) => {
+      if (localStorage.getItem(key) === null) {
+        writeJson(key, value);
+      }
+    });
   }
 
-  function getCurrentUser() {
-    const id = getCurrentUserId();
-    if (!id) return null;
-    return getUsers().find((u) => u.id === id) || null;
+  function getNumber(key, fallback = 0) {
+    const val = readJson(key, fallback);
+    const num = Number(val);
+    return Number.isNaN(num) ? fallback : num;
+  }
+
+  function getRecentResults(username) {
+    const results = readJson(keyFor(GAME1_KEYS.RECENT_RESULTS, username), []);
+    return Array.isArray(results) ? results.slice(0, 5) : [];
   }
 
   function formatDate(ts) {
+    if (!ts) return "--";
     const d = new Date(ts);
-    return d.toLocaleDateString();
+    if (Number.isNaN(d.getTime())) return "--";
+    return d.toLocaleDateString() + " " + d.toLocaleTimeString();
   }
 
-  // ------------- DOM refs -------------
-  const currentUsernamePill = $("#current-username");
-  const avatar = $("#avatar");
-  const displayNameEl = $("#display-name");
-  const memberSinceEl = $("#member-since");
-  const totalSessionsEl = $("#total-sessions");
-  const totalSessionsCardEl = $("#totalSessionsCard");
+  function getDisplayName(username) {
+    const key = `profile_displayName_${username}`;
+    return localStorage.getItem(key) || username || "Guest";
+  }
 
-  const bestGame1El = $("#best-game1");
-  const sumGame1El = $("#sum-game1");
-  const gamesPlayedEl = $("#games-played");
+  function setDisplayName(username, value) {
+    const key = `profile_displayName_${username}`;
+    localStorage.setItem(key, value);
+  }
 
-  const recentTbody = $("#recent-tbody");
-
-  const displayNameInput = $("#display-name-input");
-  const saveDisplayBtn = $("#save-display-name");
-  const signOutBtn = $("#sign-out");
-  const resetBtn = $("#reset-progress");
-
-  // ------------- logic -------------
-  function ensureSignedIn() {
-    const u = getCurrentUser();
-    if (u) return true;
-
-    // Fallback: honor app session from storage.js if present
-    if (typeof getCurrentSession === "function") {
-      const session = getCurrentSession();
-      if (session?.username) {
-        const users = getUsers();
-        let existing = users.find((usr) => usr.id === session.username);
-        if (!existing) {
-          existing = {
-            id: session.username,
-            username: session.username,
-            displayName: session.username,
-            createdAt: Date.now()
-          };
-          users.push(existing);
-          saveUsers(users);
-        }
-        setCurrentUserId(existing.id);
-        return true;
-      }
+  function getMemberSince(username) {
+    const key = `profile_memberSince_${username}`;
+    let ts = localStorage.getItem(key);
+    if (!ts) {
+      ts = new Date().toISOString();
+      localStorage.setItem(key, ts);
     }
-
-    alert("Please sign in first.");
-    window.location.href = "login.html";
-    return false;
+    return ts;
   }
 
   function initials(name) {
-    const t = (name || "?").trim();
-    if (!t) return "?";
-    const parts = t.split(/\s+/).slice(0, 2);
-    return parts.map((w) => w[0]?.toUpperCase() || "").join("") || "?";
+    const trimmed = (name || "").trim();
+    if (!trimmed) return "U";
+    return trimmed
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() || "")
+      .join("") || "U";
   }
 
-  function computeStatsFor(userId) {
-    const results = getResults().filter((r) => r.userId === userId);
-    const game1 = results.filter((r) => r.gameId === "game1");
-
+  function loadStats(username) {
     return {
-      totalSessions: results.length,
-      bestGame1: game1.length ? Math.max(...game1.map((r) => r.score)) : 0,
-      sumGame1: game1.reduce((a, r) => a + r.score, 0),
-      gamesPlayed: results.length,
-      recent: results
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
-        .slice(0, 10)
+      bestScore: getNumber(keyFor(GAME1_KEYS.BEST_SCORE, username), 0),
+      totalPoints: getNumber(keyFor(GAME1_KEYS.TOTAL_POINTS, username), 0),
+      gamesPlayed: getNumber(keyFor(GAME1_KEYS.GAMES_PLAYED, username), 0),
+      sessions: getNumber(keyFor(GAME1_KEYS.SESSIONS, username), 0),
+      recent: getRecentResults(username)
     };
   }
 
-  function renderProfile() {
-    const user = getCurrentUser();
-    if (!user) return;
-
-    // Header pill
-    if (currentUsernamePill) {
-      currentUsernamePill.textContent = user.username || user.displayName || "User";
-    }
-
-    // Avatar + name
-    if (avatar) avatar.textContent = initials(user.displayName || user.username || "U");
-    if (displayNameEl) displayNameEl.textContent = user.displayName || user.username || "User";
-    if (displayNameInput) displayNameInput.value = user.displayName || "";
-
-    // Member since
-    const since = user.createdAt ? formatDate(user.createdAt) : "—";
-    if (memberSinceEl) memberSinceEl.textContent = since;
-
-    // Stats
-    const s = computeStatsFor(user.id);
-    if (totalSessionsEl) totalSessionsEl.textContent = String(s.totalSessions);
-    if (totalSessionsCardEl) totalSessionsCardEl.textContent = String(s.totalSessions);
-    if (bestGame1El) bestGame1El.textContent = String(s.bestGame1);
-    if (sumGame1El) sumGame1El.textContent = String(s.sumGame1);
-    if (gamesPlayedEl) gamesPlayedEl.textContent = String(s.gamesPlayed);
-
-    // Recent table
-    if (recentTbody) {
-      recentTbody.innerHTML = "";
-      if (s.recent.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 5;
-        td.textContent = "No games yet";
-        td.className = "muted";
-        tr.appendChild(td);
-        recentTbody.appendChild(tr);
-      } else {
-        for (const r of s.recent) {
-          const tr = document.createElement("tr");
-          const d = new Date(r.timestamp || Date.now());
-          const dateTd = document.createElement("td");
-          dateTd.textContent = d.toLocaleString();
-
-          const gameTd = document.createElement("td");
-          gameTd.textContent = r.gameId;
-
-          const diffTd = document.createElement("td");
-          diffTd.textContent = r.difficulty || "—";
-
-          const scoreTd = document.createElement("td");
-          scoreTd.textContent = String(r.score);
-
-          const durTd = document.createElement("td");
-          durTd.textContent = `${r.durationSec || 0}s`;
-
-          tr.append(dateTd, gameTd, diffTd, scoreTd, durTd);
-          recentTbody.appendChild(tr);
-        }
-      }
-    }
+  function renderHeader(username, displayName) {
+    if (els.currentUsername) els.currentUsername.textContent = username;
+    if (els.displayName) els.displayName.textContent = displayName;
+    if (els.displayNameInput) els.displayNameInput.value = displayName;
+    if (els.avatar) els.avatar.textContent = initials(displayName);
+    if (els.memberSince) els.memberSince.textContent = formatDate(getMemberSince(username));
   }
 
-  function saveDisplayName() {
-    const user = getCurrentUser();
-    if (!user) return;
-    const val = (displayNameInput?.value || "").trim();
-    if (!val) {
+  function renderStats(username) {
+    const stats = loadStats(username);
+    if (els.bestGame1) els.bestGame1.textContent = String(stats.bestScore);
+    if (els.sumGame1) els.sumGame1.textContent = String(stats.totalPoints);
+    if (els.gamesPlayed) els.gamesPlayed.textContent = String(stats.gamesPlayed);
+    if (els.totalSessions) els.totalSessions.textContent = String(stats.sessions);
+    if (els.totalSessionsCard) els.totalSessionsCard.textContent = String(stats.sessions);
+    renderRecent(stats.recent);
+  }
+
+  function renderRecent(recent) {
+    if (!els.recentTbody) return;
+    els.recentTbody.innerHTML = "";
+
+    if (!recent || recent.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 4;
+      td.textContent = "No games yet";
+      td.className = "muted";
+      tr.appendChild(td);
+      els.recentTbody.appendChild(tr);
+      return;
+    }
+
+    recent.slice(0, 5).forEach((r) => {
+      const tr = document.createElement("tr");
+
+      const gameTd = document.createElement("td");
+      gameTd.textContent = r.game || "Game 1";
+
+      const scoreTd = document.createElement("td");
+      scoreTd.textContent = String(r.score ?? 0);
+
+      const dateTd = document.createElement("td");
+      dateTd.textContent = formatDate(r.date);
+
+      const diffTd = document.createElement("td");
+      diffTd.textContent = r.difficulty || "medium";
+
+      tr.append(gameTd, scoreTd, dateTd, diffTd);
+      els.recentTbody.appendChild(tr);
+    });
+  }
+
+  function onSaveDisplayName(username) {
+    const value = (els.displayNameInput?.value || "").trim();
+    if (!value) {
       alert("Display name cannot be empty.");
       return;
     }
-    const users = getUsers();
-    const idx = users.findIndex((u) => u.id === user.id);
-    if (idx >= 0) {
-      users[idx] = { ...users[idx], displayName: val };
-      saveUsers(users);
-      renderProfile();
-      alert("Display name updated.");
-    }
+    setDisplayName(username, value);
+    renderHeader(username, value);
   }
 
-  function signOut() {
-    setCurrentUserId("");
-    if (typeof clearCurrentSession === "function") {
-      clearCurrentSession();
-    }
+  function onSignOut() {
+    localStorage.removeItem("gameHub_currentSession");
     window.location.href = "login.html";
   }
 
   function resetProgress() {
-    if (!confirm("This will delete ALL your local scores for ALL users on this device. Continue?")) {
+    if (!confirm("This will reset your saved game stats on this device. Continue?")) {
       return;
     }
-    // Only wipe results; keep users
-    saveResults([]);
-    renderProfile();
-    alert("All local scores were deleted.");
+    const username = currentUsername();
+    writeJson(keyFor(GAME1_KEYS.BEST_SCORE, username), 0);
+    writeJson(keyFor(GAME1_KEYS.TOTAL_POINTS, username), 0);
+    writeJson(keyFor(GAME1_KEYS.TOTAL_MISSES, username), 0);
+    writeJson(keyFor(GAME1_KEYS.GAMES_PLAYED, username), 0);
+    writeJson(keyFor(GAME1_KEYS.SESSIONS, username), 0);
+    writeJson(keyFor(GAME1_KEYS.RECENT_RESULTS, username), []);
+    renderStats(username);
+    alert("Game stats cleared.");
   }
 
-  // ------------- bootstrap -------------
   document.addEventListener("DOMContentLoaded", () => {
-    if (!ensureSignedIn()) return;
-    renderProfile();
-  });
+    const username = currentUsername();
+    ensureGameDefaults(username);
+    const displayName = getDisplayName(username);
+    renderHeader(username, displayName);
+    renderStats(username);
 
-  saveDisplayBtn?.addEventListener("click", saveDisplayName);
-  signOutBtn?.addEventListener("click", signOut);
-  resetBtn?.addEventListener("click", resetProgress);
+    els.saveDisplayBtn?.addEventListener("click", () => onSaveDisplayName(username));
+    els.signOutBtn?.addEventListener("click", onSignOut);
+    els.resetBtn?.addEventListener("click", resetProgress);
+  });
 })();

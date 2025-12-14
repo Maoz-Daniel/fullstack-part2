@@ -24,30 +24,25 @@
   <div class="leaderboard-container">
     <div class="page-header">
       <h1>Leaderboard</h1>
-      <p>Top players across all games</p>
-    </div>
-
-    <div class="game-selector">
-      <button class="btn-game-select active" data-game="all">All Games</button>
-      <button class="btn-game-select" data-game="memory">Memory Match</button>
-      <button class="btn-game-select" data-game="wordle">Wordle</button>
+      <p>Best scores and total points for Game 1</p>
     </div>
 
     <div class="leaderboard-card">
       <div class="leaderboard-header">
         <div class="leaderboard-title">
-          <span id="leaderboardIcon">🏆</span>
-          <span id="leaderboardGameName">All Games - Top Scores</span>
+          <span id="leaderboardIcon">*</span>
+          <span id="leaderboardGameName">Game 1 - Top Scores</span>
         </div>
+        <button class="btn primary" id="lb-refresh" type="button">Refresh</button>
       </div>
 
       <div class="leaderboard-table">
         <div class="leaderboard-table-header">
           <div>Rank</div>
           <div>Player</div>
-          <div class="games">Games</div>
-          <div>Score</div>
-          <div class="date">Date</div>
+          <div class="games">Best Score</div>
+          <div>Total Points</div>
+          <div class="date">Last Played</div>
         </div>
         <div id="leaderboardContent"></div>
       </div>
@@ -56,103 +51,6 @@
 
   <script src="../js/storage.js"></script>
   <script src="../js/darkmode.js"></script>
-  <script>
-    // Check authentication
-    const session = getCurrentSession();
-    if (!session) {
-      window.location.href = 'login.html';
-    }
-
-    let currentGameFilter = 'all';
-
-    // Initialize leaderboard
-    function initLeaderboard() {
-      setupGameSelector();
-      displayLeaderboard('all');
-    }
-
-    // Setup game selector buttons
-    function setupGameSelector() {
-      const buttons = document.querySelectorAll('.btn-game-select');
-      buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-          buttons.forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          currentGameFilter = this.dataset.game;
-          displayLeaderboard(currentGameFilter);
-        });
-      });
-    }
-
-    // Display leaderboard
-    function displayLeaderboard(gameFilter) {
-      const allScores = getAllScores();
-      let filteredScores = allScores;
-
-      // Update header
-      const icons = { all: '🏆', memory: '🧠', wordle: '📖' };
-      const names = { all: 'All Games - Top Scores', memory: 'Memory Match - Best Scores', wordle: 'Wordle - Top Scores' };
-
-      document.getElementById('leaderboardIcon').textContent = icons[gameFilter];
-      document.getElementById('leaderboardGameName').textContent = names[gameFilter];
-
-      // Filter scores
-      if (gameFilter !== 'all') {
-        filteredScores = allScores.filter(score => score.game === gameFilter);
-      }
-
-      // Sort scores
-      filteredScores.sort((a, b) => b.score - a.score);
-
-      // Group by username and take best score
-      const userBestScores = {};
-      filteredScores.forEach(score => {
-        if (!userBestScores[score.username] || score.score > userBestScores[score.username].score) {
-          userBestScores[score.username] = score;
-        }
-      });
-
-      const topScores = Object.values(userBestScores).slice(0, 10);
-
-      // Display scores
-      const content = document.getElementById('leaderboardContent');
-
-      if (topScores.length === 0) {
-        content.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">🎮</div>
-            <p>No scores yet. Be the first to play!</p>
-          </div>
-        `;
-        return;
-      }
-
-      content.innerHTML = topScores.map((score, index) => {
-        const rank = index + 1;
-        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
-        const date = new Date(score.timestamp).toLocaleDateString();
-        const userScores = getUserScores(score.username);
-        const gamesPlayed = userScores.length;
-
-        return `
-          <div class="leaderboard-row">
-            <div class="rank">
-              <span class="${rank <= 3 ? 'rank-medal' : ''}">${medal}</span>
-            </div>
-            <div class="player-info">
-              <div class="player-avatar">${score.username.charAt(0).toUpperCase()}</div>
-              <div class="player-name">${score.username}</div>
-            </div>
-            <div class="games">${gamesPlayed}</div>
-            <div class="score">${score.score}</div>
-            <div class="date">${date}</div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // Initialize
-    initLeaderboard();
-  </script>
+  <script src="../js/leaderboard.js"></script>
 </body>
 </html>
