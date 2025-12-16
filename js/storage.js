@@ -12,7 +12,23 @@ const GAME1_LS_KEYS = {
     LAST_DIFFICULTY: 'game1_lastDifficulty'
 };
 
+// Shared base keys for per-user Game 2 (Wordle) stats
+const GAME2_LS_KEYS = {
+    BEST_SCORE: 'game2_bestScore',
+    TOTAL_POINTS: 'game2_totalPoints',
+    GAMES_PLAYED: 'game2_gamesPlayed',
+    WINS: 'game2_wins',
+    SESSIONS: 'game2_sessions',
+    RECENT_RESULTS: 'game2_recentResults',
+    CURRENT_STREAK: 'game2_currentStreak',
+    BEST_STREAK: 'game2_bestStreak'
+};
+
 function getGame1Key(keyName, username) {
+    return `${keyName}_${username}`;
+}
+
+function getGame2Key(keyName, username) {
     return `${keyName}_${username}`;
 }
 
@@ -50,6 +66,27 @@ function ensureGame1DefaultsForUser(username) {
             } else {
                 localStorage.setItem(userKey, JSON.stringify(fallback));
             }
+        }
+    });
+}
+
+function ensureGame2DefaultsForUser(username) {
+    if (!username) return;
+    const defaults = [
+        { base: GAME2_LS_KEYS.BEST_SCORE, fallback: 0 },
+        { base: GAME2_LS_KEYS.TOTAL_POINTS, fallback: 0 },
+        { base: GAME2_LS_KEYS.GAMES_PLAYED, fallback: 0 },
+        { base: GAME2_LS_KEYS.WINS, fallback: 0 },
+        { base: GAME2_LS_KEYS.SESSIONS, fallback: 0 },
+        { base: GAME2_LS_KEYS.RECENT_RESULTS, fallback: [] },
+        { base: GAME2_LS_KEYS.CURRENT_STREAK, fallback: 0 },
+        { base: GAME2_LS_KEYS.BEST_STREAK, fallback: 0 }
+    ];
+
+    defaults.forEach(({ base, fallback }) => {
+        const userKey = getGame2Key(base, username);
+        if (localStorage.getItem(userKey) === null) {
+            localStorage.setItem(userKey, JSON.stringify(fallback));
         }
     });
 }
@@ -110,6 +147,38 @@ function getGame1RecentResultsForUser(username) {
 
 function saveGame1RecentResultsForUser(username, results) {
     const key = getGame1Key(GAME1_LS_KEYS.RECENT_RESULTS, username);
+    writeJson(key, results);
+}
+
+// Game 2 stat helpers (per user)
+function getGame2NumberForUser(baseKey, username, fallback = 0) {
+    const key = getGame2Key(baseKey, username);
+    const val = readJson(key, fallback);
+    const num = Number(val);
+    if (Number.isNaN(num)) return fallback;
+    return num;
+}
+
+function setGame2NumberForUser(baseKey, username, value) {
+    const key = getGame2Key(baseKey, username);
+    writeJson(key, value);
+}
+
+function incrementGame2NumberForUser(baseKey, username, amount = 1) {
+    const current = getGame2NumberForUser(baseKey, username, 0);
+    const next = current + amount;
+    setGame2NumberForUser(baseKey, username, next);
+    return next;
+}
+
+function getGame2RecentResultsForUser(username) {
+    const key = getGame2Key(GAME2_LS_KEYS.RECENT_RESULTS, username);
+    const results = readJson(key, []);
+    return Array.isArray(results) ? results : [];
+}
+
+function saveGame2RecentResultsForUser(username, results) {
+    const key = getGame2Key(GAME2_LS_KEYS.RECENT_RESULTS, username);
     writeJson(key, results);
 }
 
@@ -216,4 +285,5 @@ initializeStorage();
 const bootstrapUsername = getActiveUsername();
 if (bootstrapUsername) {
     ensureGame1DefaultsForUser(bootstrapUsername);
+    ensureGame2DefaultsForUser(bootstrapUsername);
 }

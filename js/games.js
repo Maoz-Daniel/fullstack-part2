@@ -65,24 +65,54 @@
     return Number.isNaN(parsed) ? fallback : parsed;
   }
 
+  function getGame2Number(baseKey, username, fallback = 0) {
+    if (typeof getGame2NumberForUser === "function") {
+      return getGame2NumberForUser(baseKey, username, fallback);
+    }
+    const GAME2_KEYS = window.GAME2_LS_KEYS || {};
+    const keyName = baseKey || GAME2_KEYS.TOTAL_POINTS;
+    const key = `${keyName}_${username}`;
+    const val = localStorage.getItem(key);
+    if (val === null) return fallback;
+    const parsed = Number(JSON.parse(val));
+    return Number.isNaN(parsed) ? fallback : parsed;
+  }
+
   function renderStats(username) {
     if (typeof ensureGame1DefaultsForUser === "function") {
       ensureGame1DefaultsForUser(username);
     }
+    if (typeof ensureGame2DefaultsForUser === "function") {
+      ensureGame2DefaultsForUser(username);
+    }
+
+    const GAME2_KEYS = window.GAME2_LS_KEYS || {
+      TOTAL_POINTS: "game2_totalPoints",
+      GAMES_PLAYED: "game2_gamesPlayed",
+      SESSIONS: "game2_sessions"
+    };
 
     const bestScore = getNumber(GAME1_KEYS.BEST_SCORE, username, 0);
-    const totalPoints = getNumber(GAME1_KEYS.TOTAL_POINTS, username, 0);
-    const gamesPlayed = getNumber(GAME1_KEYS.GAMES_PLAYED, username, 0);
-    const sessions = getNumber(GAME1_KEYS.SESSIONS, username, 0);
+    const game1TotalPoints = getNumber(GAME1_KEYS.TOTAL_POINTS, username, 0);
+    const game1GamesPlayed = getNumber(GAME1_KEYS.GAMES_PLAYED, username, 0);
+    const game1Sessions = getNumber(GAME1_KEYS.SESSIONS, username, 0);
 
-    setText("totalGamesPlayed", gamesPlayed);
-    setText("totalScore", totalPoints);
-    setText("totalSessions", sessions);
+    const game2TotalPoints = getGame2Number(GAME2_KEYS.TOTAL_POINTS, username, 0);
+    const game2GamesPlayed = getGame2Number(GAME2_KEYS.GAMES_PLAYED, username, 0);
+    const game2Sessions = getGame2Number(GAME2_KEYS.SESSIONS, username, 0);
 
-    setText("game1Played", sessions);
+    const totalGamesPlayed = game1GamesPlayed + game2GamesPlayed;
+    const totalScore = game1TotalPoints + game2TotalPoints;
+    const totalSessions = game1Sessions + game2Sessions;
+
+    setText("totalGamesPlayed", totalGamesPlayed);
+    setText("totalScore", totalScore);
+    setText("totalSessions", totalSessions);
+
+    setText("game1Played", game1Sessions);
     setText("game1BestScore", bestScore === 0 ? "--" : bestScore);
-    setText("game1GamesPlayed", gamesPlayed);
-    setText("game1TotalScore", totalPoints);
+    setText("game1GamesPlayed", game1GamesPlayed);
+    setText("game1TotalScore", game1TotalPoints);
   }
 
   function setText(id, value) {

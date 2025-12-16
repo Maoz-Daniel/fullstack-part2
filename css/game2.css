@@ -37,8 +37,18 @@ body.dark-mode {
 .nav-brand {
     color: #fff;
     text-decoration: none;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     font-weight: 700;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-brand:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
 }
 
 .nav-actions {

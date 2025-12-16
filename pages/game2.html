@@ -19,7 +19,16 @@
     </nav>
     <div class="game-container">
         <div class="game-header">
-            <h1>📝 Wordle</h1>
+            <h1>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                <line x1="8" y1="7" x2="16" y2="7"/>
+                <line x1="8" y1="11" x2="16" y2="11"/>
+                <line x1="8" y1="15" x2="14" y2="15"/>
+              </svg>
+              Wordle
+            </h1>
             <p>Guess the 5-letter word in 6 tries</p>
         </div>
 
@@ -50,7 +59,12 @@
 
     <div class="game-over-modal" id="gameOverModal">
         <div class="modal-content">
-            <h2 id="modalTitle">🎉 Congratulations!</h2>
+            <h2 id="modalTitle">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+              </svg>
+              Congratulations!
+            </h2>
             <p id="modalMessage">You guessed the word!</p>
             <div class="word-reveal" id="wordReveal">WORD</div>
             <div class="modal-stats">

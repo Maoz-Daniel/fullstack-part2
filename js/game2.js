@@ -346,14 +346,59 @@ function winGame() {
     
     const session = getCurrentSession();
     const score = (6 - currentRow) * 1000;
+    const attempts = currentRow + 1;
     
     saveScore({
         username: session.username,
         game: 'wordle',
         score: score,
-        attempts: currentRow + 1,
+        attempts: attempts,
         won: true
     });
+    
+    // Update per-user Game 2 stats
+    if (typeof window.GAME2_LS_KEYS !== 'undefined') {
+        const username = session.username;
+        
+        // Update best score
+        if (typeof getGame2NumberForUser === 'function' && typeof setGame2NumberForUser === 'function') {
+            const currentBest = getGame2NumberForUser(window.GAME2_LS_KEYS.BEST_SCORE, username, 0);
+            if (score > currentBest) {
+                setGame2NumberForUser(window.GAME2_LS_KEYS.BEST_SCORE, username, score);
+            }
+            
+            // Update total points
+            incrementGame2NumberForUser(window.GAME2_LS_KEYS.TOTAL_POINTS, username, score);
+            
+            // Update games played
+            incrementGame2NumberForUser(window.GAME2_LS_KEYS.GAMES_PLAYED, username, 1);
+            
+            // Update wins
+            incrementGame2NumberForUser(window.GAME2_LS_KEYS.WINS, username, 1);
+            
+            // Update current streak
+            setGame2NumberForUser(window.GAME2_LS_KEYS.CURRENT_STREAK, username, currentStreak);
+            
+            // Update best streak
+            const bestStreak = getGame2NumberForUser(window.GAME2_LS_KEYS.BEST_STREAK, username, 0);
+            if (currentStreak > bestStreak) {
+                setGame2NumberForUser(window.GAME2_LS_KEYS.BEST_STREAK, username, currentStreak);
+            }
+            
+            // Update recent results
+            if (typeof getGame2RecentResultsForUser === 'function' && typeof saveGame2RecentResultsForUser === 'function') {
+                const recent = getGame2RecentResultsForUser(username);
+                recent.unshift({
+                    game: 'Game 2',
+                    score: score,
+                    attempts: attempts,
+                    date: new Date().toISOString(),
+                    won: true
+                });
+                saveGame2RecentResultsForUser(username, recent.slice(0, 20));
+            }
+        }
+    }
     
     // Update user streak
     const user = getUserByUsername(session.username);
@@ -361,7 +406,7 @@ function winGame() {
         updateUser(session.username, { bestStreak: currentStreak });
     }
     
-    showMessage('Congratulations! 🎉', 'success');
+    showMessage('Congratulations!', 'success');
     
     setTimeout(() => {
         showGameOverModal(true);
@@ -374,13 +419,41 @@ function loseGame() {
     currentStreak = 0;
     
     const session = getCurrentSession();
+    const attempts = 6;
+    
     saveScore({
         username: session.username,
         game: 'wordle',
         score: 0,
-        attempts: 6,
+        attempts: attempts,
         won: false
     });
+    
+    // Update per-user Game 2 stats
+    if (typeof window.GAME2_LS_KEYS !== 'undefined') {
+        const username = session.username;
+        
+        if (typeof incrementGame2NumberForUser === 'function' && typeof setGame2NumberForUser === 'function') {
+            // Update games played
+            incrementGame2NumberForUser(window.GAME2_LS_KEYS.GAMES_PLAYED, username, 1);
+            
+            // Reset current streak
+            setGame2NumberForUser(window.GAME2_LS_KEYS.CURRENT_STREAK, username, 0);
+            
+            // Update recent results
+            if (typeof getGame2RecentResultsForUser === 'function' && typeof saveGame2RecentResultsForUser === 'function') {
+                const recent = getGame2RecentResultsForUser(username);
+                recent.unshift({
+                    game: 'Game 2',
+                    score: 0,
+                    attempts: attempts,
+                    date: new Date().toISOString(),
+                    won: false
+                });
+                saveGame2RecentResultsForUser(username, recent.slice(0, 20));
+            }
+        }
+    }
     
     showMessage(`The word was ${targetWord}`, 'error');
     

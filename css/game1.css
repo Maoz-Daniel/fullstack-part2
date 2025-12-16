@@ -10,8 +10,9 @@ body {
 
 /* Top navigation */
 .game-navbar {
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -20,18 +21,22 @@ body {
 .nav-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 14px 24px;
+    padding: 20px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 64px;
 }
 
 .brand {
-    font-size: 1.2rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #333;
+    color: #fff;
     text-decoration: none;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .nav-actions {
@@ -42,20 +47,20 @@ body {
 
 .back-link {
     text-decoration: none;
-    color: #4CAF50;
+    color: #fff;
     font-weight: 600;
-    transition: color 0.3s;
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: rgba(76, 175, 80, 0.08);
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .back-link:hover {
-    color: #388e3c;
-    background: rgba(76, 175, 80, 0.14);
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
 }
 
 header {

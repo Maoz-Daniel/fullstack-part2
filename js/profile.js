@@ -16,6 +16,17 @@
     RECENT_RESULTS: "game1_recentResults"
   };
 
+  const GAME2_KEYS = window.GAME2_LS_KEYS || {
+    BEST_SCORE: "game2_bestScore",
+    TOTAL_POINTS: "game2_totalPoints",
+    GAMES_PLAYED: "game2_gamesPlayed",
+    WINS: "game2_wins",
+    SESSIONS: "game2_sessions",
+    RECENT_RESULTS: "game2_recentResults",
+    CURRENT_STREAK: "game2_currentStreak",
+    BEST_STREAK: "game2_bestStreak"
+  };
+
   const els = {
     currentUsername: document.querySelector("#current-username"),
     avatar: document.querySelector("#avatar"),
@@ -25,6 +36,8 @@
     totalSessionsCard: document.querySelector("#totalSessionsCard"),
     bestGame1: document.querySelector("#best-game1"),
     sumGame1: document.querySelector("#sum-game1"),
+    bestGame2: document.querySelector("#best-game2"),
+    sumGame2: document.querySelector("#sum-game2"),
     gamesPlayed: document.querySelector("#games-played"),
     recentTbody: document.querySelector("#recent-tbody"),
     displayNameInput: document.querySelector("#display-name-input"),
@@ -74,24 +87,10 @@
   function ensureGameDefaults(username) {
     if (typeof ensureGame1DefaultsForUser === "function") {
       ensureGame1DefaultsForUser(username);
-      return;
     }
-
-    const defaults = {
-      [keyFor(GAME1_KEYS.BEST_SCORE, username)]: 0,
-      [keyFor(GAME1_KEYS.TOTAL_POINTS, username)]: 0,
-      [keyFor(GAME1_KEYS.TOTAL_MISSES, username)]: 0,
-      [keyFor(GAME1_KEYS.LAST_DIFFICULTY, username)]: "medium",
-      [keyFor(GAME1_KEYS.GAMES_PLAYED, username)]: 0,
-      [keyFor(GAME1_KEYS.SESSIONS, username)]: 0,
-      [keyFor(GAME1_KEYS.RECENT_RESULTS, username)]: []
-    };
-
-    Object.entries(defaults).forEach(([key, value]) => {
-      if (localStorage.getItem(key) === null) {
-        writeJson(key, value);
-      }
-    });
+    if (typeof ensureGame2DefaultsForUser === "function") {
+      ensureGame2DefaultsForUser(username);
+    }
   }
 
   function getNumber(key, fallback = 0) {
@@ -142,12 +141,23 @@
       .join("") || "U";
   }
 
+  function keyForGame2(baseKey, username) {
+    if (typeof getGame2Key === "function") {
+      return getGame2Key(baseKey, username);
+    }
+    return `${baseKey}_${username}`;
+  }
+
   function loadStats(username) {
     return {
       bestScore: getNumber(keyFor(GAME1_KEYS.BEST_SCORE, username), 0),
       totalPoints: getNumber(keyFor(GAME1_KEYS.TOTAL_POINTS, username), 0),
-      gamesPlayed: getNumber(keyFor(GAME1_KEYS.GAMES_PLAYED, username), 0),
-      sessions: getNumber(keyFor(GAME1_KEYS.SESSIONS, username), 0),
+      bestScoreGame2: getNumber(keyForGame2(GAME2_KEYS.BEST_SCORE, username), 0),
+      totalPointsGame2: getNumber(keyForGame2(GAME2_KEYS.TOTAL_POINTS, username), 0),
+      gamesPlayed: getNumber(keyFor(GAME1_KEYS.GAMES_PLAYED, username), 0) + 
+                   getNumber(keyForGame2(GAME2_KEYS.GAMES_PLAYED, username), 0),
+      sessions: getNumber(keyFor(GAME1_KEYS.SESSIONS, username), 0) +
+                getNumber(keyForGame2(GAME2_KEYS.SESSIONS, username), 0),
       recent: getRecentResults(username)
     };
   }
@@ -164,6 +174,8 @@
     const stats = loadStats(username);
     if (els.bestGame1) els.bestGame1.textContent = String(stats.bestScore);
     if (els.sumGame1) els.sumGame1.textContent = String(stats.totalPoints);
+    if (els.bestGame2) els.bestGame2.textContent = String(stats.bestScoreGame2);
+    if (els.sumGame2) els.sumGame2.textContent = String(stats.totalPointsGame2);
     if (els.gamesPlayed) els.gamesPlayed.textContent = String(stats.gamesPlayed);
     if (els.totalSessions) els.totalSessions.textContent = String(stats.sessions);
     if (els.totalSessionsCard) els.totalSessionsCard.textContent = String(stats.sessions);
@@ -225,12 +237,22 @@
       return;
     }
     const username = currentUsername();
+    // Reset Game 1
     writeJson(keyFor(GAME1_KEYS.BEST_SCORE, username), 0);
     writeJson(keyFor(GAME1_KEYS.TOTAL_POINTS, username), 0);
     writeJson(keyFor(GAME1_KEYS.TOTAL_MISSES, username), 0);
     writeJson(keyFor(GAME1_KEYS.GAMES_PLAYED, username), 0);
     writeJson(keyFor(GAME1_KEYS.SESSIONS, username), 0);
     writeJson(keyFor(GAME1_KEYS.RECENT_RESULTS, username), []);
+    // Reset Game 2
+    writeJson(keyForGame2(GAME2_KEYS.BEST_SCORE, username), 0);
+    writeJson(keyForGame2(GAME2_KEYS.TOTAL_POINTS, username), 0);
+    writeJson(keyForGame2(GAME2_KEYS.GAMES_PLAYED, username), 0);
+    writeJson(keyForGame2(GAME2_KEYS.WINS, username), 0);
+    writeJson(keyForGame2(GAME2_KEYS.SESSIONS, username), 0);
+    writeJson(keyForGame2(GAME2_KEYS.RECENT_RESULTS, username), []);
+    writeJson(keyForGame2(GAME2_KEYS.CURRENT_STREAK, username), 0);
+    writeJson(keyForGame2(GAME2_KEYS.BEST_STREAK, username), 0);
     renderStats(username);
     alert("Game stats cleared.");
   }

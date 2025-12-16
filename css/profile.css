@@ -37,6 +37,18 @@ body.dark-mode {
 .nav-brand {
     font-size: 1.8rem;
     font-weight: 700;
+    text-decoration: none;
+    color: #fff;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-brand:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
 }
 
 .nav-menu {
@@ -208,9 +220,21 @@ input[type="text"] {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-bottom: 30px;
+}
+
+@media (max-width: 968px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .stat-card {
@@ -230,6 +254,16 @@ input[type="text"] {
 .stat-icon {
     font-size: 3rem;
     margin-bottom: 15px;
+}
+
+.stat-icon svg {
+    stroke: #667eea;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon svg {
+    stroke: #764ba2;
+    transform: scale(1.1);
 }
 
 .stat-value {
