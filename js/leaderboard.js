@@ -1,242 +1,178 @@
-/* leaderboard.js
- * Reads leaderboard_users from localStorage and renders rankings.
+﻿/**
+ * Leaderboard Module - PlayHub Gaming Portal
+ * @file leaderboard.js
+ * @description Displays sorted leaderboard rankings for all games.
+ * @requires storage.js
  */
 
-(function () {
-  "use strict";
+(function() {
+    "use strict";
 
-  const GAME1_KEYS = window.GAME1_LS_KEYS || {
-    BEST_SCORE: "game1_bestScore",
-    TOTAL_POINTS: "game1_totalPoints",
-    TOTAL_MISSES: "game1_totalMisses",
-    GAMES_PLAYED: "game1_gamesPlayed",
-    SESSIONS: "game1_sessions",
-    RECENT_RESULTS: "game1_recentResults",
-    LAST_DIFFICULTY: "game1_lastDifficulty"
-  };
+    // ============================================================================
+    // DOM REFERENCES
+    // ============================================================================
 
-  const GAME2_KEYS = window.GAME2_LS_KEYS || {
-    BEST_SCORE: "game2_bestScore",
-    TOTAL_POINTS: "game2_totalPoints",
-    GAMES_PLAYED: "game2_gamesPlayed",
-    WINS: "game2_wins",
-    SESSIONS: "game2_sessions",
-    RECENT_RESULTS: "game2_recentResults",
-    CURRENT_STREAK: "game2_currentStreak",
-    BEST_STREAK: "game2_bestStreak"
-  };
+    const content1El = document.querySelector("#leaderboard1Content");
+    const content2El = document.querySelector("#leaderboard2Content");
 
-  const content1El = document.querySelector("#leaderboard1Content");
-  const content2El = document.querySelector("#leaderboard2Content");
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
 
-  function readJson(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw === null) return fallback;
-      const parsed = JSON.parse(raw);
-      return parsed ?? fallback;
-    } catch {
-      return fallback;
+    /**
+     * Formats a timestamp to readable date string
+     * @param {string} ts - ISO timestamp
+     * @returns {string} Formatted date
+     */
+    function formatDate(ts) {
+        if (!ts) return "--";
+        const d = new Date(ts);
+        return Number.isNaN(d.getTime()) ? "--" : `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
     }
-  }
 
-  function formatDate(ts) {
-    if (!ts) return "--";
-    const d = new Date(ts);
-    if (Number.isNaN(d.getTime())) return "--";
-    return d.toLocaleDateString() + " " + d.toLocaleTimeString();
-  }
-
-  function keyFor(baseKey, username) {
-    if (typeof getGame1Key === "function") return getGame1Key(baseKey, username);
-    return `${baseKey}_${username}`;
-  }
-
-  function getNumber(baseKey, username) {
-    if (typeof getGame1NumberForUser === "function") {
-      return getGame1NumberForUser(baseKey, username, 0);
+    /**
+     * Renders empty state message
+     * @param {HTMLElement} container - Container element
+     * @param {string} message - Message to display
+     */
+    function renderEmptyState(container, message) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                </div>
+                <p>${message}</p>
+            </div>
+        `;
     }
-    const raw = readJson(keyFor(baseKey, username), 0);
-    const num = Number(raw);
-    return Number.isNaN(num) ? 0 : num;
-  }
 
-  function getRecent(username) {
-    if (typeof getGame1RecentResultsForUser === "function") {
-      return getGame1RecentResultsForUser(username);
+    /**
+     * Creates a leaderboard row HTML
+     * @param {Object} row - Row data
+     * @param {number} rank - Rank number
+     * @param {string} extraColumn - Extra column value (difficulty/attempts)
+     * @returns {string} HTML string
+     */
+    function createRowHtml(row, rank, extraColumn) {
+        return `
+            <div class="leaderboard-row">
+                <div class="rank">${rank}</div>
+                <div class="player-info">
+                    <div class="player-avatar">${row.username.charAt(0).toUpperCase()}</div>
+                    <div class="player-name">${row.username}</div>
+                </div>
+                <div class="games">${row.score}</div>
+                <div class="score">${extraColumn}</div>
+                <div class="date">${formatDate(row.date)}</div>
+            </div>
+        `;
     }
-    const data = readJson(keyFor(GAME1_KEYS.RECENT_RESULTS, username), []);
-    return Array.isArray(data) ? data : [];
-  }
 
-  function keyForGame2(baseKey, username) {
-    if (typeof getGame2Key === "function") return getGame2Key(baseKey, username);
-    return `${baseKey}_${username}`;
-  }
+    // ============================================================================
+    // DATA COMPUTATION
+    // ============================================================================
 
-  function getRecentGame2(username) {
-    if (typeof getGame2RecentResultsForUser === "function") {
-      return getGame2RecentResultsForUser(username);
-    }
-    const data = readJson(keyForGame2(GAME2_KEYS.RECENT_RESULTS, username), []);
-    return Array.isArray(data) ? data : [];
-  }
+    /**
+     * Computes Game 1 leaderboard rows
+     * @returns {Array} Sorted rows
+     */
+    function computeGame1Rows() {
+        const users = getAllUsers();
+        const rows = [];
 
-  function getLastPlayed(username) {
-    const results = getRecent(username);
-    if (!results.length) return null;
-    return results[0].date || results[0].timestamp || null;
-  }
-
-  function ensureDefaults(username) {
-    if (typeof ensureGame1DefaultsForUser === "function") {
-      ensureGame1DefaultsForUser(username);
-    }
-    if (typeof ensureGame2DefaultsForUser === "function") {
-      ensureGame2DefaultsForUser(username);
-    }
-  }
-
-  function computeGame1Rows() {
-    const users = typeof getAllUsers === "function" ? getAllUsers() : [];
-    const rows = [];
-
-    // Collect all game sessions from all users
-    users.forEach((u) => {
-      const username = u.username;
-      ensureDefaults(username);
-      const recentResults = getRecent(username);
-
-      // Add each game session as a separate row
-      recentResults.forEach((result) => {
-        rows.push({
-          username,
-          score: result.score || 0,
-          date: result.date || result.timestamp || null,
-          difficulty: result.difficulty || "medium"
+        users.forEach(u => {
+            ensureGame1DefaultsForUser(u.username);
+            getGame1RecentResultsForUser(u.username).forEach(result => {
+                rows.push({
+                    username: u.username,
+                    score: result.score || 0,
+                    date: result.date || result.timestamp || null,
+                    difficulty: result.difficulty || "medium"
+                });
+            });
         });
-      });
-    });
 
-    // Sort by score descending (highest first)
-    return rows.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      // Secondary sort by date (most recent first)
-      if (a.date && b.date) {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-      return a.username.localeCompare(b.username);
-    });
-  }
-
-  function computeGame2Rows() {
-    const users = typeof getAllUsers === "function" ? getAllUsers() : [];
-    const rows = [];
-
-    // Collect all game sessions from all users
-    users.forEach((u) => {
-      const username = u.username;
-      ensureDefaults(username);
-      const recentResults = getRecentGame2(username);
-
-      // Add each game session as a separate row
-      recentResults.forEach((result) => {
-        rows.push({
-          username,
-          score: result.score || 0,
-          date: result.date || result.timestamp || null,
-          attempts: result.attempts || 6
+        return rows.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+            return a.username.localeCompare(b.username);
         });
-      });
-    });
-
-    // Sort by score descending (highest first)
-    return rows.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      // Secondary sort by attempts (fewer is better)
-      if (a.attempts !== b.attempts) return a.attempts - b.attempts;
-      // Tertiary sort by date (most recent first)
-      if (a.date && b.date) {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-      return a.username.localeCompare(b.username);
-    });
-  }
-
-  function renderGame1Leaderboard() {
-    if (!content1El) return;
-    const rows = computeGame1Rows();
-
-    if (rows.length === 0) {
-      content1El.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-            </svg>
-          </div>
-          <p>No scores yet. Play Game 1 to appear here.</p>
-        </div>
-      `;
-      return;
     }
 
-    content1El.innerHTML = rows.map((row, idx) => {
-      const rank = idx + 1;
-      return `
-        <div class="leaderboard-row">
-          <div class="rank">${rank}</div>
-          <div class="player-info">
-            <div class="player-avatar">${row.username.charAt(0).toUpperCase()}</div>
-            <div class="player-name">${row.username}</div>
-          </div>
-          <div class="games">${row.score}</div>
-          <div class="score">${row.difficulty}</div>
-          <div class="date">${formatDate(row.date)}</div>
-        </div>
-      `;
-    }).join("");
-  }
+    /**
+     * Computes Game 2 leaderboard rows
+     * @returns {Array} Sorted rows
+     */
+    function computeGame2Rows() {
+        const users = getAllUsers();
+        const rows = [];
 
-  function renderGame2Leaderboard() {
-    if (!content2El) return;
-    const rows = computeGame2Rows();
+        users.forEach(u => {
+            ensureGame2DefaultsForUser(u.username);
+            getGame2RecentResultsForUser(u.username).forEach(result => {
+                rows.push({
+                    username: u.username,
+                    score: result.score || 0,
+                    date: result.date || result.timestamp || null,
+                    attempts: result.attempts || 6
+                });
+            });
+        });
 
-    if (rows.length === 0) {
-      content2El.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-            </svg>
-          </div>
-          <p>No scores yet. Play Game 2 to appear here.</p>
-        </div>
-      `;
-      return;
+        return rows.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            if (a.attempts !== b.attempts) return a.attempts - b.attempts;
+            if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+            return a.username.localeCompare(b.username);
+        });
     }
 
-    content2El.innerHTML = rows.map((row, idx) => {
-      const rank = idx + 1;
-      return `
-        <div class="leaderboard-row">
-          <div class="rank">${rank}</div>
-          <div class="player-info">
-            <div class="player-avatar">${row.username.charAt(0).toUpperCase()}</div>
-            <div class="player-name">${row.username}</div>
-          </div>
-          <div class="games">${row.score}</div>
-          <div class="score">${row.attempts}</div>
-          <div class="date">${formatDate(row.date)}</div>
-        </div>
-      `;
-    }).join("");
-  }
+    // ============================================================================
+    // RENDERING
+    // ============================================================================
 
-  function renderLeaderboard() {
-    renderGame1Leaderboard();
-    renderGame2Leaderboard();
-  }
+    /**
+     * Renders Game 1 leaderboard
+     */
+    function renderGame1Leaderboard() {
+        if (!content1El) return;
+        
+        const rows = computeGame1Rows();
+        if (rows.length === 0) {
+            renderEmptyState(content1El, "No scores yet. Play Snake to appear here.");
+            return;
+        }
 
-  document.addEventListener("DOMContentLoaded", renderLeaderboard);
+        content1El.innerHTML = rows
+            .map((row, idx) => createRowHtml(row, idx + 1, row.difficulty))
+            .join("");
+    }
+
+    /**
+     * Renders Game 2 leaderboard
+     */
+    function renderGame2Leaderboard() {
+        if (!content2El) return;
+        
+        const rows = computeGame2Rows();
+        if (rows.length === 0) {
+            renderEmptyState(content2El, "No scores yet. Play Wordle to appear here.");
+            return;
+        }
+
+        content2El.innerHTML = rows
+            .map((row, idx) => createRowHtml(row, idx + 1, row.attempts))
+            .join("");
+    }
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderGame1Leaderboard();
+        renderGame2Leaderboard();
+    });
 })();

@@ -1,131 +1,111 @@
-/* js/games.js
- * Dashboard interactions: session gate, logout, dark mode toggle, and basic stats.
+/**
+ * Games Dashboard Module - PlayHub Gaming Portal
+ * @file games.js
+ * @description Handles the games dashboard with session validation and statistics.
+ * @requires storage.js
  */
 
-(function () {
-  "use strict";
+(function() {
+    "use strict";
 
-  const $ = (id) => document.getElementById(id);
-  const GAME1_KEYS = window.GAME1_LS_KEYS || {
-    BEST_SCORE: "game1_bestScore",
-    TOTAL_POINTS: "game1_totalPoints",
-    TOTAL_MISSES: "game1_totalMisses",
-    GAMES_PLAYED: "game1_gamesPlayed",
-    SESSIONS: "game1_sessions",
-    RECENT_RESULTS: "game1_recentResults",
-    LAST_DIFFICULTY: "game1_lastDifficulty"
-  };
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
 
-  function requireSession() {
-    if (typeof getCurrentSession !== "function") return null;
-    const session = getCurrentSession();
-    if (!session) {
-      window.location.href = "login.html";
-      return null;
-    }
-    return session;
-  }
-
-  function renderUser(username) {
-    const initial = username?.charAt(0)?.toUpperCase() || "U";
-    const usernameEl = $("username");
-    const welcomeEl = $("welcomeUsername");
-    const avatarEl = $("userAvatar");
-
-    if (usernameEl) usernameEl.textContent = username;
-    if (welcomeEl) welcomeEl.textContent = username;
-    if (avatarEl) avatarEl.textContent = initial;
-  }
-
-  function bindLogout() {
-    const btn = $("logoutBtn");
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      if (typeof clearCurrentSession === "function") {
-        clearCurrentSession();
-      }
-      window.location.href = "login.html";
-    });
-  }
-
-  function keyFor(baseKey, username) {
-    if (typeof getGame1Key === "function") {
-      return getGame1Key(baseKey, username);
-    }
-    return `${baseKey}_${username}`;
-  }
-
-  function getNumber(baseKey, username, fallback = 0) {
-    if (typeof getGame1NumberForUser === "function") {
-      return getGame1NumberForUser(baseKey, username, fallback);
-    }
-    const val = localStorage.getItem(keyFor(baseKey, username));
-    if (val === null) return fallback;
-    const parsed = Number(JSON.parse(val));
-    return Number.isNaN(parsed) ? fallback : parsed;
-  }
-
-  function getGame2Number(baseKey, username, fallback = 0) {
-    if (typeof getGame2NumberForUser === "function") {
-      return getGame2NumberForUser(baseKey, username, fallback);
-    }
-    const GAME2_KEYS = window.GAME2_LS_KEYS || {};
-    const keyName = baseKey || GAME2_KEYS.TOTAL_POINTS;
-    const key = `${keyName}_${username}`;
-    const val = localStorage.getItem(key);
-    if (val === null) return fallback;
-    const parsed = Number(JSON.parse(val));
-    return Number.isNaN(parsed) ? fallback : parsed;
-  }
-
-  function renderStats(username) {
-    if (typeof ensureGame1DefaultsForUser === "function") {
-      ensureGame1DefaultsForUser(username);
-    }
-    if (typeof ensureGame2DefaultsForUser === "function") {
-      ensureGame2DefaultsForUser(username);
-    }
-
-    const GAME2_KEYS = window.GAME2_LS_KEYS || {
-      TOTAL_POINTS: "game2_totalPoints",
-      GAMES_PLAYED: "game2_gamesPlayed",
-      SESSIONS: "game2_sessions"
+    const $ = (id) => document.getElementById(id);
+    const setText = (id, value) => {
+        const el = $(id);
+        if (el) el.textContent = String(value);
     };
 
-    const bestScore = getNumber(GAME1_KEYS.BEST_SCORE, username, 0);
-    const game1TotalPoints = getNumber(GAME1_KEYS.TOTAL_POINTS, username, 0);
-    const game1GamesPlayed = getNumber(GAME1_KEYS.GAMES_PLAYED, username, 0);
-    const game1Sessions = getNumber(GAME1_KEYS.SESSIONS, username, 0);
+    // ============================================================================
+    // SESSION MANAGEMENT
+    // ============================================================================
 
-    const game2TotalPoints = getGame2Number(GAME2_KEYS.TOTAL_POINTS, username, 0);
-    const game2GamesPlayed = getGame2Number(GAME2_KEYS.GAMES_PLAYED, username, 0);
-    const game2Sessions = getGame2Number(GAME2_KEYS.SESSIONS, username, 0);
+    /**
+     * Requires valid session, redirects to login if none
+     * @returns {Object|null} Session object or null
+     */
+    function requireSession() {
+        const session = getCurrentSession();
+        if (!session) {
+            window.location.href = "login.html";
+            return null;
+        }
+        return session;
+    }
 
-    const totalGamesPlayed = game1GamesPlayed + game2GamesPlayed;
-    const totalScore = game1TotalPoints + game2TotalPoints;
-    const totalSessions = game1Sessions + game2Sessions;
+    // ============================================================================
+    // UI RENDERING
+    // ============================================================================
 
-    setText("totalGamesPlayed", totalGamesPlayed);
-    setText("totalScore", totalScore);
-    setText("totalSessions", totalSessions);
+    /**
+     * Renders user information in header
+     * @param {string} username - Username to display
+     */
+    function renderUser(username) {
+        const initial = username?.charAt(0)?.toUpperCase() || "U";
+        setText("username", username);
+        setText("welcomeUsername", username);
+        
+        const avatarEl = $("userAvatar");
+        if (avatarEl) avatarEl.textContent = initial;
+    }
 
-    setText("game1Played", game1Sessions);
-    setText("game1BestScore", bestScore === 0 ? "--" : bestScore);
-    setText("game1GamesPlayed", game1GamesPlayed);
-    setText("game1TotalScore", game1TotalPoints);
-  }
+    /**
+     * Renders combined game statistics
+     * @param {string} username - Username
+     */
+    function renderStats(username) {
+        ensureGame1DefaultsForUser(username);
+        ensureGame2DefaultsForUser(username);
 
-  function setText(id, value) {
-    const el = $(id);
-    if (el) el.textContent = String(value);
-  }
+        // Game 1 stats
+        const g1Best = getGame1NumberForUser(GAME1_LS_KEYS.BEST_SCORE, username, 0);
+        const g1Total = getGame1NumberForUser(GAME1_LS_KEYS.TOTAL_POINTS, username, 0);
+        const g1Played = getGame1NumberForUser(GAME1_LS_KEYS.GAMES_PLAYED, username, 0);
+        const g1Sessions = getGame1NumberForUser(GAME1_LS_KEYS.SESSIONS, username, 0);
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const session = requireSession();
-    if (!session) return;
+        // Game 2 stats
+        const g2Total = getGame2NumberForUser(GAME2_LS_KEYS.TOTAL_POINTS, username, 0);
+        const g2Played = getGame2NumberForUser(GAME2_LS_KEYS.GAMES_PLAYED, username, 0);
+        const g2Sessions = getGame2NumberForUser(GAME2_LS_KEYS.SESSIONS, username, 0);
 
-    renderUser(session.username);
-    renderStats(session.username);
-    bindLogout();
-  });
+        // Combined totals
+        setText("totalGamesPlayed", g1Played + g2Played);
+        setText("totalScore", g1Total + g2Total);
+        setText("totalSessions", g1Sessions + g2Sessions);
+
+        // Game 1 specific
+        setText("game1Played", g1Sessions);
+        setText("game1BestScore", g1Best || "--");
+        setText("game1GamesPlayed", g1Played);
+        setText("game1TotalScore", g1Total);
+    }
+
+    /**
+     * Binds logout button handler
+     */
+    function bindLogout() {
+        const btn = $("logoutBtn");
+        if (!btn) return;
+        
+        btn.addEventListener("click", () => {
+            clearCurrentSession();
+            window.location.href = "login.html";
+        });
+    }
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const session = requireSession();
+        if (!session) return;
+
+        renderUser(session.username);
+        renderStats(session.username);
+        bindLogout();
+    });
 })();

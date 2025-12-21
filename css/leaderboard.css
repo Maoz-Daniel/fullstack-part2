@@ -289,9 +289,87 @@ body.dark-mode {
 }
 
 @media (max-width: 768px) {
-    .leaderboard-table-header,
+    .navbar {
+        padding: 12px 0;
+    }
+    
+    .nav-content {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 0 15px;
+    }
+    
+    .nav-brand {
+        font-size: 1.4rem;
+    }
+    
+    .nav-menu {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-link {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .btn-darkmode {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .leaderboard-container {
+        padding: 20px 15px;
+    }
+    
+    .page-header {
+        margin-bottom: 30px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .page-header p {
+        font-size: 1rem;
+    }
+    
+    .game-selector {
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    
+    .btn-game-select {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+    
+    .leaderboard-card {
+        padding: 20px 15px;
+        border-radius: 15px;
+    }
+    
+    .leaderboard-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+    
+    .leaderboard-title {
+        font-size: 1.5rem;
+    }
+    
+    .leaderboard-table-header {
+        display: none;
+    }
+    
     .leaderboard-row {
-        grid-template-columns: 60px 1fr 100px;
+        grid-template-columns: 50px 1fr 80px;
+        padding: 15px;
+        gap: 10px;
     }
     
     .games,
@@ -299,7 +377,67 @@ body.dark-mode {
         display: none;
     }
     
-    .page-header h1 {
-        font-size: 2rem;
+    .rank {
+        font-size: 1.2rem;
+    }
+    
+    .rank-medal {
+        font-size: 1.5rem;
+    }
+    
+    .player-info {
+        gap: 10px;
+    }
+    
+    .player-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .player-name {
+        font-size: 0.95rem;
+    }
+    
+    .score {
+        font-size: 1.1rem;
+    }
+    
+    .empty-state {
+        padding: 40px 15px;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+    }
+    
+    .empty-state p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .leaderboard-row {
+        grid-template-columns: 40px 1fr 70px;
+        padding: 12px;
+    }
+    
+    .player-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .player-name {
+        font-size: 0.85rem;
+    }
+    
+    .score {
+        font-size: 1rem;
+    }
+    
+    .btn-game-select {
+        padding: 8px 15px;
+        font-size: 0.8rem;
     }
 }

@@ -186,8 +186,14 @@ body.dark-mode {
 }
 
 .btn.ghost {
-    background: rgba(255,255,255,0.2);
+    background: #6b7280;
     color: #fff;
+    border: 2px solid #6b7280;
+}
+
+.btn.ghost:hover {
+    background: #4b5563;
+    border-color: #4b5563;
 }
 
 .btn:hover {
@@ -418,16 +424,267 @@ input[type="text"] {
 }
 
 @media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-menu {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .nav-link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .nav-brand {
+        font-size: 1.5rem;
+    }
+    
+    .btn-darkmode,
+    .btn-back {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .profile-container {
+        padding: 20px 15px;
+    }
+    
     .profile-header {
         flex-direction: column;
         text-align: center;
+        padding: 25px 20px;
+        gap: 20px;
+    }
+    
+    .profile-avatar-large {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .profile-username {
+        font-size: 1.6rem;
+    }
+    
+    .profile-email {
+        font-size: 0.95rem;
     }
     
     .profile-meta {
         justify-content: center;
+        gap: 15px;
+        flex-direction: column;
+    }
+    
+    .profile-actions {
+        width: 100%;
+    }
+    
+    .control-row {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .control-row input {
+        min-width: 100%;
+    }
+    
+    .control-row .btn {
+        width: 100%;
     }
     
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+    }
+    
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+    
+    .achievements-section,
+    .recent-games {
+        padding: 20px 15px;
+        border-radius: 15px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .achievement-card {
+        padding: 15px 10px;
+    }
+    
+    .achievement-icon {
+        font-size: 2rem;
+    }
+    
+    .achievement-name {
+        font-size: 0.9rem;
+    }
+    
+    .achievement-description {
+        font-size: 0.75rem;
+    }
+    
+    .game-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .game-item-score {
+        font-size: 1.2rem;
+    }
+    
+    .results-table th,
+    .results-table td {
+        padding: 8px 6px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .navbar {
+        padding: 12px 0;
+    }
+    
+    .nav-brand {
+        font-size: 1.3rem;
+    }
+    
+    .nav-menu {
+        gap: 5px;
+    }
+    
+    .nav-link {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .btn-darkmode,
+    .btn-back {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .profile-container {
+        padding: 15px 10px;
+    }
+    
+    .profile-header {
+        padding: 20px 15px;
+        border-radius: 15px;
+    }
+    
+    .profile-avatar-large {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .profile-username {
+        font-size: 1.3rem;
+    }
+    
+    .profile-email {
+        font-size: 0.85rem;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    
+    .achievement-card {
+        padding: 12px 8px;
+    }
+    
+    .achievement-icon {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+    
+    .achievement-name {
+        font-size: 0.8rem;
+    }
+    
+    .achievement-description {
+        font-size: 0.7rem;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+    }
+}
+
+/* Toast Notifications */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 15px 30px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-success {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.toast-error {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.toast-info {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
 }

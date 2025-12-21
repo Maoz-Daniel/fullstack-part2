@@ -1,582 +1,511 @@
-// Game 1 - Catch the Falling Objects
-// Pure vanilla JavaScript, DOM-based game (No Classes)
+/**
+ * Snake Game - PlayHub Gaming Portal
+ * @file game1.js
+ * @description Classic Snake game with difficulty levels and statistics tracking.
+ * @requires storage.js
+ */
 
-// ========== LocalStorage Helper Functions ==========
-function saveGame1Data(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-        console.error('Error saving to localStorage:', e);
+"use strict";
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+const DIFFICULTY = Object.freeze({
+    easy: { speed: 150, wallsKill: false, multiplier: 1, label: "Easy" },
+    medium: { speed: 100, wallsKill: true, multiplier: 2, label: "Medium" },
+    hard: { speed: 70, wallsKill: true, multiplier: 3, label: "Hard" }
+});
+
+const CONFIG = Object.freeze({
+    gridSize: 20,
+    canvasSize: 400,
+    initialLength: 3,
+    colors: {
+        head: "#4ade80",
+        body: "#22c55e",
+        bodyAlt: "#16a34a",
+        food: "#ef4444",
+        foodGlow: "rgba(239, 68, 68, 0.3)",
+        grid: "rgba(255, 255, 255, 0.05)",
+        bg: "rgba(0, 0, 0, 0.4)"
     }
-}
+});
 
-function loadGame1Data(key, fallback = null) {
-    try {
-        const data = localStorage.getItem(key);
-        if (data === null) {
-            if (fallback !== null && fallback !== undefined) {
-                saveGame1Data(key, fallback);
-                return fallback;
-            }
-            return fallback;
-        }
-        return JSON.parse(data);
-    } catch (e) {
-        console.error('Error loading from localStorage:', e);
-        return fallback;
-    }
-}
+const DIRECTIONS = Object.freeze({
+    up: { x: 0, y: -1 },
+    down: { x: 0, y: 1 },
+    left: { x: -1, y: 0 },
+    right: { x: 1, y: 0 }
+});
 
-const GAME1_KEYS = typeof GAME1_LS_KEYS !== 'undefined' ? GAME1_LS_KEYS : {
-    BEST_SCORE: 'game1_bestScore',
-    TOTAL_POINTS: 'game1_totalPoints',
-    TOTAL_MISSES: 'game1_totalMisses',
-    LAST_DIFFICULTY: 'game1_lastDifficulty',
-    GAMES_PLAYED: 'game1_gamesPlayed',
-    SESSIONS: 'game1_sessions',
-    RECENT_RESULTS: 'game1_recentResults'
+const OPPOSITES = Object.freeze({ up: "down", down: "up", left: "right", right: "left" });
+
+// ============================================================================
+// GAME STATE
+// ============================================================================
+
+const state = {
+    running: false,
+    paused: false,
+    difficulty: "medium",
+    snake: [],
+    food: null,
+    dir: "right",
+    nextDir: "right",
+    score: 0,
+    loopId: null,
+    sessionStarted: false,
+    newRecord: false
 };
 
-function resolveActiveUsername() {
-    if (typeof getActiveUsername === 'function') {
-        return getActiveUsername();
-    }
-    try {
-        const sessionRaw = localStorage.getItem('gameHub_currentSession');
-        if (sessionRaw) {
-            const session = JSON.parse(sessionRaw);
-            if (session && session.username) return session.username;
-        }
-    } catch (_) {
-        /* ignore */
-    }
-    return 'Guest';
-}
+// ============================================================================
+// DOM CACHE
+// ============================================================================
 
-const activeUsername = resolveActiveUsername();
+let els = {};
 
-function game1Key(base) {
-    if (typeof getGame1Key === 'function') {
-        return getGame1Key(base, activeUsername);
-    }
-    return `${base}_${activeUsername}`;
-}
-
-function ensureGameDefaults() {
-    if (typeof ensureGame1DefaultsForUser === 'function') {
-        ensureGame1DefaultsForUser(activeUsername);
-        return;
-    }
-
-    const defaults = {
-        [game1Key(GAME1_KEYS.BEST_SCORE)]: 0,
-        [game1Key(GAME1_KEYS.TOTAL_POINTS)]: 0,
-        [game1Key(GAME1_KEYS.TOTAL_MISSES)]: 0,
-        [game1Key(GAME1_KEYS.LAST_DIFFICULTY)]: 'medium',
-        [game1Key(GAME1_KEYS.GAMES_PLAYED)]: 0,
-        [game1Key(GAME1_KEYS.SESSIONS)]: 0,
-        [game1Key(GAME1_KEYS.RECENT_RESULTS)]: []
+function initElements() {
+    els = {
+        diffPanel: document.getElementById("difficultyPanel"),
+        startBtn: document.getElementById("startBtn"),
+        countdown: document.getElementById("countdownDisplay"),
+        countNum: document.getElementById("countdownNumber"),
+        gameInfo: document.getElementById("gameInfo"),
+        wrapper: document.querySelector(".game-area-wrapper"),
+        canvas: document.getElementById("gameCanvas"),
+        ctx: document.getElementById("gameCanvas")?.getContext("2d"),
+        pauseOverlay: document.getElementById("pauseOverlay"),
+        scoreEl: document.getElementById("scoreDisplay"),
+        lengthEl: document.getElementById("lengthDisplay"),
+        bestEl: document.getElementById("currentBestDisplay"),
+        diffEl: document.getElementById("difficultyDisplay"),
+        bestPanel: document.getElementById("bestScoreDisplay"),
+        gameOver: document.getElementById("gameOverPanel"),
+        playAgain: document.getElementById("playAgainBtn"),
+        backBtn: document.getElementById("backGamesBtn")
     };
-
-    Object.entries(defaults).forEach(([key, value]) => {
-        if (localStorage.getItem(key) === null) {
-            saveGame1Data(key, value);
-        }
-    });
 }
 
-function getNumberStat(key, fallback = 0) {
-    const value = loadGame1Data(key, fallback);
-    const parsed = Number(value);
-    if (Number.isNaN(parsed)) return fallback;
-    return parsed;
+// ============================================================================
+// STORAGE HELPERS
+// ============================================================================
+
+const username = getActiveUsername();
+
+function gameKey(base) {
+    return userKey(base, username);
+}
+
+function loadStat(key, fallback = 0) {
+    const val = readJson(gameKey(key), fallback);
+    const num = Number(val);
+    return Number.isNaN(num) ? fallback : num;
+}
+
+function saveStat(key, value) {
+    writeJson(gameKey(key), value);
 }
 
 function incrementStat(key, amount = 1) {
-    const next = getNumberStat(key, 0) + amount;
-    saveGame1Data(key, next);
+    const next = loadStat(key, 0) + amount;
+    saveStat(key, next);
     return next;
 }
 
-function getRecentResults() {
-    const results = loadGame1Data(game1Key(GAME1_KEYS.RECENT_RESULTS), []);
-    return Array.isArray(results) ? results : [];
+function getRecent() {
+    const data = readJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), []);
+    return Array.isArray(data) ? data : [];
 }
 
-function addRecentResult(result) {
-    const updated = [result, ...getRecentResults()].slice(0, 5);
-    saveGame1Data(game1Key(GAME1_KEYS.RECENT_RESULTS), updated);
+function addRecent(entry) {
+    const updated = [entry, ...getRecent()].slice(0, 5);
+    writeJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), updated);
 }
 
-// ========== Game Configuration ==========
-const DIFFICULTY_SETTINGS = {
-    easy: {
-        fallSpeed: 3,
-        maxObjects: 1,
-        spawnInterval: 1200
-    },
-    medium: {
-        fallSpeed: 5,
-        maxObjects: 2,
-        spawnInterval: 900
-    },
-    hard: {
-        fallSpeed: 8,
-        maxObjects: 3,
-        spawnInterval: 650
+// ============================================================================
+// SNAKE & FOOD
+// ============================================================================
+
+function createSnake() {
+    const snake = [];
+    const startX = Math.floor(CONFIG.gridSize / 2);
+    const startY = Math.floor(CONFIG.gridSize / 2);
+    for (let i = 0; i < CONFIG.initialLength; i++) {
+        snake.push({ x: startX - i, y: startY });
     }
-};
-
-const GAME_CONFIG = {
-    gameAreaWidth: 800,
-    gameAreaHeight: 600,
-    playerWidth: 80,
-    playerHeight: 40,
-    playerSpeed: 12,
-    objectSize: 40,
-    maxMisses: 10,
-    colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2']
-};
-
-// ========== Game State Object ==========
-const gameState = {
-    isRunning: false,
-    isPaused: false,
-    score: 0,
-    missed: 0,
-    difficulty: 'medium',
-    playerX: 360,
-    fallingObjects: [],
-    keys: {},
-    animationId: null,
-    spawnIntervalId: null,
-    lastDifficulty: loadGame1Data(game1Key(GAME1_KEYS.LAST_DIFFICULTY), 'medium'),
-    sessionStarted: false
-};
-
-// ========== DOM Elements ==========
-const elements = {
-    difficultySelector: null,
-    startBtn: null,
-    countdownDisplay: null,
-    countdownNumber: null,
-    gameInfo: null,
-    gameArea: null,
-    player: null,
-    scoreDisplay: null,
-    missedDisplay: null,
-    bestScoreDisplay: null,
-    gameOverPanel: null,
-    playAgainBtn: null,
-    backGamesBtn: null
-};
-
-// ========== Falling Object Factory ==========
-function createFallingObject(gameAreaWidth, objectSize, fallSpeed) {
-    const obj = {
-        x: Math.random() * (gameAreaWidth - objectSize),
-        y: -objectSize,
-        size: objectSize,
-        speed: fallSpeed,
-        color: GAME_CONFIG.colors[Math.floor(Math.random() * GAME_CONFIG.colors.length)],
-        element: null
-    };
-
-    // Create DOM element
-    obj.element = document.createElement('div');
-    obj.element.className = 'falling-object';
-    obj.element.style.left = obj.x + 'px';
-    obj.element.style.top = obj.y + 'px';
-    obj.element.style.backgroundColor = obj.color;
-
-    return obj;
+    return snake;
 }
 
-function updateFallingObject(obj) {
-    obj.y += obj.speed;
-    obj.element.style.top = obj.y + 'px';
+function spawnFood() {
+    let pos;
+    do {
+        pos = {
+            x: Math.floor(Math.random() * CONFIG.gridSize),
+            y: Math.floor(Math.random() * CONFIG.gridSize)
+        };
+    } while (state.snake.some(s => s.x === pos.x && s.y === pos.y));
+    state.food = pos;
 }
 
-function isObjectOutOfBounds(obj, gameAreaHeight) {
-    return obj.y > gameAreaHeight;
-}
-
-function checkObjectCollision(obj, playerX, playerY, playerWidth, playerHeight) {
-    return (
-        obj.x < playerX + playerWidth &&
-        obj.x + obj.size > playerX &&
-        obj.y < playerY + playerHeight &&
-        obj.y + obj.size > playerY
-    );
-}
-
-function removeFallingObject(obj) {
-    if (obj.element && obj.element.parentNode) {
-        obj.element.parentNode.removeChild(obj.element);
+function moveSnake() {
+    const head = state.snake[0];
+    const d = DIRECTIONS[state.nextDir];
+    state.dir = state.nextDir;
+    
+    let newHead = { x: head.x + d.x, y: head.y + d.y };
+    const settings = DIFFICULTY[state.difficulty];
+    
+    // Wall collision
+    if (settings.wallsKill) {
+        if (newHead.x < 0 || newHead.x >= CONFIG.gridSize ||
+            newHead.y < 0 || newHead.y >= CONFIG.gridSize) {
+            return false;
+        }
+    } else {
+        // Wrap around
+        if (newHead.x < 0) newHead.x = CONFIG.gridSize - 1;
+        if (newHead.x >= CONFIG.gridSize) newHead.x = 0;
+        if (newHead.y < 0) newHead.y = CONFIG.gridSize - 1;
+        if (newHead.y >= CONFIG.gridSize) newHead.y = 0;
     }
-}
-
-// ========== Game State Functions ==========
-function resetGameState() {
-    gameState.score = 0;
-    gameState.missed = 0;
-    gameState.playerX = (GAME_CONFIG.gameAreaWidth - GAME_CONFIG.playerWidth) / 2;
-    gameState.fallingObjects = [];
-    gameState.isRunning = false;
-    gameState.isPaused = false;
-    gameState.sessionStarted = false;
-}
-
-function getBestScore() {
-    return getNumberStat(game1Key(GAME1_KEYS.BEST_SCORE), 0);
-}
-
-function updateBestScore() {
-    const currentBest = getBestScore();
-    if (gameState.score > currentBest) {
-        saveGame1Data(game1Key(GAME1_KEYS.BEST_SCORE), gameState.score);
+    
+    // Self collision
+    for (let i = 0; i < state.snake.length - 1; i++) {
+        if (state.snake[i].x === newHead.x && state.snake[i].y === newHead.y) {
+            return false;
+        }
     }
+    
+    state.snake.unshift(newHead);
+    
+    // Check food
+    if (newHead.x === state.food.x && newHead.y === state.food.y) {
+        state.score += settings.multiplier;
+        updateDisplays();
+        spawnFood();
+    } else {
+        state.snake.pop();
+    }
+    
+    return true;
 }
 
-function getTotalPoints() {
-    return getNumberStat(game1Key(GAME1_KEYS.TOTAL_POINTS), 0);
-}
+// ============================================================================
+// RENDERING
+// ============================================================================
 
-function getTotalMisses() {
-    return getNumberStat(game1Key(GAME1_KEYS.TOTAL_MISSES), 0);
-}
-
-function updateTotalStats() {
-    const currentPoints = getTotalPoints();
-    const currentMisses = getTotalMisses();
-    saveGame1Data(game1Key(GAME1_KEYS.TOTAL_POINTS), currentPoints + gameState.score);
-    saveGame1Data(game1Key(GAME1_KEYS.TOTAL_MISSES), currentMisses + gameState.missed);
-}
-
-function incrementGamesPlayed() {
-    incrementStat(game1Key(GAME1_KEYS.GAMES_PLAYED), 1);
-}
-
-function incrementSessions() {
-    incrementStat(game1Key(GAME1_KEYS.SESSIONS), 1);
-}
-
-function recordRecentResult() {
-    const entry = {
-        game: 'Game 1',
-        score: gameState.score,
-        date: new Date().toISOString(),
-        difficulty: gameState.difficulty
-    };
-    addRecentResult(entry);
-}
-
-// ========== DOM Initialization ==========
-function initElements() {
-    elements.difficultySelector = document.getElementById('difficultySelector');
-    elements.startBtn = document.getElementById('startBtn');
-    elements.countdownDisplay = document.getElementById('countdownDisplay');
-    elements.countdownNumber = document.getElementById('countdownNumber');
-    elements.gameInfo = document.getElementById('gameInfo');
-    elements.gameArea = document.getElementById('gameArea');
-    elements.player = document.getElementById('player');
-    elements.scoreDisplay = document.getElementById('scoreDisplay');
-    elements.missedDisplay = document.getElementById('missedDisplay');
-    elements.bestScoreDisplay = document.getElementById('bestScoreDisplay');
-    elements.gameOverPanel = document.getElementById('gameOverPanel');
-    elements.playAgainBtn = document.getElementById('playAgainBtn');
-    elements.backGamesBtn = document.getElementById('backGamesBtn');
-}
-
-function initEventListeners() {
-    // Difficulty buttons
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    difficultyBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            difficultyBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            gameState.difficulty = btn.dataset.difficulty;
-        });
-    });
-
-    // Start button
-    elements.startBtn.addEventListener('click', () => startGame());
-
-    // Keyboard controls
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-            e.preventDefault();
-            gameState.keys[e.key] = true;
-        }
-    });
-
-    document.addEventListener('keyup', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-            gameState.keys[e.key] = false;
-        }
-    });
-
-    // Game over buttons
-    elements.playAgainBtn.addEventListener('click', () => restartGame());
-    elements.backGamesBtn.addEventListener('click', () => {
-        window.location.href = 'games.html';
+function render() {
+    const ctx = els.ctx;
+    const cell = CONFIG.canvasSize / CONFIG.gridSize;
+    
+    // Background
+    ctx.fillStyle = CONFIG.colors.bg;
+    ctx.fillRect(0, 0, CONFIG.canvasSize, CONFIG.canvasSize);
+    
+    // Grid
+    ctx.strokeStyle = CONFIG.colors.grid;
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= CONFIG.gridSize; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * cell, 0);
+        ctx.lineTo(i * cell, CONFIG.canvasSize);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i * cell);
+        ctx.lineTo(CONFIG.canvasSize, i * cell);
+        ctx.stroke();
+    }
+    
+    // Food
+    if (state.food) {
+        const fx = state.food.x * cell + cell / 2;
+        const fy = state.food.y * cell + cell / 2;
+        
+        ctx.beginPath();
+        ctx.arc(fx, fy, cell * 0.6, 0, Math.PI * 2);
+        ctx.fillStyle = CONFIG.colors.foodGlow;
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(fx, fy, cell * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = CONFIG.colors.food;
+        ctx.fill();
+    }
+    
+    // Snake
+    state.snake.forEach((seg, i) => {
+        const x = seg.x * cell + 1;
+        const y = seg.y * cell + 1;
+        const w = cell - 2;
+        const r = i === 0 ? 6 : 4;
+        
+        ctx.fillStyle = i === 0 ? CONFIG.colors.head : 
+                        (i % 2 === 0 ? CONFIG.colors.body : CONFIG.colors.bodyAlt);
+        
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + w - r);
+        ctx.quadraticCurveTo(x + w, y + w, x + w - r, y + w);
+        ctx.lineTo(x + r, y + w);
+        ctx.quadraticCurveTo(x, y + w, x, y + w - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Eyes on head
+        if (i === 0) renderEyes(ctx, seg, cell);
     });
 }
 
-function loadLastDifficulty() {
-    const lastDiff = gameState.lastDifficulty;
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    difficultyBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.difficulty === lastDiff) {
-            btn.classList.add('active');
-            gameState.difficulty = lastDiff;
-        }
-    });
+function renderEyes(ctx, head, cell) {
+    const cx = head.x * cell + cell / 2;
+    const cy = head.y * cell + cell / 2;
+    const off = cell * 0.2;
+    const size = cell * 0.1;
+    const d = DIRECTIONS[state.dir];
+    
+    let e1x, e1y, e2x, e2y;
+    if (d.x === 1) { e1x = cx + off; e1y = cy - off; e2x = cx + off; e2y = cy + off; }
+    else if (d.x === -1) { e1x = cx - off; e1y = cy - off; e2x = cx - off; e2y = cy + off; }
+    else if (d.y === -1) { e1x = cx - off; e1y = cy - off; e2x = cx + off; e2y = cy - off; }
+    else { e1x = cx - off; e1y = cy + off; e2x = cx + off; e2y = cy + off; }
+    
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.arc(e1x, e1y, size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(e2x, e2y, size, 0, Math.PI * 2);
+    ctx.fill();
 }
 
-function updateBestScoreDisplay() {
-    elements.bestScoreDisplay.textContent = getBestScore();
+// ============================================================================
+// UI UPDATES
+// ============================================================================
+
+function updateDisplays() {
+    if (els.scoreEl) els.scoreEl.textContent = state.score;
+    if (els.lengthEl) els.lengthEl.textContent = state.snake.length;
+    if (els.bestEl) els.bestEl.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
 }
 
-// ========== Game Flow Functions ==========
+function updateBestDisplay() {
+    if (els.bestPanel) els.bestPanel.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
+}
+
+// ============================================================================
+// GAME FLOW
+// ============================================================================
+
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(r => setTimeout(r, ms));
 }
 
 async function showCountdown() {
-    elements.countdownDisplay.classList.add('active');
-    
+    els.countdown.classList.add("active");
     for (let i = 3; i > 0; i--) {
-        elements.countdownNumber.textContent = i;
-        // Restart animation
-        elements.countdownNumber.style.animation = 'none';
-        setTimeout(() => {
-            elements.countdownNumber.style.animation = 'countdown-pulse 1s ease-in-out';
-        }, 10);
+        els.countNum.textContent = i;
+        els.countNum.style.animation = "none";
+        setTimeout(() => els.countNum.style.animation = "countdown-pulse 1s ease-in-out", 10);
         await sleep(1000);
     }
-    
-    elements.countdownDisplay.classList.remove('active');
+    els.countdown.classList.remove("active");
 }
 
 async function startGame() {
-    if (gameState.isRunning) return;
-
-    // Hide difficulty selector
-    elements.difficultySelector.style.display = 'none';
+    if (state.running) return;
     
-    // Save selected difficulty
-    saveGame1Data(game1Key(GAME1_KEYS.LAST_DIFFICULTY), gameState.difficulty);
+    els.diffPanel.style.display = "none";
+    saveStat(GAME1_LS_KEYS.LAST_DIFFICULTY, state.difficulty);
     
-    // Show countdown
     await showCountdown();
     
-    // Initialize game
-    resetGameState();
-    gameState.sessionStarted = true;
-    incrementGamesPlayed();
-    gameState.isRunning = true;
+    resetState();
+    state.sessionStarted = true;
+    incrementStat(GAME1_LS_KEYS.GAMES_PLAYED);
+    state.running = true;
+    state.snake = createSnake();
+    spawnFood();
     
-    // Show game elements
-    elements.gameInfo.classList.add('active');
-    elements.gameArea.classList.add('active');
+    els.gameInfo.classList.add("active");
+    els.wrapper.classList.add("active");
+    els.diffEl.textContent = DIFFICULTY[state.difficulty].label;
+    updateDisplays();
+    render();
     
-    // Update displays
-    updateScore();
-    updateMissed();
-    
-    // Reset player position
-    updatePlayerPosition();
-    
-    // Start game loop
-    gameLoop();
-    
-    // Start spawning objects
-    startSpawning();
+    state.loopId = setInterval(gameLoop, DIFFICULTY[state.difficulty].speed);
 }
 
-function startSpawning() {
-    const settings = DIFFICULTY_SETTINGS[gameState.difficulty];
-    
-    gameState.spawnIntervalId = setInterval(() => {
-        if (gameState.isRunning && !gameState.isPaused) {
-            if (gameState.fallingObjects.length < settings.maxObjects) {
-                spawnObject();
-            }
-        }
-    }, settings.spawnInterval);
-}
-
-function spawnObject() {
-    const settings = DIFFICULTY_SETTINGS[gameState.difficulty];
-    const obj = createFallingObject(
-        GAME_CONFIG.gameAreaWidth,
-        GAME_CONFIG.objectSize,
-        settings.fallSpeed
-    );
-    
-    gameState.fallingObjects.push(obj);
-    elements.gameArea.appendChild(obj.element);
-}
-
-// ========== Game Loop ==========
 function gameLoop() {
-    if (!gameState.isRunning) return;
-    
-    // Update player position
-    handlePlayerMovement();
-    
-    // Update falling objects
-    updateAllFallingObjects();
-    
-    // Continue loop
-    gameState.animationId = requestAnimationFrame(() => gameLoop());
-}
-
-function handlePlayerMovement() {
-    if (gameState.keys['ArrowLeft']) {
-        gameState.playerX -= GAME_CONFIG.playerSpeed;
-    }
-    if (gameState.keys['ArrowRight']) {
-        gameState.playerX += GAME_CONFIG.playerSpeed;
-    }
-    
-    // Boundary checking
-    gameState.playerX = Math.max(0, Math.min(
-        gameState.playerX,
-        GAME_CONFIG.gameAreaWidth - GAME_CONFIG.playerWidth
-    ));
-    
-    updatePlayerPosition();
-}
-
-function updatePlayerPosition() {
-    elements.player.style.left = gameState.playerX + 'px';
-}
-
-function updateAllFallingObjects() {
-    const playerY = GAME_CONFIG.gameAreaHeight - GAME_CONFIG.playerHeight - 20;
-    
-    for (let i = gameState.fallingObjects.length - 1; i >= 0; i--) {
-        const obj = gameState.fallingObjects[i];
-        updateFallingObject(obj);
-        
-        // Check collision with player
-        if (checkObjectCollision(
-            obj,
-            gameState.playerX,
-            playerY,
-            GAME_CONFIG.playerWidth,
-            GAME_CONFIG.playerHeight
-        )) {
-            handleCatch(i);
-            continue;
-        }
-        
-        // Check if object is out of bounds
-        if (isObjectOutOfBounds(obj, GAME_CONFIG.gameAreaHeight)) {
-            handleMiss(i);
-        }
-    }
-}
-
-function handleCatch(index) {
-    const obj = gameState.fallingObjects[index];
-    removeFallingObject(obj);
-    gameState.fallingObjects.splice(index, 1);
-    
-    gameState.score++;
-    updateScore();
-}
-
-function handleMiss(index) {
-    const obj = gameState.fallingObjects[index];
-    removeFallingObject(obj);
-    gameState.fallingObjects.splice(index, 1);
-    
-    gameState.missed++;
-    updateMissed();
-    
-    // Check game over condition
-    if (gameState.missed >= GAME_CONFIG.maxMisses) {
+    if (!state.running || state.paused) return;
+    if (!moveSnake()) {
         endGame();
+        return;
+    }
+    render();
+}
+
+function resetState() {
+    state.score = 0;
+    state.snake = [];
+    state.food = null;
+    state.dir = "right";
+    state.nextDir = "right";
+    state.running = false;
+    state.paused = false;
+    state.sessionStarted = false;
+    state.newRecord = false;
+    if (state.loopId) {
+        clearInterval(state.loopId);
+        state.loopId = null;
     }
 }
 
-function updateScore() {
-    elements.scoreDisplay.textContent = gameState.score;
-}
-
-function updateMissed() {
-    elements.missedDisplay.textContent = `${gameState.missed} / ${GAME_CONFIG.maxMisses}`;
-}
-
-// ========== Game End Functions ==========
 function endGame() {
-    gameState.isRunning = false;
-    
-    // Stop animation and spawning
-    if (gameState.animationId) {
-        cancelAnimationFrame(gameState.animationId);
-    }
-    if (gameState.spawnIntervalId) {
-        clearInterval(gameState.spawnIntervalId);
+    state.running = false;
+    if (state.loopId) {
+        clearInterval(state.loopId);
+        state.loopId = null;
     }
     
-    // Clear remaining objects
-    gameState.fallingObjects.forEach(obj => removeFallingObject(obj));
-    gameState.fallingObjects = [];
-    
-    // Update statistics
-    updateBestScore();
-    updateTotalStats();
-    if (gameState.sessionStarted) {
-        incrementSessions();
-        gameState.sessionStarted = false;
+    // Update stats
+    const best = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
+    if (state.score > best) {
+        saveStat(GAME1_LS_KEYS.BEST_SCORE, state.score);
+        state.newRecord = true;
     }
-    recordRecentResult();
     
-    // Show game over panel
+    const total = loadStat(GAME1_LS_KEYS.TOTAL_POINTS, 0);
+    saveStat(GAME1_LS_KEYS.TOTAL_POINTS, total + state.score);
+    
+    if (state.sessionStarted) {
+        incrementStat(GAME1_LS_KEYS.SESSIONS);
+        state.sessionStarted = false;
+    }
+    
+    addRecent({
+        game: "Snake",
+        score: state.score,
+        date: new Date().toISOString(),
+        difficulty: state.difficulty
+    });
+    
     showGameOver();
 }
 
 function showGameOver() {
-    document.getElementById('finalScore').textContent = gameState.score;
-    document.getElementById('finalBestScore').textContent = getBestScore();
-    document.getElementById('totalCatches').textContent = getTotalPoints();
-    document.getElementById('totalMisses').textContent = getTotalMisses();
+    document.getElementById("finalScore").textContent = state.score;
+    document.getElementById("finalLength").textContent = state.snake.length;
+    document.getElementById("finalBestScore").textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
+    document.getElementById("totalGames").textContent = loadStat(GAME1_LS_KEYS.GAMES_PLAYED, 0);
     
-    elements.gameOverPanel.classList.add('active');
+    const badge = document.getElementById("newRecordBadge");
+    badge.style.display = state.newRecord ? "block" : "none";
+    
+    els.gameOver.classList.add("active");
 }
 
 function restartGame() {
-    // Hide game over panel
-    elements.gameOverPanel.classList.remove('active');
-    
-    // Hide game elements
-    elements.gameInfo.classList.remove('active');
-    elements.gameArea.classList.remove('active');
-    
-    // Show difficulty selector
-    elements.difficultySelector.style.display = 'block';
-    
-    // Update best score display
-    updateBestScoreDisplay();
-    
-    // Reset state
-    resetGameState();
+    els.gameOver.classList.remove("active");
+    els.gameInfo.classList.remove("active");
+    els.wrapper.classList.remove("active");
+    els.pauseOverlay.classList.remove("active");
+    els.diffPanel.style.display = "block";
+    updateBestDisplay();
+    resetState();
 }
 
-// ========== Initialize Game ==========
-function initGame() {
-    ensureGameDefaults();
+function togglePause() {
+    state.paused = !state.paused;
+    if (state.paused) {
+        els.pauseOverlay.classList.add("active");
+        clearInterval(state.loopId);
+    } else {
+        els.pauseOverlay.classList.remove("active");
+        state.loopId = setInterval(gameLoop, DIFFICULTY[state.difficulty].speed);
+    }
+}
+
+// ============================================================================
+// INPUT HANDLING
+// ============================================================================
+
+function handleKeyDown(e) {
+    const keyMap = {
+        ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+        w: "up", W: "up", s: "down", S: "down", a: "left", A: "left", d: "right", D: "right"
+    };
+    
+    if (keyMap[e.key]) {
+        e.preventDefault();
+        changeDir(keyMap[e.key]);
+    }
+    
+    if (e.key === " " && state.running) {
+        e.preventDefault();
+        togglePause();
+    }
+}
+
+function changeDir(newDir) {
+    if (!state.running || state.paused) return;
+    if (newDir !== OPPOSITES[state.dir]) {
+        state.nextDir = newDir;
+    }
+}
+
+// ============================================================================
+// EVENT BINDING
+// ============================================================================
+
+function initEvents() {
+    // Difficulty buttons
+    document.querySelectorAll(".difficulty-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".difficulty-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            state.difficulty = btn.dataset.difficulty;
+        });
+    });
+    
+    els.startBtn.addEventListener("click", startGame);
+    document.addEventListener("keydown", handleKeyDown);
+    els.playAgain.addEventListener("click", restartGame);
+    els.backBtn.addEventListener("click", () => window.location.href = "games.html");
+    
+    // Mobile controls
+    document.querySelectorAll(".mobile-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            if (btn.dataset.direction) changeDir(btn.dataset.direction);
+        });
+    });
+}
+
+function loadLastDifficulty() {
+    const last = readJson(gameKey(GAME1_LS_KEYS.LAST_DIFFICULTY), "medium");
+    document.querySelectorAll(".difficulty-btn").forEach(btn => {
+        btn.classList.remove("active");
+        if (btn.dataset.difficulty === last) {
+            btn.classList.add("active");
+            state.difficulty = last;
+        }
+    });
+}
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+
+function init() {
+    ensureGame1DefaultsForUser(username);
     initElements();
-    initEventListeners();
+    initEvents();
     loadLastDifficulty();
-    updateBestScoreDisplay();
+    updateBestDisplay();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initGame();
-});
+document.addEventListener("DOMContentLoaded", init);

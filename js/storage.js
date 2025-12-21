@@ -1,137 +1,441 @@
-// js/storage.js - LocalStorage management functions
-// Purpose: Handle all data persistence operations
+/**
+ * Storage Module - PlayHub Gaming Portal
+ * @file storage.js
+ * @description Central data persistence layer for the gaming portal.
+ * Handles users, sessions, scores, and per-user game statistics.
+ */
 
-// Shared base keys for per-user Game 1 stats
-const GAME1_LS_KEYS = {
-    BEST_SCORE: 'game1_bestScore',
-    TOTAL_POINTS: 'game1_totalPoints',
-    TOTAL_MISSES: 'game1_totalMisses',
-    GAMES_PLAYED: 'game1_gamesPlayed',
-    SESSIONS: 'game1_sessions',
-    RECENT_RESULTS: 'game1_recentResults',
-    LAST_DIFFICULTY: 'game1_lastDifficulty'
-};
+"use strict";
 
-// Shared base keys for per-user Game 2 (Wordle) stats
-const GAME2_LS_KEYS = {
-    BEST_SCORE: 'game2_bestScore',
-    TOTAL_POINTS: 'game2_totalPoints',
-    GAMES_PLAYED: 'game2_gamesPlayed',
-    WINS: 'game2_wins',
-    SESSIONS: 'game2_sessions',
-    RECENT_RESULTS: 'game2_recentResults',
-    CURRENT_STREAK: 'game2_currentStreak',
-    BEST_STREAK: 'game2_bestStreak'
-};
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
 
-function getGame1Key(keyName, username) {
-    return `${keyName}_${username}`;
-}
+/** Storage keys for Game 1 (Snake) */
+const GAME1_LS_KEYS = Object.freeze({
+    BEST_SCORE: "game1_bestScore",
+    TOTAL_POINTS: "game1_totalPoints",
+    TOTAL_MISSES: "game1_totalMisses",
+    GAMES_PLAYED: "game1_gamesPlayed",
+    SESSIONS: "game1_sessions",
+    RECENT_RESULTS: "game1_recentResults",
+    LAST_DIFFICULTY: "game1_lastDifficulty"
+});
 
-function getGame2Key(keyName, username) {
-    return `${keyName}_${username}`;
-}
+/** Storage keys for Game 2 (Wordle) */
+const GAME2_LS_KEYS = Object.freeze({
+    BEST_SCORE: "game2_bestScore",
+    TOTAL_POINTS: "game2_totalPoints",
+    GAMES_PLAYED: "game2_gamesPlayed",
+    WINS: "game2_wins",
+    SESSIONS: "game2_sessions",
+    RECENT_RESULTS: "game2_recentResults",
+    CURRENT_STREAK: "game2_currentStreak",
+    BEST_STREAK: "game2_bestStreak"
+});
 
-// Initialize storage structure if it doesn't exist
-function initializeStorage() {
-    if (!localStorage.getItem('gameHub_users')) {
-        localStorage.setItem('gameHub_users', JSON.stringify([]));
-    }
-    if (!localStorage.getItem('gameHub_sessions')) {
-        localStorage.setItem('gameHub_sessions', JSON.stringify([]));
-    }
-    if (!localStorage.getItem('gameHub_scores')) {
-        localStorage.setItem('gameHub_scores', JSON.stringify([]));
-    }
-}
+/** Core storage keys */
+const STORAGE_KEYS = Object.freeze({
+    USERS: "gameHub_users",
+    SESSIONS: "gameHub_sessions",
+    SCORES: "gameHub_scores",
+    CURRENT_SESSION: "gameHub_currentSession",
+    DARK_MODE: "darkMode"
+});
 
-function ensureGame1DefaultsForUser(username) {
-    if (!username) return;
-    const defaults = [
-        { base: GAME1_LS_KEYS.BEST_SCORE, fallback: 0 },
-        { base: GAME1_LS_KEYS.TOTAL_POINTS, fallback: 0 },
-        { base: GAME1_LS_KEYS.TOTAL_MISSES, fallback: 0 },
-        { base: GAME1_LS_KEYS.GAMES_PLAYED, fallback: 0 },
-        { base: GAME1_LS_KEYS.SESSIONS, fallback: 0 },
-        { base: GAME1_LS_KEYS.RECENT_RESULTS, fallback: [] },
-        { base: GAME1_LS_KEYS.LAST_DIFFICULTY, fallback: 'medium' }
-    ];
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 
-    defaults.forEach(({ base, fallback }) => {
-        const userKey = getGame1Key(base, username);
-        if (localStorage.getItem(userKey) === null) {
-            const legacy = localStorage.getItem(base);
-            if (legacy !== null) {
-                localStorage.setItem(userKey, legacy);
-            } else {
-                localStorage.setItem(userKey, JSON.stringify(fallback));
-            }
-        }
-    });
-}
-
-function ensureGame2DefaultsForUser(username) {
-    if (!username) return;
-    const defaults = [
-        { base: GAME2_LS_KEYS.BEST_SCORE, fallback: 0 },
-        { base: GAME2_LS_KEYS.TOTAL_POINTS, fallback: 0 },
-        { base: GAME2_LS_KEYS.GAMES_PLAYED, fallback: 0 },
-        { base: GAME2_LS_KEYS.WINS, fallback: 0 },
-        { base: GAME2_LS_KEYS.SESSIONS, fallback: 0 },
-        { base: GAME2_LS_KEYS.RECENT_RESULTS, fallback: [] },
-        { base: GAME2_LS_KEYS.CURRENT_STREAK, fallback: 0 },
-        { base: GAME2_LS_KEYS.BEST_STREAK, fallback: 0 }
-    ];
-
-    defaults.forEach(({ base, fallback }) => {
-        const userKey = getGame2Key(base, username);
-        if (localStorage.getItem(userKey) === null) {
-            localStorage.setItem(userKey, JSON.stringify(fallback));
-        }
-    });
-}
-
-function readJson(key, fallback) {
+/**
+ * Safely reads and parses JSON from localStorage
+ * @param {string} key - Storage key
+ * @param {*} fallback - Default value if key doesn't exist
+ * @returns {*} Parsed value or fallback
+ */
+function readJson(key, fallback = null) {
     try {
         const raw = localStorage.getItem(key);
         if (raw === null) return fallback;
         const parsed = JSON.parse(raw);
-        return parsed === undefined ? fallback : parsed;
+        return parsed ?? fallback;
     } catch {
         return fallback;
     }
 }
 
+/**
+ * Writes a value to localStorage as JSON
+ * @param {string} key - Storage key
+ * @param {*} value - Value to store
+ */
 function writeJson(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-}
-
-function getActiveUsername() {
     try {
-        if (typeof getCurrentSession === 'function') {
-            const session = getCurrentSession();
-            if (session?.username) return session.username;
-        }
-    } catch (_) {
-        /* ignore */
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+        console.error("Storage write error:", e);
     }
-    return localStorage.getItem('currentUser') || 'Guest';
 }
 
-// Game 1 stat helpers (per user)
+/**
+ * Creates a user-specific storage key
+ * @param {string} baseKey - Base key name
+ * @param {string} username - Username
+ * @returns {string} User-specific key
+ */
+function userKey(baseKey, username) {
+    return `${baseKey}_${username}`;
+}
+
+// Aliases for backward compatibility
+const getGame1Key = userKey;
+const getGame2Key = userKey;
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+
+/**
+ * Initializes storage structure if not present
+ */
+function initializeStorage() {
+    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+        writeJson(STORAGE_KEYS.USERS, []);
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.SESSIONS)) {
+        writeJson(STORAGE_KEYS.SESSIONS, []);
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.SCORES)) {
+        writeJson(STORAGE_KEYS.SCORES, []);
+    }
+}
+
+/**
+ * Ensures default Game 1 stats exist for a user
+ * @param {string} username - Username
+ */
+function ensureGame1DefaultsForUser(username) {
+    if (!username) return;
+    
+    const defaults = [
+        { key: GAME1_LS_KEYS.BEST_SCORE, value: 0 },
+        { key: GAME1_LS_KEYS.TOTAL_POINTS, value: 0 },
+        { key: GAME1_LS_KEYS.TOTAL_MISSES, value: 0 },
+        { key: GAME1_LS_KEYS.GAMES_PLAYED, value: 0 },
+        { key: GAME1_LS_KEYS.SESSIONS, value: 0 },
+        { key: GAME1_LS_KEYS.RECENT_RESULTS, value: [] },
+        { key: GAME1_LS_KEYS.LAST_DIFFICULTY, value: "medium" }
+    ];
+
+    defaults.forEach(({ key, value }) => {
+        const fullKey = userKey(key, username);
+        if (localStorage.getItem(fullKey) === null) {
+            writeJson(fullKey, value);
+        }
+    });
+}
+
+/**
+ * Ensures default Game 2 stats exist for a user
+ * @param {string} username - Username
+ */
+function ensureGame2DefaultsForUser(username) {
+    if (!username) return;
+    
+    const defaults = [
+        { key: GAME2_LS_KEYS.BEST_SCORE, value: 0 },
+        { key: GAME2_LS_KEYS.TOTAL_POINTS, value: 0 },
+        { key: GAME2_LS_KEYS.GAMES_PLAYED, value: 0 },
+        { key: GAME2_LS_KEYS.WINS, value: 0 },
+        { key: GAME2_LS_KEYS.SESSIONS, value: 0 },
+        { key: GAME2_LS_KEYS.RECENT_RESULTS, value: [] },
+        { key: GAME2_LS_KEYS.CURRENT_STREAK, value: 0 },
+        { key: GAME2_LS_KEYS.BEST_STREAK, value: 0 }
+    ];
+
+    defaults.forEach(({ key, value }) => {
+        const fullKey = userKey(key, username);
+        if (localStorage.getItem(fullKey) === null) {
+            writeJson(fullKey, value);
+        }
+    });
+}
+
+// ============================================================================
+// SESSION MANAGEMENT
+// ============================================================================
+
+/**
+ * Gets the currently active username
+ * @returns {string} Username or "Guest"
+ */
+function getActiveUsername() {
+    const session = getCurrentSession();
+    return session?.username || "Guest";
+}
+
+/**
+ * Creates a new session for a user (uses sessionStorage)
+ * @param {string} username - Username
+ * @returns {Object} Session object
+ */
+function createSession(username) {
+    const session = {
+        username,
+        loginTime: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    };
+    
+    sessionStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
+    
+    // Add to session history
+    const sessions = getAllSessions();
+    sessions.push(session);
+    writeJson(STORAGE_KEYS.SESSIONS, sessions);
+    
+    return session;
+}
+
+/**
+ * Gets the current active session
+ * @returns {Object|null} Session or null if expired/none
+ */
+function getCurrentSession() {
+    try {
+        const raw = sessionStorage.getItem(STORAGE_KEYS.CURRENT_SESSION);
+        if (!raw) return null;
+        
+        const session = JSON.parse(raw);
+        if (new Date() > new Date(session.expiresAt)) {
+            clearCurrentSession();
+            return null;
+        }
+        return session;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Clears the current session
+ */
+function clearCurrentSession() {
+    sessionStorage.removeItem(STORAGE_KEYS.CURRENT_SESSION);
+}
+
+/**
+ * Gets all session history
+ * @returns {Array} Sessions array
+ */
+function getAllSessions() {
+    return readJson(STORAGE_KEYS.SESSIONS, []);
+}
+
+// ============================================================================
+// USER MANAGEMENT
+// ============================================================================
+
+/**
+ * Gets all registered users
+ * @returns {Array} Users array
+ */
+function getAllUsers() {
+    return readJson(STORAGE_KEYS.USERS, []);
+}
+
+/**
+ * Saves a new user
+ * @param {Object} user - User object
+ */
+function saveUser(user) {
+    const users = getAllUsers();
+    users.push(user);
+    writeJson(STORAGE_KEYS.USERS, users);
+}
+
+/**
+ * Finds a user by username
+ * @param {string} username - Username to find
+ * @returns {Object|undefined} User or undefined
+ */
+function getUserByUsername(username) {
+    return getAllUsers().find(u => u.username === username);
+}
+
+/**
+ * Updates a user's data
+ * @param {string} username - Username
+ * @param {Object} updates - Fields to update
+ * @returns {boolean} Success status
+ */
+function updateUser(username, updates) {
+    const users = getAllUsers();
+    const index = users.findIndex(u => u.username === username);
+    if (index === -1) return false;
+    
+    users[index] = { ...users[index], ...updates };
+    writeJson(STORAGE_KEYS.USERS, users);
+    return true;
+}
+
+/**
+ * Changes username across all stored data
+ * @param {string} oldUsername - Current username
+ * @param {string} newUsername - New username
+ * @returns {Object} Result with success and message
+ */
+function changeUsername(oldUsername, newUsername) {
+    newUsername = (newUsername || "").trim();
+    
+    if (!newUsername) {
+        return { success: false, message: "Username cannot be empty" };
+    }
+    if (newUsername.length < 3) {
+        return { success: false, message: "Username must be at least 3 characters" };
+    }
+    if (oldUsername === newUsername) {
+        return { success: false, message: "New username is the same as current" };
+    }
+    if (getUserByUsername(newUsername)) {
+        return { success: false, message: "Username already taken" };
+    }
+    
+    // Update users list
+    const users = getAllUsers();
+    const userIndex = users.findIndex(u => u.username === oldUsername);
+    if (userIndex !== -1) {
+        users[userIndex].username = newUsername;
+        writeJson(STORAGE_KEYS.USERS, users);
+    }
+    
+    // Update current session
+    const session = getCurrentSession();
+    if (session?.username === oldUsername) {
+        session.username = newUsername;
+        sessionStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
+    }
+    
+    // Update leaderboard scores
+    const scores = getAllScores();
+    let updated = false;
+    scores.forEach(s => {
+        if (s.username === oldUsername) {
+            s.username = newUsername;
+            updated = true;
+        }
+    });
+    if (updated) writeJson(STORAGE_KEYS.SCORES, scores);
+    
+    // Update sessions history
+    const sessions = getAllSessions();
+    updated = false;
+    sessions.forEach(s => {
+        if (s.username === oldUsername) {
+            s.username = newUsername;
+            updated = true;
+        }
+    });
+    if (updated) writeJson(STORAGE_KEYS.SESSIONS, sessions);
+    
+    // Migrate per-user keys
+    const keysToMigrate = [
+        ...Object.values(GAME1_LS_KEYS),
+        ...Object.values(GAME2_LS_KEYS),
+        "profile_displayName",
+        "profile_memberSince"
+    ];
+    
+    keysToMigrate.forEach(baseKey => {
+        const oldKey = userKey(baseKey, oldUsername);
+        const newKey = userKey(baseKey, newUsername);
+        const value = localStorage.getItem(oldKey);
+        if (value !== null) {
+            localStorage.setItem(newKey, value);
+            localStorage.removeItem(oldKey);
+        }
+    });
+    
+    return { success: true, message: "Username changed successfully" };
+}
+
+// ============================================================================
+// SCORE MANAGEMENT
+// ============================================================================
+
+/**
+ * Gets all scores
+ * @returns {Array} Scores array
+ */
+function getAllScores() {
+    return readJson(STORAGE_KEYS.SCORES, []);
+}
+
+/**
+ * Saves a score entry
+ * @param {Object} scoreData - Score data
+ */
+function saveScore(scoreData) {
+    const scores = getAllScores();
+    scores.push({ ...scoreData, timestamp: new Date().toISOString() });
+    writeJson(STORAGE_KEYS.SCORES, scores);
+}
+
+/**
+ * Gets scores for a specific user
+ * @param {string} username - Username
+ * @returns {Array} User's scores
+ */
+function getUserScores(username) {
+    return getAllScores().filter(s => s.username === username);
+}
+
+/**
+ * Gets top scores for a game
+ * @param {string} gameName - Game name
+ * @param {number} limit - Max results
+ * @returns {Array} Top scores
+ */
+function getTopScores(gameName, limit = 10) {
+    return getAllScores()
+        .filter(s => s.game === gameName)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit);
+}
+
+// ============================================================================
+// GAME STAT HELPERS
+// ============================================================================
+
+/**
+ * Gets a numeric stat for Game 1
+ * @param {string} baseKey - Key from GAME1_LS_KEYS
+ * @param {string} username - Username
+ * @param {number} fallback - Default value
+ * @returns {number} Stat value
+ */
 function getGame1NumberForUser(baseKey, username, fallback = 0) {
-    const key = getGame1Key(baseKey, username);
-    const val = readJson(key, fallback);
+    const val = readJson(userKey(baseKey, username), fallback);
     const num = Number(val);
-    if (Number.isNaN(num)) return fallback;
-    return num;
+    return Number.isNaN(num) ? fallback : num;
 }
 
+/**
+ * Sets a numeric stat for Game 1
+ * @param {string} baseKey - Key from GAME1_LS_KEYS
+ * @param {string} username - Username
+ * @param {number} value - Value to set
+ */
 function setGame1NumberForUser(baseKey, username, value) {
-    const key = getGame1Key(baseKey, username);
-    writeJson(key, value);
+    writeJson(userKey(baseKey, username), value);
 }
 
+/**
+ * Increments a numeric stat for Game 1
+ * @param {string} baseKey - Key from GAME1_LS_KEYS
+ * @param {string} username - Username
+ * @param {number} amount - Amount to add
+ * @returns {number} New value
+ */
 function incrementGame1NumberForUser(baseKey, username, amount = 1) {
     const current = getGame1NumberForUser(baseKey, username, 0);
     const next = current + amount;
@@ -139,31 +443,55 @@ function incrementGame1NumberForUser(baseKey, username, amount = 1) {
     return next;
 }
 
+/**
+ * Gets recent results for Game 1
+ * @param {string} username - Username
+ * @returns {Array} Recent results
+ */
 function getGame1RecentResultsForUser(username) {
-    const key = getGame1Key(GAME1_LS_KEYS.RECENT_RESULTS, username);
-    const results = readJson(key, []);
+    const results = readJson(userKey(GAME1_LS_KEYS.RECENT_RESULTS, username), []);
     return Array.isArray(results) ? results : [];
 }
 
+/**
+ * Saves recent results for Game 1
+ * @param {string} username - Username
+ * @param {Array} results - Results array
+ */
 function saveGame1RecentResultsForUser(username, results) {
-    const key = getGame1Key(GAME1_LS_KEYS.RECENT_RESULTS, username);
-    writeJson(key, results);
+    writeJson(userKey(GAME1_LS_KEYS.RECENT_RESULTS, username), results);
 }
 
-// Game 2 stat helpers (per user)
+/**
+ * Gets a numeric stat for Game 2
+ * @param {string} baseKey - Key from GAME2_LS_KEYS
+ * @param {string} username - Username
+ * @param {number} fallback - Default value
+ * @returns {number} Stat value
+ */
 function getGame2NumberForUser(baseKey, username, fallback = 0) {
-    const key = getGame2Key(baseKey, username);
-    const val = readJson(key, fallback);
+    const val = readJson(userKey(baseKey, username), fallback);
     const num = Number(val);
-    if (Number.isNaN(num)) return fallback;
-    return num;
+    return Number.isNaN(num) ? fallback : num;
 }
 
+/**
+ * Sets a numeric stat for Game 2
+ * @param {string} baseKey - Key from GAME2_LS_KEYS
+ * @param {string} username - Username
+ * @param {number} value - Value to set
+ */
 function setGame2NumberForUser(baseKey, username, value) {
-    const key = getGame2Key(baseKey, username);
-    writeJson(key, value);
+    writeJson(userKey(baseKey, username), value);
 }
 
+/**
+ * Increments a numeric stat for Game 2
+ * @param {string} baseKey - Key from GAME2_LS_KEYS
+ * @param {string} username - Username
+ * @param {number} amount - Amount to add
+ * @returns {number} New value
+ */
 function incrementGame2NumberForUser(baseKey, username, amount = 1) {
     const current = getGame2NumberForUser(baseKey, username, 0);
     const next = current + amount;
@@ -171,119 +499,32 @@ function incrementGame2NumberForUser(baseKey, username, amount = 1) {
     return next;
 }
 
+/**
+ * Gets recent results for Game 2
+ * @param {string} username - Username
+ * @returns {Array} Recent results
+ */
 function getGame2RecentResultsForUser(username) {
-    const key = getGame2Key(GAME2_LS_KEYS.RECENT_RESULTS, username);
-    const results = readJson(key, []);
+    const results = readJson(userKey(GAME2_LS_KEYS.RECENT_RESULTS, username), []);
     return Array.isArray(results) ? results : [];
 }
 
+/**
+ * Saves recent results for Game 2
+ * @param {string} username - Username
+ * @param {Array} results - Results array
+ */
 function saveGame2RecentResultsForUser(username, results) {
-    const key = getGame2Key(GAME2_LS_KEYS.RECENT_RESULTS, username);
-    writeJson(key, results);
+    writeJson(userKey(GAME2_LS_KEYS.RECENT_RESULTS, username), results);
 }
 
-// User Management Functions
-function getAllUsers() {
-    const users = localStorage.getItem('gameHub_users');
-    return users ? JSON.parse(users) : [];
-}
+// ============================================================================
+// AUTO-INITIALIZATION
+// ============================================================================
 
-function saveUser(user) {
-    const users = getAllUsers();
-    users.push(user);
-    localStorage.setItem('gameHub_users', JSON.stringify(users));
-}
-
-function getUserByUsername(username) {
-    const users = getAllUsers();
-    return users.find(user => user.username === username);
-}
-
-function updateUser(username, updates) {
-    const users = getAllUsers();
-    const index = users.findIndex(user => user.username === username);
-    if (index !== -1) {
-        users[index] = { ...users[index], ...updates };
-        localStorage.setItem('gameHub_users', JSON.stringify(users));
-        return true;
-    }
-    return false;
-}
-
-// Session Management Functions
-function createSession(username) {
-    const session = {
-        username: username,
-        loginTime: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
-    };
-    localStorage.setItem('gameHub_currentSession', JSON.stringify(session));
-    
-    // Add to sessions history
-    const sessions = getAllSessions();
-    sessions.push(session);
-    localStorage.setItem('gameHub_sessions', JSON.stringify(sessions));
-    
-    return session;
-}
-
-function getCurrentSession() {
-    const session = localStorage.getItem('gameHub_currentSession');
-    if (!session) return null;
-    
-    const sessionData = JSON.parse(session);
-    const now = new Date();
-    const expiresAt = new Date(sessionData.expiresAt);
-    
-    if (now > expiresAt) {
-        clearCurrentSession();
-        return null;
-    }
-    
-    return sessionData;
-}
-
-function clearCurrentSession() {
-    localStorage.removeItem('gameHub_currentSession');
-}
-
-function getAllSessions() {
-    const sessions = localStorage.getItem('gameHub_sessions');
-    return sessions ? JSON.parse(sessions) : [];
-}
-
-// Score Management Functions
-function saveScore(scoreData) {
-    const scores = getAllScores();
-    scores.push({
-        ...scoreData,
-        timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('gameHub_scores', JSON.stringify(scores));
-}
-
-function getAllScores() {
-    const scores = localStorage.getItem('gameHub_scores');
-    return scores ? JSON.parse(scores) : [];
-}
-
-function getUserScores(username) {
-    const scores = getAllScores();
-    return scores.filter(score => score.username === username);
-}
-
-function getTopScores(gameName, limit = 10) {
-    const scores = getAllScores();
-    return scores
-        .filter(score => score.game === gameName)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, limit);
-}
-
-// Initialize storage on load
 initializeStorage();
-const bootstrapUsername = getActiveUsername();
-if (bootstrapUsername) {
-    ensureGame1DefaultsForUser(bootstrapUsername);
-    ensureGame2DefaultsForUser(bootstrapUsername);
+const _bootstrapUser = getActiveUsername();
+if (_bootstrapUser && _bootstrapUser !== "Guest") {
+    ensureGame1DefaultsForUser(_bootstrapUser);
+    ensureGame2DefaultsForUser(_bootstrapUser);
 }
