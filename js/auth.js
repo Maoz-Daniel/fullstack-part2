@@ -1,7 +1,7 @@
 /**
- * Authentication Module - PlayHub Gaming Portal
+ * authentication Module - playHub Gaming Portal
  * @file auth.js
- * @description Handles user login, registration, and session management.
+ * @description handles user login, registration, and session management.
  * @requires storage.js
  */
 
@@ -23,9 +23,9 @@ const AUTH_CONFIG = {
 // ============================================================================
 
 /**
- * Shows an error message in the specified element
- * @param {HTMLElement} element - Error display element
- * @param {string} message - Error message
+ * shows an error message in the specified element
+ * @param {HTMLElement} element - error display element
+ * @param {string} message - error message
  */
 function showError(element, message) {
     if (!element) return;
@@ -33,9 +33,8 @@ function showError(element, message) {
     element.classList.add("show");
 }
 
-/**
- * Clears all visible error messages
- */
+
+//clears all visible error messages
 function clearAllErrors() {
     document.querySelectorAll(".error-message").forEach(el => {
         el.textContent = "";
@@ -44,9 +43,9 @@ function clearAllErrors() {
 }
 
 /**
- * Gets a lockout key for a username
- * @param {string} username - Username
- * @returns {Object} Keys for failed attempts and lockout time
+ * gets a lockout key for a username
+ * @param {string} username - username
+ * @returns {Object} keys for failed attempts and lockout time
  */
 function getLockoutKeys(username) {
     return {
@@ -59,9 +58,8 @@ function getLockoutKeys(username) {
 // SESSION CHECK
 // ============================================================================
 
-/**
- * Redirects to games page if already logged in
- */
+
+//redirects to games page if already logged in
 function checkExistingSession() {
     const session = getCurrentSession();
     if (session && window.location.pathname.includes("login.html")) {
@@ -74,9 +72,9 @@ function checkExistingSession() {
 // ============================================================================
 
 /**
- * Checks password against requirements
- * @param {string} password - Password to check
- * @returns {Object} Requirements status and strength
+ * checks password against requirements
+ * @param {string} password - password to check
+ * @returns {Object} requirements status and strength
  */
 function checkPasswordRequirements(password) {
     const requirements = {
@@ -87,7 +85,7 @@ function checkPasswordRequirements(password) {
         special: /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/`~;']/.test(password)
     };
     
-    const passedCount = Object.values(requirements).filter(Boolean).length;
+    const passedCount = Object.values(requirements).filter(Boolean).length; // count passed requirements
     
     let strength = "weak";
     if (passedCount >= 5) strength = "strong";
@@ -98,26 +96,25 @@ function checkPasswordRequirements(password) {
 }
 
 /**
- * Updates password requirement UI elements
- * @param {HTMLElement} element - Requirement list item
- * @param {boolean} isValid - Whether requirement is met
+ * updates password requirement UI elements
+ * @param {HTMLElement} element - requirement list item
+ * @param {boolean} isValid - whether requirement is met
  */
 function updateRequirement(element, isValid) {
     if (!element) return;
     const icon = element.querySelector(".req-icon");
     
-    element.classList.toggle("valid", isValid);
-    element.classList.toggle("invalid", !isValid);
-    if (icon) icon.textContent = isValid ? "✓" : "✗";
+    element.classList.toggle("valid", isValid); // if valid, add 'valid' class
+    element.classList.toggle("invalid", !isValid); // if invalid, add 'invalid' class
+    if (icon) icon.textContent = isValid ? "✓" : "✗"; // update icon
 }
 
 // ============================================================================
 // LOGIN HANDLER
 // ============================================================================
 
-/**
- * Initializes login form handling
- */
+
+// initializes login form handling
 function initLoginForm() {
     const form = document.getElementById("loginForm");
     if (!form) return;
@@ -127,17 +124,17 @@ function initLoginForm() {
     const generalError = document.getElementById("generalError");
     
     form.addEventListener("submit", (e) => {
-        e.preventDefault();
+        e.preventDefault(); // prevent form submission
         
         const username = usernameInput.value.trim();
         const password = passwordInput.value;
         const keys = getLockoutKeys(username);
         
-        // Clear previous errors
+        // clear previous errors
         generalError.textContent = "";
         generalError.classList.remove("show");
         
-        // Check lockout
+        // check lockout
         const lockoutTime = localStorage.getItem(keys.lockout);
         if (lockoutTime) {
             const lockoutEnd = new Date(lockoutTime);
@@ -146,12 +143,12 @@ function initLoginForm() {
                 showError(generalError, `Account locked. Try again in ${minutesLeft} minutes.`);
                 return;
             }
-            // Unlock
+            // unlock
             localStorage.removeItem(keys.lockout);
             localStorage.removeItem(keys.attempts);
         }
         
-        // Validate user
+        // validate user
         const user = getUserByUsername(username);
         if (!user) {
             showError(generalError, "Username not found.");
@@ -173,7 +170,7 @@ function initLoginForm() {
             return;
         }
         
-        // Successful login
+        // successful login
         localStorage.removeItem(keys.attempts);
         localStorage.removeItem(keys.lockout);
         
@@ -191,9 +188,7 @@ function initLoginForm() {
 // REGISTRATION HANDLER
 // ============================================================================
 
-/**
- * Initializes registration form handling
- */
+//initializes registration form handling
 function initRegisterForm() {
     const form = document.getElementById("registerForm");
     if (!form) return;
@@ -203,7 +198,7 @@ function initRegisterForm() {
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
     
-    // Password UI elements
+    // password UI elements
     const strengthFill = document.getElementById("strengthFill");
     const strengthText = document.getElementById("strengthText");
     const reqLength = document.getElementById("req-length");
@@ -212,9 +207,8 @@ function initRegisterForm() {
     const reqNumber = document.getElementById("req-number");
     const reqSpecial = document.getElementById("req-special");
     
-    /**
-     * Updates password strength UI
-     */
+    
+    //Updates password strength UI
     function updatePasswordUI() {
         const password = passwordInput.value;
         const { requirements, strength } = checkPasswordRequirements(password);
@@ -241,7 +235,7 @@ function initRegisterForm() {
     passwordInput.addEventListener("input", updatePasswordUI);
     
     form.addEventListener("submit", (e) => {
-        e.preventDefault();
+        e.preventDefault(); // prevent form submission
         clearAllErrors();
         
         const username = usernameInput.value.trim();
@@ -251,7 +245,7 @@ function initRegisterForm() {
         
         let isValid = true;
         
-        // Validate username
+        // validate username
         if (username.length < AUTH_CONFIG.MIN_USERNAME_LENGTH) {
             showError(document.getElementById("usernameError"), 
                 `Username must be at least ${AUTH_CONFIG.MIN_USERNAME_LENGTH} characters.`);
@@ -261,7 +255,7 @@ function initRegisterForm() {
             isValid = false;
         }
         
-        // Validate email
+        // validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             showError(document.getElementById("emailError"), "Please enter a valid email address.");
@@ -271,7 +265,7 @@ function initRegisterForm() {
             isValid = false;
         }
         
-        // Validate password
+        // validate password
         const { requirements, passedCount } = checkPasswordRequirements(password);
         if (!requirements.length) {
             showError(document.getElementById("passwordError"), 
@@ -282,7 +276,7 @@ function initRegisterForm() {
             isValid = false;
         }
         
-        // Validate confirmation
+        // validate confirmation
         if (password !== confirmPassword) {
             showError(document.getElementById("confirmPasswordError"), "Passwords do not match.");
             isValid = false;
@@ -290,7 +284,7 @@ function initRegisterForm() {
         
         if (!isValid) return;
         
-        // Create user
+        // create user
         saveUser({
             username,
             email,

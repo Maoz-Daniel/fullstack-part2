@@ -1,7 +1,7 @@
 /**
- * Games Dashboard Module - PlayHub Gaming Portal
+ * games Dashboard Module - PlayHub Gaming Portal
  * @file games.js
- * @description Handles the games dashboard with session validation and statistics.
+ * @description handles the games dashboard with session validation and statistics.
  * @requires storage.js
  */
 
@@ -12,7 +12,7 @@
     // UTILITY FUNCTIONS
     // ============================================================================
 
-    const $ = (id) => document.getElementById(id);
+    const $ = (id) => document.getElementById(id); // shorthand for getElementById
     const setText = (id, value) => {
         const el = $(id);
         if (el) el.textContent = String(value);
@@ -23,8 +23,8 @@
     // ============================================================================
 
     /**
-     * Requires valid session, redirects to login if none
-     * @returns {Object|null} Session object or null
+     * requires valid session, redirects to login if none
+     * @returns {Object|null} session object or null
      */
     function requireSession() {
         const session = getCurrentSession();
@@ -40,7 +40,7 @@
     // ============================================================================
 
     /**
-     * Renders user information in header
+     * renders user information in header
      * @param {string} username - Username to display
      */
     function renderUser(username) {
@@ -53,30 +53,30 @@
     }
 
     /**
-     * Renders combined game statistics
+     * renders combined game statistics
      * @param {string} username - Username
      */
     function renderStats(username) {
         ensureGame1DefaultsForUser(username);
         ensureGame2DefaultsForUser(username);
 
-        // Game 1 stats
+        // game 1 stats
         const g1Best = getGame1NumberForUser(GAME1_LS_KEYS.BEST_SCORE, username, 0);
         const g1Total = getGame1NumberForUser(GAME1_LS_KEYS.TOTAL_POINTS, username, 0);
         const g1Played = getGame1NumberForUser(GAME1_LS_KEYS.GAMES_PLAYED, username, 0);
         const g1Sessions = getGame1NumberForUser(GAME1_LS_KEYS.SESSIONS, username, 0);
 
-        // Game 2 stats
+        // game 2 stats
         const g2Total = getGame2NumberForUser(GAME2_LS_KEYS.TOTAL_POINTS, username, 0);
         const g2Played = getGame2NumberForUser(GAME2_LS_KEYS.GAMES_PLAYED, username, 0);
         const g2Sessions = getGame2NumberForUser(GAME2_LS_KEYS.SESSIONS, username, 0);
 
-        // Combined totals
+        // combined totals
         setText("totalGamesPlayed", g1Played + g2Played);
         setText("totalScore", g1Total + g2Total);
         setText("totalSessions", g1Sessions + g2Sessions);
 
-        // Game 1 specific
+        // game 1 specific
         setText("game1Played", g1Sessions);
         setText("game1BestScore", g1Best || "--");
         setText("game1GamesPlayed", g1Played);
