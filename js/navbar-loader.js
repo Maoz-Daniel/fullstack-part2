@@ -1,5 +1,5 @@
 /**
- * Navbar Loader - Fetches and injects shared navbar component
+ * Navbar Loader - Injects shared navbar component
  * @file navbar-loader.js
  * @description Dynamically loads the shared navbar HTML into pages
  */
@@ -7,36 +7,64 @@
 "use strict";
 
 (function() {
+    // Navbar HTML template (embedded to work with file:// protocol)
+    const NAVBAR_HTML = `
+<nav class="navbar" id="main-navbar">
+    <div class="nav-content">
+        <!-- Brand/Logo -->
+        <a class="nav-brand" href="games.html">PlayHub</a>
+        
+        <!-- Navigation menu -->
+        <div class="nav-menu">
+            <a href="games.html" class="nav-link" data-page="games">Games</a>
+            <a href="leaderboard.html" class="nav-link" data-page="leaderboard">Leaderboard</a>
+            <a href="profile.html" class="nav-link" data-page="profile">Profile</a>
+            
+            <!-- User info section (shown on games page) -->
+            <div class="user-info" id="navbar-user-info" style="display:none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">User</span>
+            </div>
+            
+            <!-- Action buttons -->
+            <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
+            <button class="btn-logout" id="logoutBtn" type="button" style="display:none;">Logout</button>
+            <a href="games.html" class="btn-back" id="backBtn" style="display:none;">Back to Games</a>
+        </div>
+    </div>
+</nav>
+`;
+
     /**
      * Load and inject navbar into the page
      */
-    async function loadNavbar() {
+    function loadNavbar() {
         const placeholder = document.getElementById("navbar-placeholder");
         if (!placeholder) return;
 
-        try {
-            // Determine path based on page location
-            const isInPages = window.location.pathname.includes("/pages/");
-            const basePath = isInPages ? "../" : "";
-            
-            const response = await fetch(`${basePath}components/navbar.html`);
-            if (!response.ok) throw new Error("Failed to load navbar");
-            
-            const html = await response.text();
-            placeholder.innerHTML = html;
-            
-            // Initialize navbar after loading
-            initNavbar();
-            
-            // Re-initialize darkmode after navbar is in DOM
-            initDarkModeButton();
-            
-            // Initialize logout button
-            initLogoutButton();
-            
-        } catch (error) {
-            console.error("Error loading navbar:", error);
+        // Determine path prefix based on page location
+        const isInPages = window.location.pathname.includes("/pages/");
+        const basePath = isInPages ? "../" : "";
+        
+        // Fix href paths based on current location
+        let html = NAVBAR_HTML;
+        if (!isInPages) {
+            // From root (index.html), links should point to pages/
+            html = html.replace(/href="games\.html"/g, 'href="pages/games.html"')
+                       .replace(/href="leaderboard\.html"/g, 'href="pages/leaderboard.html"')
+                       .replace(/href="profile\.html"/g, 'href="pages/profile.html"');
         }
+        
+        placeholder.innerHTML = html;
+        
+        // Initialize navbar after loading
+        initNavbar();
+        
+        // Re-initialize darkmode after navbar is in DOM
+        initDarkModeButton();
+        
+        // Initialize logout button
+        initLogoutButton();
     }
 
     /**

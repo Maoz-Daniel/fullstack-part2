@@ -8,10 +8,10 @@
 "use strict";
 
 // ============================================================================
-// WORD LISTS
+// WORD LIST
 // ============================================================================
 
-const WORD_LIST = [
+const WORDS = [
     "about", "above", "abuse", "actor", "acute", "admit", "adopt", "adult", "after", "again",
     "agent", "agree", "ahead", "alarm", "album", "alert", "alike", "alive", "allow", "alone",
     "along", "alter", "among", "angel", "anger", "angle", "angry", "apart", "apple", "apply",
@@ -192,89 +192,6 @@ const WORD_LIST = [
     "youth", "zebra", "zesty", "zonal"
 ];
 
-const ANSWER_WORDS = [
-    "about", "above", "actor", "admit", "adult", "after", "again", "agent", "agree", "ahead",
-    "album", "alert", "alive", "allow", "alone", "along", "among", "angel", "anger", "angry",
-    "apart", "apple", "arena", "argue", "arise", "armor", "array", "arrow", "audio", "avoid",
-    "award", "aware", "awful", "badge", "badly", "baker", "basic", "beach", "beast", "began",
-    "begin", "being", "below", "bench", "birth", "black", "blade", "blame", "blank", "blast",
-    "blend", "blind", "block", "blood", "bloom", "board", "bonus", "booth", "bound", "brain",
-    "brake", "brand", "brave", "bread", "break", "breed", "brick", "bride", "brief", "bring",
-    "broad", "broke", "brown", "brush", "build", "built", "bunch", "burst", "buyer", "cabin",
-    "cable", "camel", "candy", "cargo", "carry", "catch", "cause", "chain", "chair", "charm",
-    "chart", "chase", "cheap", "check", "cheek", "cheer", "chess", "chest", "chief", "child",
-    "china", "chose", "chunk", "civil", "claim", "class", "clean", "clear", "clerk", "click",
-    "cliff", "climb", "clock", "clone", "close", "cloth", "cloud", "clown", "coach", "coast",
-    "color", "comic", "coral", "couch", "could", "count", "court", "cover", "crack", "craft",
-    "crane", "crash", "crawl", "crazy", "cream", "creek", "crime", "crisp", "cross", "crowd",
-    "crown", "cruel", "crush", "curve", "cycle", "daily", "dance", "death", "debut", "decay",
-    "delay", "demon", "denim", "depth", "devil", "diary", "digit", "dirty", "ditch", "diver",
-    "doing", "donor", "doubt", "dough", "draft", "drain", "drama", "drank", "drawn", "dread",
-    "dream", "dress", "dried", "drift", "drill", "drink", "drive", "drown", "drums", "drunk",
-    "dying", "eager", "eagle", "early", "earth", "eaten", "eight", "elbow", "elder", "elect",
-    "elite", "email", "empty", "enemy", "enjoy", "enter", "entry", "equal", "error", "essay",
-    "event", "every", "exact", "exist", "extra", "faint", "fairy", "faith", "false", "fancy",
-    "fatal", "fault", "favor", "feast", "fence", "fever", "fiber", "field", "fiery", "fifth",
-    "fifty", "fight", "final", "first", "fixed", "flame", "flash", "flesh", "float", "flock",
-    "flood", "floor", "flour", "fluid", "flush", "focal", "focus", "force", "forge", "forth",
-    "forty", "forum", "found", "frame", "frank", "fraud", "fresh", "fried", "front", "frost",
-    "fruit", "fully", "funny", "giant", "given", "glass", "globe", "glory", "going", "grace",
-    "grade", "grain", "grand", "grant", "grape", "graph", "grasp", "grass", "grave", "great",
-    "greed", "green", "greet", "grief", "grill", "grind", "group", "grove", "growl", "grown",
-    "guard", "guess", "guest", "guide", "guilt", "habit", "happy", "harsh", "hasty", "haven",
-    "heart", "heavy", "hedge", "hello", "hence", "honey", "honor", "horse", "hotel", "hound",
-    "house", "human", "humor", "hurry", "ideal", "image", "imply", "index", "inner", "input",
-    "intro", "irony", "issue", "jeans", "jewel", "joint", "joker", "jolly", "judge", "juice",
-    "jumbo", "karma", "knife", "knock", "known", "label", "labor", "large", "laser", "later",
-    "laugh", "layer", "learn", "lease", "least", "leave", "legal", "lemon", "level", "lever",
-    "light", "liked", "limit", "lined", "liver", "local", "lodge", "logic", "loose", "lover",
-    "lower", "loyal", "lucky", "lunar", "lunch", "lying", "magic", "major", "maker", "manor",
-    "maple", "march", "match", "maybe", "mayor", "meant", "medal", "media", "mercy", "merge",
-    "merit", "merry", "metal", "meter", "micro", "might", "minor", "minus", "mixed", "model",
-    "money", "month", "moral", "motor", "motto", "mount", "mouse", "mouth", "moved", "movie",
-    "music", "nanny", "nasty", "naval", "nerve", "never", "newer", "night", "noble", "noise",
-    "north", "noted", "novel", "nurse", "occur", "ocean", "offer", "often", "olive", "opera",
-    "orbit", "order", "other", "ought", "outer", "owned", "owner", "paint", "panel", "panic",
-    "paper", "party", "pasta", "patch", "pause", "peace", "peach", "pearl", "penny", "perch",
-    "phase", "phone", "photo", "piano", "piece", "pilot", "pinch", "pitch", "pixel", "pizza",
-    "place", "plain", "plane", "plant", "plate", "plaza", "plead", "pluck", "plumb", "plump",
-    "plush", "poach", "point", "polar", "pouch", "pound", "power", "press", "price", "pride",
-    "prime", "print", "prior", "prize", "proof", "proud", "prove", "pulse", "punch", "pupil",
-    "puppy", "queen", "query", "quest", "quick", "quiet", "quote", "radio", "rainy", "raise",
-    "rally", "ranch", "range", "rapid", "ratio", "razor", "reach", "react", "ready", "realm",
-    "rebel", "refer", "reign", "relax", "renew", "repay", "reply", "rerun", "reset", "retry",
-    "reuse", "rider", "ridge", "rifle", "right", "risky", "rival", "river", "roach", "roast",
-    "robin", "robot", "rocky", "rough", "round", "route", "royal", "rugby", "ruins", "ruler",
-    "rumor", "rural", "sadly", "saint", "salad", "salon", "sandy", "sauce", "scale", "scare",
-    "scarf", "scary", "scene", "scent", "score", "scout", "scrap", "screw", "seize", "sense",
-    "serve", "setup", "seven", "shade", "shake", "shaky", "shall", "shame", "shape", "share",
-    "shark", "sharp", "shave", "sheet", "shelf", "shell", "shift", "shine", "shiny", "shirt",
-    "shock", "shoot", "shore", "short", "shout", "shown", "sight", "silly", "since", "siren",
-    "sixth", "sixty", "skate", "skull", "slack", "slate", "slave", "sleep", "slice", "slide",
-    "slope", "small", "smart", "smash", "smell", "smile", "smoke", "snake", "sneak", "solid",
-    "solve", "sorry", "sound", "south", "space", "spare", "spark", "speak", "spear", "speed",
-    "spell", "spend", "spent", "spice", "spill", "spine", "spoil", "spoke", "spoon", "sport",
-    "spray", "squad", "stack", "staff", "stage", "stain", "stair", "stake", "stand", "stare",
-    "start", "state", "steak", "steal", "steam", "steel", "steep", "steer", "stick", "still",
-    "sting", "stock", "stone", "stood", "stool", "store", "storm", "story", "stout", "stove",
-    "strap", "straw", "strip", "stuck", "study", "stuff", "style", "sugar", "suite", "sunny",
-    "super", "surge", "swear", "sweat", "sweep", "sweet", "swept", "swift", "swing", "swipe",
-    "sword", "sworn", "table", "taken", "taste", "teach", "teeth", "tempo", "tense", "thank",
-    "theft", "their", "theme", "there", "these", "thick", "thief", "thigh", "thing", "think",
-    "third", "those", "three", "threw", "throw", "thumb", "tiger", "tight", "timer", "title",
-    "today", "token", "tooth", "topic", "torch", "total", "touch", "tough", "towel", "tower",
-    "toxic", "trace", "track", "trade", "trail", "train", "trait", "trash", "treat", "trend",
-    "trial", "tribe", "trick", "tried", "troop", "trout", "truck", "truly", "trump", "trunk",
-    "trust", "truth", "tutor", "twice", "twist", "ultra", "uncle", "under", "union", "unite",
-    "unity", "until", "upper", "upset", "urban", "usage", "usual", "valid", "value", "video",
-    "viral", "virus", "visit", "vital", "vivid", "vocal", "voice", "voter", "wagon", "waist",
-    "watch", "water", "waved", "weary", "weave", "wedge", "weigh", "weird", "whale", "wheat",
-    "wheel", "where", "which", "while", "white", "whole", "whose", "widen", "widow", "width",
-    "witch", "woman", "women", "woods", "world", "worry", "worse", "worst", "worth", "would",
-    "wound", "woven", "wrath", "wreck", "wrist", "write", "wrong", "wrote", "yacht", "yield",
-    "young", "youth", "zebra"
-];
-
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
@@ -367,12 +284,11 @@ function addRecent(entry) {
 // ============================================================================
 
 function selectWord() {
-    return ANSWER_WORDS[Math.floor(Math.random() * ANSWER_WORDS.length)].toUpperCase();
+    return WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
 }
 
 function isValidWord(word) {
-    const lower = word.toLowerCase();
-    return WORD_LIST.includes(lower) || ANSWER_WORDS.includes(lower);
+    return WORDS.includes(word.toLowerCase());
 }
 
 function getCurrentWord() {
