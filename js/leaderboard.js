@@ -20,9 +20,9 @@
     // ============================================================================
 
     /**
-     * Formats a timestamp to readable date string
+     * formats a timestamp to readable date string
      * @param {string} ts - ISO timestamp
-     * @returns {string} Formatted date
+     * @returns {string} formatted date
      */
     function formatDate(ts) {
         if (!ts) return "--";
@@ -31,11 +31,11 @@
     }
 
     /**
-     * Renders empty state message
-     * @param {HTMLElement} container - Container element
-     * @param {string} message - Message to display
+     * renders empty state message
+     * @param {HTMLElement} container - container element
+     * @param {string} message - message to display
      */
-    function renderEmptyState(container, message) {
+    function renderEmptyState(container, message) { 
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -49,10 +49,10 @@
     }
 
     /**
-     * Creates a leaderboard row HTML
-     * @param {Object} row - Row data
-     * @param {number} rank - Rank number
-     * @param {string} extraColumn - Extra column value (difficulty/attempts)
+     * creates a leaderboard row HTML
+     * @param {Object} row - row data
+     * @param {number} rank - rank number
+     * @param {string} extraColumn - extra column value (difficulty/attempts)
      * @returns {string} HTML string
      */
     function createRowHtml(row, rank, extraColumn) {
@@ -75,7 +75,7 @@
     // ============================================================================
 
     /**
-     * Computes Game 1 leaderboard rows
+     * compute game 1 leaderboard rows
      * @returns {Array} Sorted rows
      */
     function computeGame1Rows() {
@@ -102,8 +102,8 @@
     }
 
     /**
-     * Computes Game 2 leaderboard rows
-     * @returns {Array} Sorted rows
+     * compute game 2 leaderboard rows
+     * @returns {Array} sorted rows
      */
     function computeGame2Rows() {
         const users = getAllUsers();
@@ -133,9 +133,8 @@
     // RENDERING
     // ============================================================================
 
-    /**
-     * Renders Game 1 leaderboard
-     */
+    
+    //renders game 1 leaderboard
     function renderGame1Leaderboard() {
         if (!content1El) return;
         
@@ -150,9 +149,8 @@
             .join("");
     }
 
-    /**
-     * Renders Game 2 leaderboard
-     */
+    
+    //renders Game 2 leaderboard
     function renderGame2Leaderboard() {
         if (!content2El) return;
         

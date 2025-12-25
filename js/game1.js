@@ -1,7 +1,6 @@
 /**
- * Snake Game - PlayHub Gaming Portal
+ * snake Game - PlayHub Gaming Portal
  * @file game1.js
- * @description Classic Snake game with difficulty levels and statistics tracking.
  * @requires storage.js
  */
 
@@ -63,18 +62,18 @@ const state = {
 // DOM CACHE
 // ============================================================================
 
-let els = {};
+let els = {}; 
 
 function initElements() {
     els = {
-        diffPanel: document.getElementById("difficultyPanel"),
+        diffPanel: document.getElementById("difficultyPanel"), // difficulty selection panel
         startBtn: document.getElementById("startBtn"),
-        countdown: document.getElementById("countdownDisplay"),
-        countNum: document.getElementById("countdownNumber"),
+        countdown: document.getElementById("countdownDisplay"), // countdown overlay
+        countNum: document.getElementById("countdownNumber"), // countdown number element
         gameInfo: document.getElementById("gameInfo"),
         wrapper: document.querySelector(".game-area-wrapper"),
         canvas: document.getElementById("gameCanvas"),
-        ctx: document.getElementById("gameCanvas")?.getContext("2d"),
+        ctx: document.getElementById("gameCanvas")?.getContext("2d"), //
         pauseOverlay: document.getElementById("pauseOverlay"),
         scoreEl: document.getElementById("scoreDisplay"),
         lengthEl: document.getElementById("lengthDisplay"),
@@ -113,13 +112,13 @@ function incrementStat(key, amount = 1) {
     return next;
 }
 
-function getRecent() {
+function getRecent() { // recent game results
     const data = readJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), []);
     return Array.isArray(data) ? data : [];
 }
 
-function addRecent(entry) {
-    const updated = [entry, ...getRecent()].slice(0, 5);
+function addRecent(entry) { // add a recent game result
+    const updated = [entry, ...getRecent()].slice(0, 5); // keep only last 5
     writeJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), updated);
 }
 
@@ -129,22 +128,25 @@ function addRecent(entry) {
 
 function createSnake() {
     const snake = [];
+
+    // start in center
     const startX = Math.floor(CONFIG.gridSize / 2);
     const startY = Math.floor(CONFIG.gridSize / 2);
-    for (let i = 0; i < CONFIG.initialLength; i++) {
-        snake.push({ x: startX - i, y: startY });
+
+    for (let i = 0; i < CONFIG.initialLength; i++) { 
+        snake.push({ x: startX - i, y: startY }); // each node in same row, extending left
     }
     return snake;
 }
 
-function spawnFood() {
-    let pos;
+function spawnFood() { // place food in random position not occupied by snake
+    let pos; 
     do {
         pos = {
             x: Math.floor(Math.random() * CONFIG.gridSize),
             y: Math.floor(Math.random() * CONFIG.gridSize)
         };
-    } while (state.snake.some(s => s.x === pos.x && s.y === pos.y));
+    } while (state.snake.some(s => s.x === pos.x && s.y === pos.y)); //while collides with snake, try again
     state.food = pos;
 }
 
@@ -153,39 +155,38 @@ function moveSnake() {
     const d = DIRECTIONS[state.nextDir];
     state.dir = state.nextDir;
     
-    let newHead = { x: head.x + d.x, y: head.y + d.y };
+    let newHead = { x: head.x + d.x, y: head.y + d.y }; // calculate new head position
     const settings = DIFFICULTY[state.difficulty];
     
-    // Wall collision
-    if (settings.wallsKill) {
+    if (settings.wallsKill) {  //if the wall make you lose
         if (newHead.x < 0 || newHead.x >= CONFIG.gridSize ||
-            newHead.y < 0 || newHead.y >= CONFIG.gridSize) {
+            newHead.y < 0 || newHead.y >= CONFIG.gridSize) { //if hits wall
             return false;
         }
-    } else {
-        // Wrap around
+    } else { // if walls don't kill
+        // move to opposite side
         if (newHead.x < 0) newHead.x = CONFIG.gridSize - 1;
         if (newHead.x >= CONFIG.gridSize) newHead.x = 0;
         if (newHead.y < 0) newHead.y = CONFIG.gridSize - 1;
         if (newHead.y >= CONFIG.gridSize) newHead.y = 0;
     }
     
-    // Self collision
+    // self collision
     for (let i = 0; i < state.snake.length - 1; i++) {
         if (state.snake[i].x === newHead.x && state.snake[i].y === newHead.y) {
             return false;
         }
     }
     
-    state.snake.unshift(newHead);
+    state.snake.unshift(newHead); // add new head to front of snake
     
-    // Check food
+    // if food eaten
     if (newHead.x === state.food.x && newHead.y === state.food.y) {
-        state.score += settings.multiplier;
-        updateDisplays();
+        state.score += settings.multiplier; // increase score
+        updateDisplays(); 
         spawnFood();
     } else {
-        state.snake.pop();
+        state.snake.pop(); // remove tail segment, beacuse we increased length only if food eaten (visually move snake)
     }
     
     return true;
@@ -196,14 +197,16 @@ function moveSnake() {
 // ============================================================================
 
 function render() {
-    const ctx = els.ctx;
-    const cell = CONFIG.canvasSize / CONFIG.gridSize;
+
+    // clear canvas
+    const ctx = els.ctx; //
+    const cell = CONFIG.canvasSize / CONFIG.gridSize; 
     
-    // Background
+    // background
     ctx.fillStyle = CONFIG.colors.bg;
     ctx.fillRect(0, 0, CONFIG.canvasSize, CONFIG.canvasSize);
     
-    // Grid
+    // grid
     ctx.strokeStyle = CONFIG.colors.grid;
     ctx.lineWidth = 1;
     for (let i = 0; i <= CONFIG.gridSize; i++) {
@@ -217,13 +220,15 @@ function render() {
         ctx.stroke();
     }
     
-    // Food
+    // food
     if (state.food) {
-        const fx = state.food.x * cell + cell / 2;
-        const fy = state.food.y * cell + cell / 2;
-        
-        ctx.beginPath();
-        ctx.arc(fx, fy, cell * 0.6, 0, Math.PI * 2);
+        const fx = state.food.x * cell + cell / 2; 
+        const fy = state.food.y * cell + cell / 2; 
+
+        //drow 2 circles for food (glow and core)
+
+        ctx.beginPath(); 
+        ctx.arc(fx, fy, cell * 0.6, 0, Math.PI * 2); 
         ctx.fillStyle = CONFIG.colors.foodGlow;
         ctx.fill();
         
@@ -233,16 +238,17 @@ function render() {
         ctx.fill();
     }
     
-    // Snake
+    // snake
     state.snake.forEach((seg, i) => {
-        const x = seg.x * cell + 1;
+        const x = seg.x * cell + 1; // slight padding
         const y = seg.y * cell + 1;
         const w = cell - 2;
-        const r = i === 0 ? 6 : 4;
+        const r = i === 0 ? 6 : 4; // rounded corners (more for head)
         
         ctx.fillStyle = i === 0 ? CONFIG.colors.head : 
-                        (i % 2 === 0 ? CONFIG.colors.body : CONFIG.colors.bodyAlt);
+                        (i % 2 === 0 ? CONFIG.colors.body : CONFIG.colors.bodyAlt); // head different color, alternating body colors
         
+        // rounded rectangle for snake segment
         ctx.beginPath();
         ctx.moveTo(x + r, y);
         ctx.lineTo(x + w - r, y);
@@ -256,7 +262,7 @@ function render() {
         ctx.closePath();
         ctx.fill();
         
-        // Eyes on head
+        // eyes on head
         if (i === 0) renderEyes(ctx, seg, cell);
     });
 }
@@ -288,7 +294,7 @@ function renderEyes(ctx, head, cell) {
 // ============================================================================
 
 function updateDisplays() {
-    if (els.scoreEl) els.scoreEl.textContent = state.score;
+    if (els.scoreEl) els.scoreEl.textContent = state.score; 
     if (els.lengthEl) els.lengthEl.textContent = state.snake.length;
     if (els.bestEl) els.bestEl.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
 }
@@ -302,15 +308,17 @@ function updateBestDisplay() {
 // ============================================================================
 
 function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
+    return new Promise(r => setTimeout(r, ms)); 
 }
 
 async function showCountdown() {
     els.countdown.classList.add("active");
     for (let i = 3; i > 0; i--) {
         els.countNum.textContent = i;
+
+        // this restarts the CSS animation for the countdown number, because just changing text doesn't retrigger it
         els.countNum.style.animation = "none";
-        setTimeout(() => els.countNum.style.animation = "countdown-pulse 1s ease-in-out", 10);
+        setTimeout(() => els.countNum.style.animation = "countdown-pulse 1s ease-in-out", 10); 
         await sleep(1000);
     }
     els.countdown.classList.remove("active");

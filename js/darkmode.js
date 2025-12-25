@@ -14,13 +14,13 @@
 
     if (darkModeEnabled) {
       body.classList.add("dark-mode");
-      if (darkModeToggle) darkModeToggle.textContent = LIGHT_LABEL;
+      if (darkModeToggle) darkModeToggle.textContent = LIGHT_LABEL; // show "Light mode" when dark mode is active
     } else if (darkModeToggle) {
       darkModeToggle.textContent = DARK_LABEL;
     }
 
     if (darkModeToggle) {
-      darkModeToggle.addEventListener("click", toggleDarkMode);
+      darkModeToggle.addEventListener("click", toggleDarkMode); 
     }
   }
 
@@ -37,14 +37,14 @@
     }
   }
 
-  // Initialize on page load
+  // initialize on page load
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initDarkMode);
   } else {
     initDarkMode();
   }
 
-  // Expose toggle for manual use if needed
+  // expose toggle for manual use if needed
   window.toggleDarkMode = toggleDarkMode;
   window.initDarkMode = initDarkMode;
 })();

@@ -5,14 +5,15 @@
  * Handles users, sessions, scores, and per-user game statistics.
  */
 
-"use strict";
+/* avoid eslint warnings */ 
+"use strict"; 
 
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
 
 /** Storage keys for Game 1 (Snake) */
-const GAME1_LS_KEYS = Object.freeze({
+const GAME1_LS_KEYS = Object.freeze({ 
     BEST_SCORE: "game1_bestScore",
     TOTAL_POINTS: "game1_totalPoints",
     TOTAL_MISSES: "game1_totalMisses",
@@ -58,7 +59,7 @@ function readJson(key, fallback = null) {
         const raw = localStorage.getItem(key);
         if (raw === null) return fallback;
         const parsed = JSON.parse(raw);
-        return parsed ?? fallback;
+        return parsed ?? fallback; // if parsed is null/undefined, return fallback
     } catch {
         return fallback;
     }
@@ -71,7 +72,7 @@ function readJson(key, fallback = null) {
  */
 function writeJson(key, value) {
     try {
-        localStorage.setItem(key, JSON.stringify(value));
+        localStorage.setItem(key, JSON.stringify(value)); // parse to JSON
     } catch (e) {
         console.error("Storage write error:", e);
     }
@@ -99,8 +100,8 @@ const getGame2Key = userKey;
  * Initializes storage structure if not present
  */
 function initializeStorage() {
-    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-        writeJson(STORAGE_KEYS.USERS, []);
+    if (!localStorage.getItem(STORAGE_KEYS.USERS)) { // if no users key then set it to empty array
+        writeJson(STORAGE_KEYS.USERS, []); 
     }
     if (!localStorage.getItem(STORAGE_KEYS.SESSIONS)) {
         writeJson(STORAGE_KEYS.SESSIONS, []);
@@ -263,41 +264,41 @@ function getUserByUsername(username) {
 }
 
 /**
- * Updates a user's data
- * @param {string} username - Username
- * @param {Object} updates - Fields to update
- * @returns {boolean} Success status
+ * updates a user's data
+ * @param {string} username - username
+ * @param {Object} updates - fields to update
+ * @returns {boolean} success status
  */
 function updateUser(username, updates) {
     const users = getAllUsers();
     const index = users.findIndex(u => u.username === username);
     if (index === -1) return false;
     
-    users[index] = { ...users[index], ...updates };
+    users[index] = { ...users[index], ...updates }; // updates only specified fields
     writeJson(STORAGE_KEYS.USERS, users);
     return true;
 }
 
 /**
- * Changes username across all stored data
- * @param {string} oldUsername - Current username
- * @param {string} newUsername - New username
- * @returns {Object} Result with success and message
+ * changes username across all stored data
+ * @param {string} oldUsername  current username
+ * @param {string} newUsername  new username
+ * @returns {Object} result with success and message
  */
 function changeUsername(oldUsername, newUsername) {
     newUsername = (newUsername || "").trim();
     
     if (!newUsername) {
-        return { success: false, message: "Username cannot be empty" };
+        return { success: false, message: "username cannot be empty" };
     }
     if (newUsername.length < 3) {
-        return { success: false, message: "Username must be at least 3 characters" };
+        return { success: false, message: "username must be at least 3 characters" };
     }
     if (oldUsername === newUsername) {
-        return { success: false, message: "New username is the same as current" };
+        return { success: false, message: "new username is the same as current" };
     }
     if (getUserByUsername(newUsername)) {
-        return { success: false, message: "Username already taken" };
+        return { success: false, message: "username already taken" };
     }
     
     // Update users list
