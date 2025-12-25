@@ -1,0 +1,177 @@
+/**
+ * Navbar Loader - Fetches and injects shared navbar component
+ * @file navbar-loader.js
+ * @description Dynamically loads the shared navbar HTML into pages
+ */
+
+"use strict";
+
+(function() {
+    /**
+     * Load and inject navbar into the page
+     */
+    async function loadNavbar() {
+        const placeholder = document.getElementById("navbar-placeholder");
+        if (!placeholder) return;
+
+        try {
+            // Determine path based on page location
+            const isInPages = window.location.pathname.includes("/pages/");
+            const basePath = isInPages ? "../" : "";
+            
+            const response = await fetch(`${basePath}components/navbar.html`);
+            if (!response.ok) throw new Error("Failed to load navbar");
+            
+            const html = await response.text();
+            placeholder.innerHTML = html;
+            
+            // Initialize navbar after loading
+            initNavbar();
+            
+            // Re-initialize darkmode after navbar is in DOM
+            initDarkModeButton();
+            
+            // Initialize logout button
+            initLogoutButton();
+            
+        } catch (error) {
+            console.error("Error loading navbar:", error);
+        }
+    }
+
+    /**
+     * Initialize navbar functionality after DOM injection
+     */
+    function initNavbar() {
+        const currentPage = getCurrentPage();
+        
+        // Highlight current page link
+        highlightCurrentPage(currentPage);
+        
+        // Configure visibility based on page
+        configureNavbarForPage(currentPage);
+        
+        // Update user info if logged in
+        updateUserInfo();
+    }
+
+    /**
+     * Get current page name from URL
+     * @returns {string} Page name without extension
+     */
+    function getCurrentPage() {
+        const path = window.location.pathname;
+        const filename = path.substring(path.lastIndexOf("/") + 1);
+        return filename.replace(".html", "") || "index";
+    }
+
+    /**
+     * Highlight the current page in navigation
+     * @param {string} page - Current page name
+     */
+    function highlightCurrentPage(page) {
+        const links = document.querySelectorAll(".nav-link[data-page]");
+        links.forEach(link => {
+            if (link.dataset.page === page) {
+                link.setAttribute("aria-current", "page");
+            }
+        });
+    }
+
+    /**
+     * Configure navbar elements based on current page
+     * @param {string} page - Current page name
+     */
+    function configureNavbarForPage(page) {
+        const userInfo = document.getElementById("navbar-user-info");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const backBtn = document.getElementById("backBtn");
+
+        // Games page: show user info and logout
+        if (page === "games") {
+            if (userInfo) userInfo.style.display = "flex";
+            if (logoutBtn) logoutBtn.style.display = "inline-block";
+        }
+        
+        // Leaderboard and profile: show back button
+        if (page === "leaderboard" || page === "profile") {
+            if (backBtn) backBtn.style.display = "inline-block";
+        }
+    }
+
+    /**
+     * Update user info in navbar from session
+     */
+    function updateUserInfo() {
+        // Check if storage functions are available
+        if (typeof getActiveUsername !== "function") return;
+
+        const username = getActiveUsername();
+        if (!username) return;
+
+        const avatarEl = document.getElementById("userAvatar");
+        const usernameEl = document.getElementById("username");
+
+        if (avatarEl) {
+            avatarEl.textContent = username.charAt(0).toUpperCase();
+        }
+        if (usernameEl) {
+            usernameEl.textContent = username;
+        }
+    }
+
+    /**
+     * Initialize dark mode button in navbar
+     * Uses global initDarkMode from darkmode.js if available
+     */
+    function initDarkModeButton() {
+        // Use darkmode.js if available (avoids duplicate code)
+        if (typeof window.initDarkMode === "function") {
+            window.initDarkMode();
+            return;
+        }
+        
+        // Fallback if darkmode.js not loaded
+        const darkModeToggle = document.getElementById("darkModeToggle");
+        if (!darkModeToggle) return;
+
+        const DARK_LABEL = "Dark mode";
+        const LIGHT_LABEL = "Light mode";
+        const isDark = document.body.classList.contains("dark-mode");
+        
+        darkModeToggle.textContent = isDark ? LIGHT_LABEL : DARK_LABEL;
+        
+        darkModeToggle.addEventListener("click", function() {
+            document.body.classList.toggle("dark-mode");
+            const nowDark = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", nowDark);
+            darkModeToggle.textContent = nowDark ? LIGHT_LABEL : DARK_LABEL;
+        });
+    }
+
+    /**
+     * Initialize logout button in navbar
+     */
+    function initLogoutButton() {
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (!logoutBtn) return;
+
+        logoutBtn.addEventListener("click", function() {
+            // Check if logout function exists from storage.js
+            if (typeof clearCurrentSession === "function") {
+                clearCurrentSession();
+            } else {
+                // Fallback: clear session manually
+                sessionStorage.removeItem("currentSession");
+            }
+            window.location.href = "login.html";
+        });
+    }
+
+    // Load navbar when DOM is ready
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadNavbar);
+    } else {
+        loadNavbar();
+    }
+})();

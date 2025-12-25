@@ -1,107 +1,11 @@
-/* css/leaderboard.css - Leaderboard page styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ============================================================================
+   leaderboard.css - Leaderboard Page Styles
+   Page-specific styles only (common styles in style.css)
+   ============================================================================ */
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #fff;
-}
-
-body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-.navbar {
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    padding: 20px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nav-brand {
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-decoration: none;
-    color: #fff;
-    letter-spacing: -0.5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.nav-brand:hover {
-    transform: translateY(-2px);
-    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-}
-
-.nav-menu {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-}
-
-.nav-link {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    padding: 8px 16px;
-    border-radius: 8px;
-}
-
-.nav-link:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-.btn-darkmode {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-darkmode:hover {
-    background: rgba(255,255,255,0.3);
-}
-
-.btn-back {
-    background: rgba(231, 76, 60, 0.8);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-back:hover {
-    background: rgba(231, 76, 60, 1);
-    transform: translateY(-2px);
-}
-
+/* ============================================================================
+   LEADERBOARD CONTAINER & HEADER
+   ============================================================================ */
 .leaderboard-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -123,6 +27,9 @@ body.dark-mode {
     opacity: 0.9;
 }
 
+/* ============================================================================
+   GAME SELECTOR
+   ============================================================================ */
 .game-selector {
     display: flex;
     justify-content: center;
@@ -158,6 +65,9 @@ body.dark-mode {
     background: #fff;
 }
 
+/* ============================================================================
+   LEADERBOARD CARD
+   ============================================================================ */
 .leaderboard-card {
     background: rgba(255,255,255,0.95);
     border-radius: 20px;
@@ -191,6 +101,9 @@ body.dark-mode {
     stroke: #667eea;
 }
 
+/* ============================================================================
+   LEADERBOARD TABLE
+   ============================================================================ */
 .leaderboard-table {
     width: 100%;
 }
@@ -224,6 +137,7 @@ body.dark-mode {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
 }
 
+/* Rank styling */
 .rank {
     font-size: 1.5rem;
     font-weight: 700;
@@ -235,6 +149,7 @@ body.dark-mode {
     font-size: 2rem;
 }
 
+/* Player info */
 .player-info {
     display: flex;
     align-items: center;
@@ -260,6 +175,7 @@ body.dark-mode {
     color: #333;
 }
 
+/* Score and other columns */
 .score,
 .games,
 .date {
@@ -273,6 +189,7 @@ body.dark-mode {
     color: #667eea;
 }
 
+/* Empty state */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -288,37 +205,10 @@ body.dark-mode {
     font-size: 1.2rem;
 }
 
+/* ============================================================================
+   LEADERBOARD PAGE RESPONSIVE
+   ============================================================================ */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 12px 0;
-    }
-    
-    .nav-content {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 0 15px;
-    }
-    
-    .nav-brand {
-        font-size: 1.4rem;
-    }
-    
-    .nav-menu {
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .nav-link {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-    }
-    
-    .btn-darkmode {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
     .leaderboard-container {
         padding: 20px 15px;
     }

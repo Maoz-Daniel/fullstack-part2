@@ -1,0 +1,234 @@
+/* ============================================================================
+   navbar.css - Shared Navbar Styles
+   Used by: games.html, leaderboard.html, profile.html
+   ============================================================================ */
+
+/* --- Navbar Placeholder - Reserve space before load --- */
+#navbar-placeholder {
+    min-height: 80px; /* Matches navbar height */
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+#navbar-placeholder:empty {
+    display: block;
+}
+
+/* --- Main Navbar --- */
+.navbar {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    /* Gradient text */
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd93d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* Glow effect */
+    filter: drop-shadow(0 0 8px rgba(240, 147, 251, 0.4));
+}
+
+.nav-brand::before {
+    content: "🎮";
+    font-size: 1.5rem;
+    -webkit-text-fill-color: initial;
+}
+
+.nav-brand:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: drop-shadow(0 0 12px rgba(240, 147, 251, 0.6));
+}
+
+.nav-menu {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* --- User Info Section --- */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* --- Navbar Buttons --- */
+.btn-darkmode {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-darkmode:hover {
+    background: linear-gradient(135deg, #e080e8 0%, #e04a5f 100%);
+    transform: translateY(-2px);
+}
+
+.btn-logout {
+    background: rgba(231, 76, 60, 0.8);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-logout:hover {
+    background: rgba(231, 76, 60, 1);
+}
+
+.btn-back {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-decoration: none;
+    display: none;
+}
+
+/* Show back button on game pages */
+.game-nav .btn-back {
+    display: inline-block;
+}
+
+.btn-back:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+    transform: translateY(-2px);
+}
+
+/* --- Game Page Nav --- */
+.game-nav {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.game-nav .nav-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* ============================================================================
+   RESPONSIVE STYLES
+   ============================================================================ */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 12px 0;
+    }
+    
+    .nav-content {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 0 15px;
+    }
+    
+    .nav-brand {
+        font-size: 1.4rem;
+    }
+    
+    .nav-menu {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        order: 3;
+        width: 100%;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .nav-link {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .user-info {
+        gap: 8px;
+    }
+    
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-darkmode,
+    .btn-logout,
+    .btn-back {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .nav-menu {
+        gap: 5px;
+    }
+    
+    .nav-link {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+}

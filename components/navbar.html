@@ -1,0 +1,26 @@
+<!-- components/navbar.html - Shared navigation bar component -->
+<!-- This navbar is loaded dynamically by navbar-loader.js -->
+<nav class="navbar" id="main-navbar">
+    <div class="nav-content">
+        <!-- Brand/Logo -->
+        <a class="nav-brand" href="games.html">PlayHub</a>
+        
+        <!-- Navigation menu -->
+        <div class="nav-menu">
+            <a href="games.html" class="nav-link" data-page="games">Games</a>
+            <a href="leaderboard.html" class="nav-link" data-page="leaderboard">Leaderboard</a>
+            <a href="profile.html" class="nav-link" data-page="profile">Profile</a>
+            
+            <!-- User info section (shown on games page) -->
+            <div class="user-info" id="navbar-user-info" style="display:none;">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="username">User</span>
+            </div>
+            
+            <!-- Action buttons -->
+            <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
+            <button class="btn-logout" id="logoutBtn" type="button" style="display:none;">Logout</button>
+            <a href="games.html" class="btn-back" id="backBtn" style="display:none;">Back to Games</a>
+        </div>
+    </div>
+</nav>

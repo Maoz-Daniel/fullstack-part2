@@ -83,19 +83,6 @@
         setText("game1TotalScore", g1Total);
     }
 
-    /**
-     * Binds logout button handler
-     */
-    function bindLogout() {
-        const btn = $("logoutBtn");
-        if (!btn) return;
-        
-        btn.addEventListener("click", () => {
-            clearCurrentSession();
-            window.location.href = "login.html";
-        });
-    }
-
     // ============================================================================
     // INITIALIZATION
     // ============================================================================
@@ -106,6 +93,7 @@
 
         renderUser(session.username);
         renderStats(session.username);
-        bindLogout();
+        
+        // Note: Logout button is now handled by navbar-loader.js
     });
 })();

@@ -1,123 +1,11 @@
-/* css/games.css - Games hub page styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ============================================================================
+   games.css - Games Hub Page Styles
+   Page-specific styles only (common styles in style.css)
+   ============================================================================ */
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #fff;
-}
-
-body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-.navbar {
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    padding: 20px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nav-brand {
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-decoration: none;
-    color: #fff;
-    letter-spacing: -0.5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.nav-brand:hover {
-    transform: translateY(-2px);
-    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-}
-
-.nav-menu {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-}
-
-.nav-link {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    padding: 8px 16px;
-    border-radius: 8px;
-}
-
-.nav-link:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-}
-
-.btn-darkmode {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-darkmode:hover {
-    background: rgba(255,255,255,0.3);
-}
-
-.btn-logout {
-    background: rgba(231, 76, 60, 0.8);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-.btn-logout:hover {
-    background: rgba(231, 76, 60, 1);
-    transform: translateY(-2px);
-}
-
+/* ============================================================================
+   GAMES CONTAINER & WELCOME SECTION
+   ============================================================================ */
 .games-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -134,6 +22,7 @@ body.dark-mode {
     margin-bottom: 10px;
 }
 
+/* User stats display */
 .user-stats {
     display: flex;
     justify-content: center;
@@ -162,6 +51,9 @@ body.dark-mode {
     margin-top: 5px;
 }
 
+/* ============================================================================
+   GAMES GRID & CARDS
+   ============================================================================ */
 .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -194,6 +86,7 @@ body.dark-mode {
     transform: none;
 }
 
+/* Game card icon */
 .game-icon {
     font-size: 5rem;
     margin-bottom: 20px;
@@ -219,7 +112,6 @@ body.dark-mode {
     margin-bottom: 15px;
 }
 
-/* css/games.css - Continuation */
 .game-card p {
     color: #666;
     font-size: 1rem;
@@ -227,6 +119,7 @@ body.dark-mode {
     line-height: 1.6;
 }
 
+/* Game stats within card */
 .game-stats {
     display: flex;
     justify-content: space-around;
@@ -254,6 +147,7 @@ body.dark-mode {
     margin-top: 5px;
 }
 
+/* Play button */
 .btn-play {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
@@ -272,6 +166,7 @@ body.dark-mode {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
+/* Coming soon badge */
 .coming-soon-badge {
     position: absolute;
     top: 20px;
@@ -284,52 +179,10 @@ body.dark-mode {
     font-weight: 600;
 }
 
+/* ============================================================================
+   GAMES PAGE RESPONSIVE
+   ============================================================================ */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 12px 0;
-    }
-    
-    .nav-content {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 0 15px;
-    }
-    
-    .nav-brand {
-        font-size: 1.4rem;
-    }
-    
-    .nav-menu {
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        order: 3;
-        width: 100%;
-        padding-top: 10px;
-        border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .nav-link {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-    }
-    
-    .user-info {
-        gap: 8px;
-    }
-    
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-    }
-    
-    .btn-darkmode,
-    .btn-logout {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
     .games-container {
         padding: 20px 15px;
     }
@@ -421,15 +274,6 @@ body.dark-mode {
 }
 
 @media (max-width: 400px) {
-    .nav-menu {
-        gap: 5px;
-    }
-    
-    .nav-link {
-        padding: 5px 8px;
-        font-size: 0.8rem;
-    }
-    
     .welcome-section h1 {
         font-size: 1.4rem;
     }

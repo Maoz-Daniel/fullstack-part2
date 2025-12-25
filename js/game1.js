@@ -1,7 +1,7 @@
 /**
- * Snake Game - PlayHub Gaming Portal
+ * Snake Game - PlayHub Gaming Portal (DOM-based)
  * @file game1.js
- * @description Classic Snake game with difficulty levels and statistics tracking.
+ * @description Classic Snake game using DOM grid instead of Canvas API.
  * @requires storage.js
  */
 
@@ -19,17 +19,8 @@ const DIFFICULTY = Object.freeze({
 
 const CONFIG = Object.freeze({
     gridSize: 20,
-    canvasSize: 400,
-    initialLength: 3,
-    colors: {
-        head: "#4ade80",
-        body: "#22c55e",
-        bodyAlt: "#16a34a",
-        food: "#ef4444",
-        foodGlow: "rgba(239, 68, 68, 0.3)",
-        grid: "rgba(255, 255, 255, 0.05)",
-        bg: "rgba(0, 0, 0, 0.4)"
-    }
+    boardSize: 400,
+    initialLength: 3
 });
 
 const DIRECTIONS = Object.freeze({
@@ -56,7 +47,8 @@ const state = {
     score: 0,
     loopId: null,
     sessionStarted: false,
-    newRecord: false
+    newRecord: false,
+    cells: [] // 2D array for DOM cells
 };
 
 // ============================================================================
@@ -73,8 +65,7 @@ function initElements() {
         countNum: document.getElementById("countdownNumber"),
         gameInfo: document.getElementById("gameInfo"),
         wrapper: document.querySelector(".game-area-wrapper"),
-        canvas: document.getElementById("gameCanvas"),
-        ctx: document.getElementById("gameCanvas")?.getContext("2d"),
+        board: document.getElementById("gameBoard"),
         pauseOverlay: document.getElementById("pauseOverlay"),
         scoreEl: document.getElementById("scoreDisplay"),
         lengthEl: document.getElementById("lengthDisplay"),
@@ -124,6 +115,32 @@ function addRecent(entry) {
 }
 
 // ============================================================================
+// GRID CREATION (DOM-based)
+// ============================================================================
+
+function createGrid() {
+    const board = els.board;
+    board.innerHTML = "";
+    state.cells = [];
+    
+    const cellSize = CONFIG.boardSize / CONFIG.gridSize;
+    board.style.width = CONFIG.boardSize + "px";
+    board.style.height = CONFIG.boardSize + "px";
+    board.style.gridTemplateColumns = `repeat(${CONFIG.gridSize}, ${cellSize}px)`;
+    board.style.gridTemplateRows = `repeat(${CONFIG.gridSize}, ${cellSize}px)`;
+    
+    for (let y = 0; y < CONFIG.gridSize; y++) {
+        state.cells[y] = [];
+        for (let x = 0; x < CONFIG.gridSize; x++) {
+            const cell = document.createElement("div");
+            cell.className = "grid-cell";
+            board.appendChild(cell);
+            state.cells[y][x] = cell;
+        }
+    }
+}
+
+// ============================================================================
 // SNAKE & FOOD
 // ============================================================================
 
@@ -170,7 +187,7 @@ function moveSnake() {
         if (newHead.y >= CONFIG.gridSize) newHead.y = 0;
     }
     
-    // Self collision
+    // Self collision (check all except tail which will move)
     for (let i = 0; i < state.snake.length - 1; i++) {
         if (state.snake[i].x === newHead.x && state.snake[i].y === newHead.y) {
             return false;
@@ -192,95 +209,39 @@ function moveSnake() {
 }
 
 // ============================================================================
-// RENDERING
+// RENDERING (DOM-based)
 // ============================================================================
 
 function render() {
-    const ctx = els.ctx;
-    const cell = CONFIG.canvasSize / CONFIG.gridSize;
-    
-    // Background
-    ctx.fillStyle = CONFIG.colors.bg;
-    ctx.fillRect(0, 0, CONFIG.canvasSize, CONFIG.canvasSize);
-    
-    // Grid
-    ctx.strokeStyle = CONFIG.colors.grid;
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= CONFIG.gridSize; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * cell, 0);
-        ctx.lineTo(i * cell, CONFIG.canvasSize);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, i * cell);
-        ctx.lineTo(CONFIG.canvasSize, i * cell);
-        ctx.stroke();
+    // Clear all cells
+    for (let y = 0; y < CONFIG.gridSize; y++) {
+        for (let x = 0; x < CONFIG.gridSize; x++) {
+            const cell = state.cells[y][x];
+            cell.className = "grid-cell";
+            cell.innerHTML = "";
+        }
     }
     
-    // Food
+    // Render food
     if (state.food) {
-        const fx = state.food.x * cell + cell / 2;
-        const fy = state.food.y * cell + cell / 2;
-        
-        ctx.beginPath();
-        ctx.arc(fx, fy, cell * 0.6, 0, Math.PI * 2);
-        ctx.fillStyle = CONFIG.colors.foodGlow;
-        ctx.fill();
-        
-        ctx.beginPath();
-        ctx.arc(fx, fy, cell * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = CONFIG.colors.food;
-        ctx.fill();
+        const foodCell = state.cells[state.food.y][state.food.x];
+        foodCell.classList.add("food");
     }
     
-    // Snake
+    // Render snake
     state.snake.forEach((seg, i) => {
-        const x = seg.x * cell + 1;
-        const y = seg.y * cell + 1;
-        const w = cell - 2;
-        const r = i === 0 ? 6 : 4;
-        
-        ctx.fillStyle = i === 0 ? CONFIG.colors.head : 
-                        (i % 2 === 0 ? CONFIG.colors.body : CONFIG.colors.bodyAlt);
-        
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + w - r);
-        ctx.quadraticCurveTo(x + w, y + w, x + w - r, y + w);
-        ctx.lineTo(x + r, y + w);
-        ctx.quadraticCurveTo(x, y + w, x, y + w - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-        ctx.fill();
-        
-        // Eyes on head
-        if (i === 0) renderEyes(ctx, seg, cell);
+        if (seg.y >= 0 && seg.y < CONFIG.gridSize && seg.x >= 0 && seg.x < CONFIG.gridSize) {
+            const cell = state.cells[seg.y][seg.x];
+            if (i === 0) {
+                cell.classList.add("snake-head", `dir-${state.dir}`);
+                // Add eyes
+                cell.innerHTML = '<span class="eye left"></span><span class="eye right"></span>';
+            } else {
+                cell.classList.add("snake-body");
+                if (i % 2 === 0) cell.classList.add("alt");
+            }
+        }
     });
-}
-
-function renderEyes(ctx, head, cell) {
-    const cx = head.x * cell + cell / 2;
-    const cy = head.y * cell + cell / 2;
-    const off = cell * 0.2;
-    const size = cell * 0.1;
-    const d = DIRECTIONS[state.dir];
-    
-    let e1x, e1y, e2x, e2y;
-    if (d.x === 1) { e1x = cx + off; e1y = cy - off; e2x = cx + off; e2y = cy + off; }
-    else if (d.x === -1) { e1x = cx - off; e1y = cy - off; e2x = cx - off; e2y = cy + off; }
-    else if (d.y === -1) { e1x = cx - off; e1y = cy - off; e2x = cx + off; e2y = cy - off; }
-    else { e1x = cx - off; e1y = cy + off; e2x = cx + off; e2y = cy + off; }
-    
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(e1x, e1y, size, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(e2x, e2y, size, 0, Math.PI * 2);
-    ctx.fill();
 }
 
 // ============================================================================
@@ -325,6 +286,7 @@ async function startGame() {
     await showCountdown();
     
     resetState();
+    createGrid();
     state.sessionStarted = true;
     incrementStat(GAME1_LS_KEYS.GAMES_PLAYED);
     state.running = true;

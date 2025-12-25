@@ -1,4 +1,4 @@
-<!-- pages/game1.html -->
+<!-- pages/game1.html - Snake game page -->
 <!-- Snake Game - A classic arcade game with arrow controls and difficulty levels -->
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game - PlayHub</title>
+    <!-- Global styles first, then page-specific -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/game1.css">
 </head>
 <body>
@@ -116,9 +119,9 @@
             </div>
         </div>
 
-        <!-- Game Canvas Area -->
+        <!-- Game Board Area (DOM-based grid) -->
         <div class="game-area-wrapper">
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div class="game-board" id="gameBoard"></div>
             <div class="pause-overlay" id="pauseOverlay">
                 <div class="pause-content">
                     <span class="pause-icon">⏸️</span>
@@ -183,6 +186,7 @@
 
     <script src="../js/storage.js"></script>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/page-transitions.js"></script>
     <script src="../js/game1.js"></script>
 </body>
 </html>

@@ -1,42 +1,21 @@
-/* css/login.css - Login page styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ============================================================================
+   login.css - Login & Register Page Styles
+   Page-specific styles only (common styles in style.css)
+   ============================================================================ */
 
+/* ============================================================================
+   LOGIN PAGE BODY OVERRIDE
+   ============================================================================ */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
 }
 
-body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-.darkmode-toggle {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    background: rgba(255,255,255,0.2);
-    border: none;
-    padding: 10px 16px;
-    border-radius: 999px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
-    backdrop-filter: blur(6px);
-}
-
-.darkmode-toggle:hover {
-    background: rgba(255,255,255,0.3);
-}
-
+/* ============================================================================
+   LOGIN CONTAINER
+   ============================================================================ */
 .login-container {
     background: rgba(255, 255, 255, 0.95);
     padding: 50px;
@@ -47,6 +26,7 @@ body.dark-mode {
     animation: slideUp 0.6s ease-out;
 }
 
+/* Login header */
 .login-header {
     text-align: center;
     margin-bottom: 40px;
@@ -65,6 +45,9 @@ body.dark-mode {
     font-size: 1.1rem;
 }
 
+/* ============================================================================
+   FORM ELEMENTS
+   ============================================================================ */
 .form-group {
     margin-bottom: 25px;
 }
@@ -92,6 +75,7 @@ body.dark-mode {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+/* Error messages */
 .error-message {
     color: #e74c3c;
     font-size: 0.9rem;
@@ -103,6 +87,9 @@ body.dark-mode {
     display: block;
 }
 
+/* ============================================================================
+   LOGIN BUTTON
+   ============================================================================ */
 .btn-login {
     width: 100%;
     padding: 15px;
@@ -126,6 +113,9 @@ body.dark-mode {
     transform: translateY(0);
 }
 
+/* ============================================================================
+   LOGIN FOOTER & LINKS
+   ============================================================================ */
 .login-footer {
     text-align: center;
     margin-top: 30px;
@@ -154,6 +144,96 @@ body.dark-mode {
     color: #667eea;
 }
 
+/* ============================================================================
+   PASSWORD STRENGTH BAR
+   ============================================================================ */
+.password-strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.strength-bar {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.strength-fill.weak { width: 25%; background: #e74c3c; }
+.strength-fill.fair { width: 50%; background: #f39c12; }
+.strength-fill.good { width: 75%; background: #3498db; }
+.strength-fill.strong { width: 100%; background: #27ae60; }
+
+.strength-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: right;
+}
+
+.strength-text.weak { color: #e74c3c; }
+.strength-text.fair { color: #f39c12; }
+.strength-text.good { color: #3498db; }
+.strength-text.strong { color: #27ae60; }
+
+/* ============================================================================
+   PASSWORD REQUIREMENTS LIST
+   ============================================================================ */
+.password-requirements {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.requirements-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.requirements-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.requirements-list li {
+    font-size: 0.85rem;
+    color: #666;
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.requirements-list li .req-icon {
+    font-weight: bold;
+    width: 16px;
+    text-align: center;
+}
+
+.requirements-list li.valid { color: #27ae60; }
+.requirements-list li.valid .req-icon { color: #27ae60; }
+.requirements-list li.invalid { color: #e74c3c; }
+.requirements-list li.invalid .req-icon { color: #e74c3c; }
+
+/* ============================================================================
+   DARK MODE OVERRIDES
+   ============================================================================ */
 body.dark-mode .login-container {
     background: rgba(17, 24, 39, 0.95);
     color: #e5e7eb;
@@ -175,6 +255,26 @@ body.dark-mode input {
     border: 1px solid rgba(255,255,255,0.2);
 }
 
+body.dark-mode .password-requirements {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .requirements-title {
+    color: #b0b0b0;
+}
+
+body.dark-mode .requirements-list li {
+    color: #999;
+}
+
+body.dark-mode .requirements-list li.valid { color: #27ae60; }
+body.dark-mode .requirements-list li.invalid { color: #e74c3c; }
+body.dark-mode .strength-bar { background: rgba(255, 255, 255, 0.1); }
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -186,16 +286,12 @@ body.dark-mode input {
     }
 }
 
+/* ============================================================================
+   LOGIN PAGE RESPONSIVE
+   ============================================================================ */
 @media (max-width: 480px) {
     body {
         padding: 15px;
-    }
-    
-    .darkmode-toggle {
-        top: 10px;
-        right: 10px;
-        padding: 8px 12px;
-        font-size: 0.85rem;
     }
     
     .login-container {
@@ -271,139 +367,4 @@ body.dark-mode input {
     .login-header h1 {
         font-size: 1.5rem;
     }
-}
-
-/* Password Strength Bar */
-.password-strength {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.strength-bar {
-    flex: 1;
-    height: 8px;
-    background: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.strength-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.strength-fill.weak {
-    width: 25%;
-    background: #e74c3c;
-}
-
-.strength-fill.fair {
-    width: 50%;
-    background: #f39c12;
-}
-
-.strength-fill.good {
-    width: 75%;
-    background: #3498db;
-}
-
-.strength-fill.strong {
-    width: 100%;
-    background: #27ae60;
-}
-
-.strength-text {
-    font-size: 0.8rem;
-    font-weight: 600;
-    min-width: 60px;
-    text-align: right;
-}
-
-.strength-text.weak { color: #e74c3c; }
-.strength-text.fair { color: #f39c12; }
-.strength-text.good { color: #3498db; }
-.strength-text.strong { color: #27ae60; }
-
-/* Password Requirements List */
-.password-requirements {
-    margin-top: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
-}
-
-.requirements-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.requirements-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.requirements-list li {
-    font-size: 0.85rem;
-    color: #666;
-    padding: 5px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: color 0.3s ease;
-}
-
-.requirements-list li .req-icon {
-    font-weight: bold;
-    width: 16px;
-    text-align: center;
-}
-
-.requirements-list li.valid {
-    color: #27ae60;
-}
-
-.requirements-list li.valid .req-icon {
-    color: #27ae60;
-}
-
-.requirements-list li.invalid {
-    color: #e74c3c;
-}
-
-.requirements-list li.invalid .req-icon {
-    color: #e74c3c;
-}
-
-/* Dark Mode Password Requirements */
-body.dark-mode .password-requirements {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .requirements-title {
-    color: #b0b0b0;
-}
-
-body.dark-mode .requirements-list li {
-    color: #999;
-}
-
-body.dark-mode .requirements-list li.valid {
-    color: #27ae60;
-}
-
-body.dark-mode .requirements-list li.invalid {
-    color: #e74c3c;
-}
-
-body.dark-mode .strength-bar {
-    background: rgba(255, 255, 255, 0.1);
 }

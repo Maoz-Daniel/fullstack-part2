@@ -1,10 +1,13 @@
-<!-- pages/game2.html -->
+<!-- pages/game2.html - Wordle game page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordle - PlayHub</title>
+    <!-- Global styles first, then page-specific -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/game2.css">
 </head>
 <body>
@@ -46,7 +49,6 @@
 
             <div style="display: flex; gap: 10px;">
                 <button class="btn-new-game" id="newGameBtn">New Game</button>
-                <button class="btn-back" onclick="window.location.href='games.html'">Back</button>
             </div>
         </div>
 
@@ -90,6 +92,7 @@
 
     <script src="../js/storage.js"></script>
     <script src="../js/darkmode.js"></script>
+    <script src="../js/page-transitions.js"></script>
     <script src="../js/game2.js"></script>
 </body>
 </html>

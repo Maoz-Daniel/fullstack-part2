@@ -1,97 +1,22 @@
-/* css/game1.css - Snake Game Styles */
-/* 
- * Styling for the Snake game page
- * Includes: navigation, game board, controls, animations, and responsive design
- */
+/* ============================================================================
+   game1.css - Snake Game Styles
+   Page-specific styles only (common styles in style.css)
+   ============================================================================ */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* ============================================================================
+   SNAKE BODY OVERRIDE
+   ============================================================================ */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
     height: 100vh;
-    color: #fff;
     overflow-x: hidden;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
 
-body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-/* Navigation */
-.game-nav {
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    flex-shrink: 0;
-}
-
-.nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.nav-brand {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    transition: all 0.3s ease;
-}
-
-.nav-brand:hover {
-    transform: translateY(-2px);
-    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-}
-
-.nav-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.btn-darkmode,
-.btn-back {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    padding: 6px 12px;
-    border-radius: 25px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.btn-back {
-    background: rgba(231, 76, 60, 0.9);
-}
-
-.btn-darkmode:hover,
-.btn-back:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Game Container */
+/* ============================================================================
+   GAME CONTAINER & HEADER
+   ============================================================================ */
 .game-container {
     max-width: 500px;
     margin: 0 auto;
@@ -373,13 +298,74 @@ body.dark-mode {
     display: flex;
 }
 
-#gameCanvas {
+/* Game Board (DOM-based grid) */
+.game-board {
+    display: grid;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     max-width: 100%;
-    height: auto;
+    overflow: hidden;
+}
+
+/* Grid Cells */
+.grid-cell {
+    position: relative;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
+}
+
+/* Food */
+.grid-cell.food {
+    background: radial-gradient(circle, #ef4444 40%, rgba(239, 68, 68, 0.3) 70%, transparent 100%);
+    border-radius: 50%;
+    animation: pulse-food 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-food {
+    from { transform: scale(0.85); }
+    to { transform: scale(1); }
+}
+
+/* Snake Head */
+.grid-cell.snake-head {
+    background: #4ade80;
+    border-radius: 6px;
+    position: relative;
+}
+
+/* Snake Eyes */
+.grid-cell.snake-head .eye {
+    position: absolute;
+    width: 20%;
+    height: 20%;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Eye positions based on direction */
+.grid-cell.snake-head.dir-right .eye.left { top: 20%; right: 15%; }
+.grid-cell.snake-head.dir-right .eye.right { bottom: 20%; right: 15%; }
+
+.grid-cell.snake-head.dir-left .eye.left { top: 20%; left: 15%; }
+.grid-cell.snake-head.dir-left .eye.right { bottom: 20%; left: 15%; }
+
+.grid-cell.snake-head.dir-up .eye.left { top: 15%; left: 20%; }
+.grid-cell.snake-head.dir-up .eye.right { top: 15%; right: 20%; }
+
+.grid-cell.snake-head.dir-down .eye.left { bottom: 15%; left: 20%; }
+.grid-cell.snake-head.dir-down .eye.right { bottom: 15%; right: 20%; }
+
+/* Snake Body */
+.grid-cell.snake-body {
+    background: #22c55e;
+    border-radius: 4px;
+}
+
+.grid-cell.snake-body.alt {
+    background: #16a34a;
 }
 
 /* Pause Overlay */
@@ -673,9 +659,7 @@ body.dark-mode {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    #gameCanvas {
-        width: 100% !important;
-        height: auto !important;
+    .game-board {
         max-width: 350px;
     }
     
@@ -734,7 +718,7 @@ body.dark-mode {
         gap: 10px;
     }
     
-    #gameCanvas {
+    .game-board {
         max-width: 300px;
     }
 }

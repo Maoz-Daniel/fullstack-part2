@@ -1,90 +1,22 @@
-/* css/game2.css - Wordle game styles continuation */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ============================================================================
+   game2.css - Wordle Game Styles
+   Page-specific styles only (common styles in style.css)
+   ============================================================================ */
 
+/* ============================================================================
+   WORDLE BODY OVERRIDE
+   ============================================================================ */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
     height: 100vh;
-    color: #fff;
     overflow-x: hidden;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
 
-body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-.game-nav {
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    flex-shrink: 0;
-}
-
-.nav-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.nav-brand {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.nav-brand:hover {
-    transform: translateY(-2px);
-    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-}
-
-.nav-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.btn-darkmode, .btn-back {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.btn-back {
-    background: rgba(231, 76, 60, 0.9);
-}
-
-.btn-darkmode:hover, .btn-back:hover {
-    transform: translateY(-2px);
-}
-
+/* ============================================================================
+   GAME CONTAINER & HEADER
+   ============================================================================ */
 .game-container {
     max-width: 500px;
     width: 100%;
@@ -96,6 +28,7 @@ body.dark-mode {
     gap: 10px;
     min-height: 0;
 }
+
 .game-header {
     text-align: center;
     flex-shrink: 0;
@@ -112,6 +45,9 @@ body.dark-mode {
     display: none;
 }
 
+/* ============================================================================
+   GAME CONTROLS & INFO
+   ============================================================================ */
 .game-controls {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
@@ -161,21 +97,9 @@ body.dark-mode {
     box-shadow: 0 5px 15px rgba(255,255,255,0.3);
 }
 
-.btn-back {
-    padding: 10px 20px;
-    background: rgba(231, 76, 60, 0.8);
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-.btn-back:hover {
-    background: rgba(231, 76, 60, 1);
-}
-
+/* ============================================================================
+   WORDLE BOARD
+   ============================================================================ */
 .wordle-board {
     display: flex;
     flex-direction: column;
@@ -208,6 +132,7 @@ body.dark-mode {
     transition: transform 0.1s ease, border-color 0.1s ease;
 }
 
+/* Cell states */
 .wordle-cell.filled {
     border-color: #565758;
     animation: cellPop 0.1s ease;
@@ -236,6 +161,9 @@ body.dark-mode {
     animation: shake 0.6s ease;
 }
 
+/* ============================================================================
+   KEYBOARD
+   ============================================================================ */
 .keyboard {
     background: transparent;
     padding: 0;
@@ -286,6 +214,7 @@ body.dark-mode {
     font-size: 0.65rem;
 }
 
+/* Key states */
 .key.correct {
     background: #538d4e;
     color: #fff;
@@ -301,6 +230,9 @@ body.dark-mode {
     color: #fff;
 }
 
+/* ============================================================================
+   MESSAGES
+   ============================================================================ */
 .message {
     text-align: center;
     padding: 15px;
@@ -328,6 +260,9 @@ body.dark-mode {
     background: rgba(52, 152, 219, 0.9);
 }
 
+/* ============================================================================
+   GAME OVER MODAL
+   ============================================================================ */
 .game-over-modal {
     display: none;
     position: fixed;
@@ -426,64 +361,40 @@ body.dark-mode {
     transform: scale(1.05);
 }
 
+/* ============================================================================
+   WORDLE ANIMATIONS
+   ============================================================================ */
 @keyframes cellPop {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
 
 @keyframes cellFlip {
-    0% {
-        transform: rotateX(0);
-    }
-    50% {
-        transform: rotateX(90deg);
-    }
-    100% {
-        transform: rotateX(0);
-    }
+    0% { transform: rotateX(0); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0); }
 }
 
 @keyframes shake {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    10%, 30%, 50%, 70%, 90% {
-        transform: translateX(-5px);
-    }
-    20%, 40%, 60%, 80% {
-        transform: translateX(5px);
-    }
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes modalSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
+/* ============================================================================
+   WORDLE RESPONSIVE
+   ============================================================================ */
 @media (max-width: 768px) {
     .wordle-cell {
         width: 50px;
@@ -526,15 +437,6 @@ body.dark-mode {
     
     .game-header h1 {
         font-size: 1.3rem;
-    }
-    
-    .nav-brand {
-        font-size: 1.3rem;
-    }
-    
-    .btn-darkmode, .btn-back {
-        padding: 5px 10px;
-        font-size: 0.75rem;
     }
 }
 
@@ -631,7 +533,7 @@ body.dark-mode {
     }
 }
 
-/* Very small screens - both dimensions constrained */
+/* Very small screens */
 @media (max-width: 360px), (max-height: 600px) {
     .wordle-cell {
         width: 40px;
@@ -686,9 +588,5 @@ body.dark-mode {
     .btn-new-game {
         padding: 6px 12px;
         font-size: 0.75rem;
-    }
-    
-    .nav-content {
-        padding: 0 10px;
     }
 }

@@ -1,33 +1,75 @@
-/* style.css - Main landing page styles */
+/* ============================================================================
+   style.css - Global Styles & Landing Page
+   Contains: Reset, typography, colors, navbar, buttons, dark mode
+   ============================================================================ */
+
+/* --- CSS Reset --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* --- Base Body Styles --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     color: #fff;
+    /* Page enter animation */
+    animation: pageEnter 0.3s ease-out;
 }
 
+/* --- Page Transition Animations --- */
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body.page-exit {
+    animation: pageExit 0.2s ease-in forwards;
+}
+
+@keyframes pageExit {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* --- Dark Mode --- */
 body.dark-mode {
-    background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: #e5e7eb;
 }
 
+/* ============================================================================
+   BUTTONS - Shared styles
+   ============================================================================ */
+
+/* Dark mode toggle - Fixed position for landing page */
 .darkmode-toggle {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
     position: fixed;
     top: 16px;
     right: 16px;
-    background: rgba(255,255,255,0.2);
-    border: none;
-    padding: 10px 16px;
-    border-radius: 999px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
     backdrop-filter: blur(6px);
 }
 
@@ -35,12 +77,54 @@ body.dark-mode {
     background: rgba(255,255,255,0.3);
 }
 
+/* Generic button styles */
+.btn {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.btn.danger {
+    background: #e74c3c;
+    color: #fff;
+}
+
+.btn.ghost {
+    background: #6b7280;
+    color: #fff;
+    border: 2px solid #6b7280;
+}
+
+.btn.ghost:hover {
+    background: #4b5563;
+    border-color: #4b5563;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+/* ============================================================================
+   LANDING PAGE SPECIFIC STYLES
+   ============================================================================ */
+
+/* Landing page container */
 .landing-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
+/* Hero section - main landing area */
 .hero-section {
     min-height: 80vh;
     display: flex;
@@ -57,14 +141,15 @@ body.dark-mode {
 
 .hero-title {
     font-size: 4rem;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 20px;
     letter-spacing: -1px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+    /* Matching gradient with navbar brand */
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd93d 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 4px 15px rgba(240, 147, 251, 0.3));
 }
 
 .hero-subtitle {
@@ -78,14 +163,12 @@ body.dark-mode {
     gap: 20px;
 }
 
-.btn {
+/* Landing page button overrides */
+.landing-container .btn {
     padding: 15px 40px;
     font-size: 1.1rem;
     text-decoration: none;
     border-radius: 50px;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    display: inline-block;
 }
 
 .btn-primary {
@@ -111,6 +194,7 @@ body.dark-mode {
     transform: translateY(-3px);
 }
 
+/* Floating card animation */
 .hero-animation {
     flex: 1;
     position: relative;
@@ -147,6 +231,7 @@ body.dark-mode {
     animation-delay: 1.5s;
 }
 
+/* Features section */
 .features-section {
     padding: 60px 0;
     animation: fadeIn 1s ease-out;
@@ -164,6 +249,7 @@ body.dark-mode {
     gap: 30px;
 }
 
+/* Feature cards */
 .feature-card {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
@@ -198,6 +284,9 @@ body.dark-mode {
     opacity: 0.9;
 }
 
+/* ============================================================================
+   ANIMATIONS - Shared keyframes
+   ============================================================================ */
 @keyframes slideInLeft {
     from {
         opacity: 0;
@@ -227,6 +316,9 @@ body.dark-mode {
     }
 }
 
+/* ============================================================================
+   LANDING PAGE RESPONSIVE
+   ============================================================================ */
 @media (max-width: 768px) {
     .landing-container {
         padding: 15px;
