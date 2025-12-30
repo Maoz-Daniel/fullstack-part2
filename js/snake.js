@@ -178,6 +178,16 @@ function spawnFood() { // place food in random position not occupied by snake
 
 function ensureFoodVisible() {
     if (!state.food) return spawnFood();
+    
+    if (state.food.x < 0 || state.food.x >= CONFIG.gridSize ||
+        state.food.y < 0 || state.food.y >= CONFIG.gridSize) {
+        return spawnFood();
+    }
+    
+    if (!state.cells[state.food.y]?.[state.food.x]) {
+        return spawnFood();
+    }
+    
     return true;
 }
 
