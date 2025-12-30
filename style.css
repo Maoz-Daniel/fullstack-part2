@@ -13,7 +13,12 @@
 /* --- Base Body Styles --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1.6px, transparent 0),
+        radial-gradient(circle at 11px 11px, rgba(0,0,0,0.12) 1.4px, transparent 0),
+        linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-size: 22px 22px, 22px 22px, auto;
+    background-attachment: fixed;
     min-height: 100vh;
     color: #fff;
     /* Page enter animation */
@@ -49,7 +54,12 @@ body.page-exit {
 
 /* --- Dark Mode --- */
 body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1.4px, transparent 0),
+        radial-gradient(circle at 11px 11px, rgba(0,0,0,0.18) 1.2px, transparent 0),
+        linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background-size: 22px 22px, 22px 22px, auto;
+    background-attachment: fixed;
     color: #e5e7eb;
 }
 

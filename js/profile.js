@@ -1,5 +1,5 @@
-﻿/**
- * Profile Module - PlayHub Gaming Portal
+/**
+ * Profile Module - FunZone Gaming Portal
  * @file profile.js
  * @description Manages user profile, statistics display, and account settings.
  * @requires storage.js
@@ -192,14 +192,22 @@
             return;
         }
 
-        els.recentTbody.innerHTML = recent.map(r => `
-            <tr>
-                <td>${r.game || "Game"}</td>
-                <td>${r.score ?? 0}</td>
-                <td>${formatDate(r.date)}</td>
-                <td>${r.difficulty || "--"}</td>
-            </tr>
-        `).join("");
+        els.recentTbody.innerHTML = recent.map(r => {
+            const difficulty = r.difficulty || "--";
+            const difficultyKey = String(difficulty).trim().toLowerCase();
+            const badgeClass = ["easy", "medium", "hard"].includes(difficultyKey)
+                ? `difficulty-badge difficulty-${difficultyKey}`
+                : "difficulty-badge";
+
+            return `
+                <tr>
+                    <td>${r.game || "Game"}</td>
+                    <td>${r.score ?? 0}</td>
+                    <td>${formatDate(r.date)}</td>
+                    <td><span class="${badgeClass}">${difficulty}</span></td>
+                </tr>
+            `;
+        }).join("");
     }
 
     // ============================================================================
@@ -222,7 +230,7 @@
         
         if (result.success) {
             if (els.saveBtn) {
-                els.saveBtn.textContent = "✓ Changed!";
+                els.saveBtn.textContent = "? Changed!";
                 els.saveBtn.style.background = "#27ae60";
                 setTimeout(() => {
                     els.saveBtn.textContent = "Change Username";
@@ -252,7 +260,7 @@
         
         const username = currentUsername();
         
-        // Reset Game 1
+        // Reset Snake
         Object.values(GAME1_LS_KEYS).forEach(key => {
             const fullKey = `${key}_${username}`;
             const defaultVal = key.includes("RESULTS") ? [] : 
@@ -260,7 +268,7 @@
             localStorage.setItem(fullKey, JSON.stringify(defaultVal));
         });
         
-        // Reset Game 2
+        // Reset Wordle
         Object.values(GAME2_LS_KEYS).forEach(key => {
             const fullKey = `${key}_${username}`;
             const defaultVal = key.includes("RESULTS") ? [] : 0;
@@ -299,3 +307,4 @@
         });
     });
 })();
+

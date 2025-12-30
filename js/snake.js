@@ -1,6 +1,6 @@
 /**
- * snake Game - PlayHub Gaming Portal
- * @file game1.js
+ * snake Game - FunZone Gaming Portal
+ * @file snake.js
  * @requires storage.js
  */
 
@@ -122,11 +122,10 @@ function createGrid() {
     board.innerHTML = "";
     state.cells = [];
     
-    const cellSize = CONFIG.boardSize / CONFIG.gridSize;
-    board.style.width = CONFIG.boardSize + "px";
-    board.style.height = CONFIG.boardSize + "px";
-    board.style.gridTemplateColumns = `repeat(${CONFIG.gridSize}, ${cellSize}px)`;
-    board.style.gridTemplateRows = `repeat(${CONFIG.gridSize}, ${cellSize}px)`;
+    board.style.width = "100%";
+    board.style.maxWidth = `${CONFIG.boardSize}px`;
+    board.style.gridTemplateColumns = `repeat(${CONFIG.gridSize}, 1fr)`;
+    board.style.gridTemplateRows = `repeat(${CONFIG.gridSize}, 1fr)`;
     
     for (let y = 0; y < CONFIG.gridSize; y++) {
         state.cells[y] = [];
@@ -156,15 +155,30 @@ function createSnake() {
     return snake;
 }
 
+function getEmptyCells() {
+    const occupied = new Set(state.snake.map(s => `${s.x},${s.y}`));
+    const empty = [];
+    for (let y = 0; y < CONFIG.gridSize; y++) {
+        for (let x = 0; x < CONFIG.gridSize; x++) {
+            if (!occupied.has(`${x},${y}`)) empty.push({ x, y });
+        }
+    }
+    return empty;
+}
+
 function spawnFood() { // place food in random position not occupied by snake
-    let pos; 
-    do {
-        pos = {
-            x: Math.floor(Math.random() * CONFIG.gridSize),
-            y: Math.floor(Math.random() * CONFIG.gridSize)
-        };
-    } while (state.snake.some(s => s.x === pos.x && s.y === pos.y)); //while collides with snake, try again
-    state.food = pos;
+    const empty = getEmptyCells();
+    if (empty.length === 0) {
+        state.food = null;
+        return false;
+    }
+    state.food = empty[Math.floor(Math.random() * empty.length)];
+    return true;
+}
+
+function ensureFoodVisible() {
+    if (!state.food) return spawnFood();
+    return true;
 }
 
 function moveSnake() {
@@ -188,20 +202,18 @@ function moveSnake() {
         if (newHead.y >= CONFIG.gridSize) newHead.y = 0;
     }
     
-    // self collision
-    for (let i = 0; i < state.snake.length - 1; i++) {
-        if (state.snake[i].x === newHead.x && state.snake[i].y === newHead.y) {
-            return false;
-        }
+    // self collision - check new head against entire current snake body
+    if (state.snake.some(seg => seg.x === newHead.x && seg.y === newHead.y)) {
+        return false;
     }
     
     state.snake.unshift(newHead); // add new head to front of snake
     
     // if food eaten
-    if (newHead.x === state.food.x && newHead.y === state.food.y) {
+    if (state.food && newHead.x === state.food.x && newHead.y === state.food.y) {
         state.score += settings.multiplier; // increase score
         updateDisplays(); 
-        spawnFood();
+        if (!spawnFood()) return false;
     } else {
         state.snake.pop(); // remove tail segment, beacuse we increased length only if food eaten (visually move snake)
     }
@@ -224,7 +236,7 @@ function render() {
     }
     
     // Render food
-    if (state.food) {
+    if (state.food && state.cells[state.food.y]?.[state.food.x]) {
         const foodCell = state.cells[state.food.y][state.food.x];
         foodCell.classList.add("food");
     }
@@ -257,6 +269,13 @@ function updateDisplays() {
 
 function updateBestDisplay() {
     if (els.bestPanel) els.bestPanel.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
+}
+
+function setDifficultyBadge(level) {
+    if (!els.diffEl) return;
+    els.diffEl.textContent = DIFFICULTY[level]?.label || "Medium";
+    els.diffEl.classList.remove("difficulty-easy", "difficulty-medium", "difficulty-hard");
+    els.diffEl.classList.add(`difficulty-${level}`);
 }
 
 // ============================================================================
@@ -298,7 +317,7 @@ async function startGame() {
     
     els.gameInfo.classList.add("active");
     els.wrapper.classList.add("active");
-    els.diffEl.textContent = DIFFICULTY[state.difficulty].label;
+    setDifficultyBadge(state.difficulty);
     updateDisplays();
     render();
     
@@ -307,6 +326,10 @@ async function startGame() {
 
 function gameLoop() {
     if (!state.running || state.paused) return;
+    if (!ensureFoodVisible()) {
+        endGame();
+        return;
+    }
     if (!moveSnake()) {
         endGame();
         return;
@@ -337,7 +360,7 @@ function endGame() {
         state.loopId = null;
     }
     
-    // Update stats
+    // update stats
     const best = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
     if (state.score > best) {
         saveStat(GAME1_LS_KEYS.BEST_SCORE, state.score);
@@ -363,6 +386,7 @@ function endGame() {
 }
 
 function showGameOver() {
+    // populate game over panel
     document.getElementById("finalScore").textContent = state.score;
     document.getElementById("finalLength").textContent = state.snake.length;
     document.getElementById("finalBestScore").textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
@@ -371,10 +395,13 @@ function showGameOver() {
     const badge = document.getElementById("newRecordBadge");
     badge.style.display = state.newRecord ? "block" : "none";
     
+
     els.gameOver.classList.add("active");
 }
 
 function restartGame() {
+
+    // reset and go back to difficulty selection
     els.gameOver.classList.remove("active");
     els.gameInfo.classList.remove("active");
     els.wrapper.classList.remove("active");
@@ -405,9 +432,9 @@ function handleKeyDown(e) {
         w: "up", W: "up", s: "down", S: "down", a: "left", A: "left", d: "right", D: "right"
     };
     
-    if (keyMap[e.key]) {
-        e.preventDefault();
-        changeDir(keyMap[e.key]);
+    if (keyMap[e.key]) { //if it's a direction key
+        e.preventDefault(); // prevent scrolling
+        changeDir(keyMap[e.key]); // change direction
     }
     
     if (e.key === " " && state.running) {
@@ -417,8 +444,8 @@ function handleKeyDown(e) {
 }
 
 function changeDir(newDir) {
-    if (!state.running || state.paused) return;
-    if (newDir !== OPPOSITES[state.dir]) {
+    if (!state.running || state.paused) return; 
+    if (newDir !== OPPOSITES[state.dir]) { // prevent reversing into self
         state.nextDir = newDir;
     }
 }
@@ -428,26 +455,27 @@ function changeDir(newDir) {
 // ============================================================================
 
 function initEvents() {
-    // Difficulty buttons
+    //  listen for difficulty selection, if chosen, set active and update state
     document.querySelectorAll(".difficulty-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".difficulty-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             state.difficulty = btn.dataset.difficulty;
+            setDifficultyBadge(state.difficulty);
         });
     });
     
-    els.startBtn.addEventListener("click", startGame);
-    document.addEventListener("keydown", handleKeyDown);
+    els.startBtn.addEventListener("click", startGame); 
+    document.addEventListener("keydown", handleKeyDown); 
     els.playAgain.addEventListener("click", restartGame);
-    els.backBtn.addEventListener("click", () => window.location.href = "games.html");
+    els.backBtn.addEventListener("click", () => window.location.href = "games.html"); // back to games list
     
-    // Mobile controls
-    document.querySelectorAll(".mobile-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            if (btn.dataset.direction) changeDir(btn.dataset.direction);
-        });
-    });
+    // mobile controls
+    // document.querySelectorAll(".mobile-btn").forEach(btn => {
+    //     btn.addEventListener("click", () => {
+    //         if (btn.dataset.direction) changeDir(btn.dataset.direction);
+    //     });
+    // });
 }
 
 function loadLastDifficulty() {
@@ -471,6 +499,7 @@ function init() {
     initEvents();
     loadLastDifficulty();
     updateBestDisplay();
+    setDifficultyBadge(state.difficulty);
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", init); // when DOM is ready, initialize

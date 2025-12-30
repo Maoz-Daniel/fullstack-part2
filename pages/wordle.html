@@ -1,19 +1,19 @@
-<!-- pages/game2.html - Wordle game page -->
+<!-- pages/wordle.html - Wordle game page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle - PlayHub</title>
+    <title>Wordle - FunZone</title>
     <!-- Global styles first, then page-specific -->
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../css/navbar.css">
-    <link rel="stylesheet" href="../css/game2.css">
+    <link rel="stylesheet" href="../css/wordle.css">
 </head>
 <body>
     <nav class="game-nav">
         <div class="nav-content">
-            <a class="nav-brand" href="games.html">PlayHub</a>
+            <a class="nav-brand" href="games.html">FunZone</a>
             <div class="nav-actions">
                 <button class="btn-darkmode" id="darkModeToggle" type="button">Dark mode</button>
                 <button class="btn-back" onclick="window.location.href='games.html'">Back to Games</button>
@@ -23,12 +23,11 @@
     <div class="game-container">
         <div class="game-header">
             <h1>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                <line x1="8" y1="7" x2="16" y2="7"/>
-                <line x1="8" y1="11" x2="16" y2="11"/>
-                <line x1="8" y1="15" x2="14" y2="15"/>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="4"/>
+                <path d="M8 8h2M12 8h2M16 8h0"/>
+                <path d="M8 12h4M14 12h2"/>
+                <path d="M8 16h2M12 16h2"/>
               </svg>
               Wordle
             </h1>
@@ -47,9 +46,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-new-game" id="newGameBtn">New Game</button>
-            </div>
+            <button class="btn-new-game" id="newGameBtn">New Game</button>
         </div>
 
         <div class="wordle-board" id="wordleBoard"></div>
@@ -93,6 +90,7 @@
     <script src="../js/storage.js"></script>
     <script src="../js/darkmode.js"></script>
     <script src="../js/page-transitions.js"></script>
-    <script src="../js/game2.js"></script>
+    <script src="../js/wordle.js"></script>
 </body>
 </html>
+

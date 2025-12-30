@@ -1,6 +1,6 @@
 /**
- * Wordle Game - PlayHub Gaming Portal
- * @file game2.js
+ * Wordle Game - FunZone Gaming Portal
+ * @file wordle.js
  * @description Word guessing game with statistics tracking.
  * @requires storage.js
  */
@@ -230,7 +230,8 @@ const state = {
 
 let els = {};
 
-function initElements() {
+// initElements: Caches frequently accessed DOM elements for later use.
+function initElements() { 
     els = {
         board: document.getElementById("wordleBoard"),
         keyboard: document.getElementById("keyboard"),
@@ -292,7 +293,7 @@ function isValidWord(word) {
 }
 
 function getCurrentWord() {
-    return state.board[state.row].map(c => c.letter).join("");
+    return state.board[state.row].map(c => c.letter).join(""); 
 }
 
 // ============================================================================
@@ -327,16 +328,16 @@ function createKeyboard() {
     els.keyboard.innerHTML = "";
     
     KEYBOARD_ROWS.forEach(row => {
-        const rowDiv = document.createElement("div");
+        const rowDiv = document.createElement("div"); // keyboard row
         rowDiv.className = "keyboard-row";
         
         row.forEach(key => {
-            const btn = document.createElement("button");
+            const btn = document.createElement("button"); // key button
             btn.className = "key";
             btn.textContent = key;
             btn.dataset.key = key;
             if (key === "ENTER" || key === "⌫") btn.classList.add("wide");
-            btn.addEventListener("click", () => handleKey(key));
+            btn.addEventListener("click", () => handleKey(key)); 
             rowDiv.appendChild(btn);
         });
         
@@ -344,17 +345,18 @@ function createKeyboard() {
     });
 }
 
-function updateTile(row, col, letter) {
+
+function updateTile(row, col, letter) { 
     const tile = document.querySelector(`.wordle-cell[data-row="${row}"][data-col="${col}"]`);
     if (tile) {
-        tile.textContent = letter;
+        tile.textContent = letter; // display letter
         tile.classList.toggle("filled", !!letter);
     }
     state.board[row][col].letter = letter;
 }
 
-function updateKeyboardKey(letter, newState) {
-    const key = document.querySelector(`.key[data-key="${letter}"]`);
+function updateKeyboardKey(letter, newState) { // updates key color/state
+    const key = document.querySelector(`.key[data-key="${letter}"]`); // find key button
     if (!key) return;
     
     const current = key.dataset.state;
@@ -389,7 +391,7 @@ function addLetter(letter) {
 }
 
 function deleteLetter() {
-    if (state.tile <= 0) return;
+    if (state.tile <= 0) return; 
     state.tile--;
     updateTile(state.row, state.tile, "");
 }
@@ -420,23 +422,23 @@ function submitGuess() {
 }
 
 function evaluateGuess(guess) {
-    const results = new Array(CONFIG.wordLength).fill("absent");
+    const results = new Array(CONFIG.wordLength).fill("absent"); // fisrst, all absent
     const targetLetters = state.target.split("");
     const guessLetters = guess.split("");
     
-    // Mark correct positions
-    guessLetters.forEach((letter, i) => {
-        if (letter === targetLetters[i]) {
+    // mark correct positions
+    guessLetters.forEach((letter, i) => { 
+        if (letter === targetLetters[i]) { // if correct, mark
             results[i] = "correct";
             targetLetters[i] = null;
         }
     });
     
-    // Mark present letters
+    // mark present letters
     guessLetters.forEach((letter, i) => {
-        if (results[i] === "correct") return;
+        if (results[i] === "correct") return; 
         const idx = targetLetters.indexOf(letter);
-        if (idx !== -1) {
+        if (idx !== -1) { // if present, mark
             results[i] = "present";
             targetLetters[idx] = null;
         }
@@ -448,15 +450,15 @@ function evaluateGuess(guess) {
 function revealWord(guess) {
     state.revealing = true;
     const results = evaluateGuess(guess);
-    const row = document.querySelector(`.wordle-row[data-row="${state.row}"]`);
-    const tiles = row.querySelectorAll(".wordle-cell");
+    const row = document.querySelector(`.wordle-row[data-row="${state.row}"]`);  // get current row
+    const tiles = row.querySelectorAll(".wordle-cell"); // get tiles in the row
     
-    tiles.forEach((tile, i) => {
+    tiles.forEach((tile, i) => { // reveal each tile with delay
         setTimeout(() => {
             tile.classList.add("flip");
-            setTimeout(() => {
-                tile.classList.add(results[i]);
-                updateKeyboardKey(guess[i], results[i]);
+            setTimeout(() => { 
+                tile.classList.add(results[i]); 
+                updateKeyboardKey(guess[i], results[i]); // update keyboard 
             }, 250);
         }, i * CONFIG.flipDelay);
     });

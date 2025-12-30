@@ -6,8 +6,8 @@
 /* --- Navbar Placeholder - Reserve space before load --- */
 #navbar-placeholder {
     min-height: 80px; /* Matches navbar height */
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
+    background: transparent;
+    backdrop-filter: blur(12px);
 }
 
 #navbar-placeholder:empty {
@@ -16,9 +16,11 @@
 
 /* --- Main Navbar --- */
 .navbar {
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    padding: 20px 0;
+    background: rgba(50, 54, 115, 0.7);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(180, 184, 198, 0.45);
+    box-shadow: 0 12px 30px rgba(6, 8, 16, 0.2);
+    padding: 18px 0;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -62,6 +64,10 @@
     filter: drop-shadow(0 0 12px rgba(240, 147, 251, 0.6));
 }
 
+.nav-brand::before {
+    content: "";
+}
+
 .nav-menu {
     display: flex;
     gap: 30px;
@@ -71,10 +77,11 @@
 .nav-link {
     color: #fff;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 1.1rem;
     transition: all 0.3s ease;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 14px 20px;
+    border-radius: 12px;
 }
 
 .nav-link:hover {
@@ -157,9 +164,11 @@
 
 /* --- Game Page Nav --- */
 .game-nav {
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    padding: 20px 0;
+    background: rgba(50, 54, 115, 0.7);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(180, 184, 198, 0.45);
+    box-shadow: 0 12px 30px rgba(6, 8, 16, 0.2);
+    padding: 18px 0;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -200,8 +209,8 @@
     }
     
     .nav-link {
-        padding: 6px 10px;
-        font-size: 0.85rem;
+        padding: 10px 14px;
+        font-size: 1rem;
     }
     
     .user-info {

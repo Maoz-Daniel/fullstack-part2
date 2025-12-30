@@ -1,5 +1,5 @@
-﻿/**
- * Leaderboard Module - PlayHub Gaming Portal
+/**
+ * Leaderboard Module - FunZone Gaming Portal
  * @file leaderboard.js
  * @description Displays sorted leaderboard rankings for all games.
  * @requires storage.js
@@ -27,7 +27,38 @@
     function formatDate(ts) {
         if (!ts) return "--";
         const d = new Date(ts);
-        return Number.isNaN(d.getTime()) ? "--" : `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+        if (Number.isNaN(d.getTime())) return "--";
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const year = d.getFullYear();
+        return `${day}.${month}.${year}`;
+    }
+
+    /**
+     * creates a color hue for an avatar
+     * @param {string} value - string to hash
+     * @returns {number} hue value
+     */
+    function avatarHue(value) {
+        let hash = 0;
+        for (let i = 0; i < value.length; i += 1) {
+            hash = (hash * 31 + value.charCodeAt(i)) % 360;
+        }
+        return hash;
+    }
+
+    /**
+     * renders a difficulty badge
+     * @param {string} difficulty - difficulty label
+     * @returns {string} HTML string
+     */
+    function renderDifficultyBadge(difficulty) {
+        const label = difficulty || "--";
+        const key = String(label).trim().toLowerCase();
+        const badgeClass = ["easy", "medium", "hard"].includes(key)
+            ? `difficulty-badge difficulty-${key}`
+            : "difficulty-badge";
+        return `<span class="${badgeClass}">${label}</span>`;
     }
 
     /**
@@ -55,16 +86,24 @@
      * @param {string} extraColumn - extra column value (difficulty/attempts)
      * @returns {string} HTML string
      */
-    function createRowHtml(row, rank, extraColumn) {
+    function createRowHtml(row, rank, extraColumn, extraType) {
+        const rankClass = rank === 1 ? "rank rank--1" :
+            rank === 2 ? "rank rank--2" :
+            rank === 3 ? "rank rank--3" : "rank";
+        const avatarHueValue = avatarHue(row.username || "");
+        const extraValue = extraType === "difficulty"
+            ? renderDifficultyBadge(extraColumn)
+            : `<span class="table-number">${extraColumn}</span>`;
+
         return `
             <div class="leaderboard-row">
-                <div class="rank">${rank}</div>
+                <div class="${rankClass}">${rank}</div>
                 <div class="player-info">
-                    <div class="player-avatar">${row.username.charAt(0).toUpperCase()}</div>
+                    <div class="player-avatar" style="--avatar-hue:${avatarHueValue}">${row.username.charAt(0).toUpperCase()}</div>
                     <div class="player-name">${row.username}</div>
                 </div>
-                <div class="games">${row.score}</div>
-                <div class="score">${extraColumn}</div>
+                <div class="games table-number">${row.score}</div>
+                <div class="score">${extraValue}</div>
                 <div class="date">${formatDate(row.date)}</div>
             </div>
         `;
@@ -145,12 +184,12 @@
         }
 
         content1El.innerHTML = rows
-            .map((row, idx) => createRowHtml(row, idx + 1, row.difficulty))
+            .map((row, idx) => createRowHtml(row, idx + 1, row.difficulty, "difficulty"))
             .join("");
     }
 
     
-    //renders Game 2 leaderboard
+    //renders Wordle leaderboard
     function renderGame2Leaderboard() {
         if (!content2El) return;
         
@@ -161,7 +200,7 @@
         }
 
         content2El.innerHTML = rows
-            .map((row, idx) => createRowHtml(row, idx + 1, row.attempts))
+            .map((row, idx) => createRowHtml(row, idx + 1, row.attempts, "attempts"))
             .join("");
     }
 
@@ -174,3 +213,4 @@
         renderGame2Leaderboard();
     });
 })();
+

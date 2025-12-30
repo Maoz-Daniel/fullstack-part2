@@ -1,5 +1,5 @@
 /**
- * games Dashboard Module - PlayHub Gaming Portal
+ * games Dashboard Module - FunZone Gaming Portal
  * @file games.js
  * @description handles the games dashboard with session validation and statistics.
  * @requires storage.js
@@ -70,6 +70,8 @@
         const g2Total = getGame2NumberForUser(GAME2_LS_KEYS.TOTAL_POINTS, username, 0);
         const g2Played = getGame2NumberForUser(GAME2_LS_KEYS.GAMES_PLAYED, username, 0);
         const g2Sessions = getGame2NumberForUser(GAME2_LS_KEYS.SESSIONS, username, 0);
+        const g2Wins = getGame2NumberForUser(GAME2_LS_KEYS.WINS, username, 0);
+        const g2BestStreak = getGame2NumberForUser(GAME2_LS_KEYS.BEST_STREAK, username, 0);
 
         // combined totals
         setText("totalGamesPlayed", g1Played + g2Played);
@@ -81,6 +83,13 @@
         setText("game1BestScore", g1Best || "--");
         setText("game1GamesPlayed", g1Played);
         setText("game1TotalScore", g1Total);
+
+        // game 2 specific
+        setText("wordlePlayed", g2Sessions);
+        setText("wordleWins", g2Wins);
+        const avgScore = g2Wins > 0 ? (g2Total / g2Wins).toFixed(1) : "--";
+        setText("wordleAvgScore", avgScore);
+        setText("wordleBestStreak", g2BestStreak);
     }
 
     // ============================================================================
@@ -97,3 +106,6 @@
         // Note: Logout button is now handled by navbar-loader.js
     });
 })();
+
+
+

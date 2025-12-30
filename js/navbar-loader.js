@@ -12,7 +12,7 @@
 <nav class="navbar" id="main-navbar">
     <div class="nav-content">
         <!-- Brand/Logo -->
-        <a class="nav-brand" href="games.html">PlayHub</a>
+        <a class="nav-brand" href="games.html">FunZone</a>
         
         <!-- Navigation menu -->
         <div class="nav-menu">
@@ -203,3 +203,4 @@
         loadNavbar();
     }
 })();
+

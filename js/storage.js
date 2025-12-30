@@ -1,5 +1,5 @@
 /**
- * Storage Module - PlayHub Gaming Portal
+ * Storage Module - FunZone Gaming Portal
  * @file storage.js
  * @description Central data persistence layer for the gaming portal.
  * Handles users, sessions, scores, and per-user game statistics.
@@ -12,7 +12,7 @@
 // CONFIGURATION
 // ============================================================================
 
-/** Storage keys for Game 1 (Snake) */
+/** Storage keys for Snake (Snake) */
 const GAME1_LS_KEYS = Object.freeze({ 
     BEST_SCORE: "game1_bestScore",
     TOTAL_POINTS: "game1_totalPoints",
@@ -23,7 +23,7 @@ const GAME1_LS_KEYS = Object.freeze({
     LAST_DIFFICULTY: "game1_lastDifficulty"
 });
 
-/** Storage keys for Game 2 (Wordle) */
+/** Storage keys for Wordle (Wordle) */
 const GAME2_LS_KEYS = Object.freeze({
     BEST_SCORE: "game2_bestScore",
     TOTAL_POINTS: "game2_totalPoints",
@@ -112,7 +112,7 @@ function initializeStorage() {
 }
 
 /**
- * Ensures default Game 1 stats exist for a user
+ * Ensures default Snake stats exist for a user
  * @param {string} username - Username
  */
 function ensureGame1DefaultsForUser(username) {
@@ -137,7 +137,7 @@ function ensureGame1DefaultsForUser(username) {
 }
 
 /**
- * Ensures default Game 2 stats exist for a user
+ * Ensures default Wordle stats exist for a user
  * @param {string} username - Username
  */
 function ensureGame2DefaultsForUser(username) {
@@ -408,7 +408,7 @@ function getTopScores(gameName, limit = 10) {
 // ============================================================================
 
 /**
- * Gets a numeric stat for Game 1
+ * Gets a numeric stat for Snake
  * @param {string} baseKey - Key from GAME1_LS_KEYS
  * @param {string} username - Username
  * @param {number} fallback - Default value
@@ -421,7 +421,7 @@ function getGame1NumberForUser(baseKey, username, fallback = 0) {
 }
 
 /**
- * Sets a numeric stat for Game 1
+ * Sets a numeric stat for Snake
  * @param {string} baseKey - Key from GAME1_LS_KEYS
  * @param {string} username - Username
  * @param {number} value - Value to set
@@ -431,7 +431,7 @@ function setGame1NumberForUser(baseKey, username, value) {
 }
 
 /**
- * Increments a numeric stat for Game 1
+ * Increments a numeric stat for Snake
  * @param {string} baseKey - Key from GAME1_LS_KEYS
  * @param {string} username - Username
  * @param {number} amount - Amount to add
@@ -445,7 +445,7 @@ function incrementGame1NumberForUser(baseKey, username, amount = 1) {
 }
 
 /**
- * Gets recent results for Game 1
+ * Gets recent results for Snake
  * @param {string} username - Username
  * @returns {Array} Recent results
  */
@@ -455,7 +455,7 @@ function getGame1RecentResultsForUser(username) {
 }
 
 /**
- * Saves recent results for Game 1
+ * Saves recent results for Snake
  * @param {string} username - Username
  * @param {Array} results - Results array
  */
@@ -464,7 +464,7 @@ function saveGame1RecentResultsForUser(username, results) {
 }
 
 /**
- * Gets a numeric stat for Game 2
+ * Gets a numeric stat for Wordle
  * @param {string} baseKey - Key from GAME2_LS_KEYS
  * @param {string} username - Username
  * @param {number} fallback - Default value
@@ -477,7 +477,7 @@ function getGame2NumberForUser(baseKey, username, fallback = 0) {
 }
 
 /**
- * Sets a numeric stat for Game 2
+ * Sets a numeric stat for Wordle
  * @param {string} baseKey - Key from GAME2_LS_KEYS
  * @param {string} username - Username
  * @param {number} value - Value to set
@@ -487,7 +487,7 @@ function setGame2NumberForUser(baseKey, username, value) {
 }
 
 /**
- * Increments a numeric stat for Game 2
+ * Increments a numeric stat for Wordle
  * @param {string} baseKey - Key from GAME2_LS_KEYS
  * @param {string} username - Username
  * @param {number} amount - Amount to add
@@ -501,7 +501,7 @@ function incrementGame2NumberForUser(baseKey, username, amount = 1) {
 }
 
 /**
- * Gets recent results for Game 2
+ * Gets recent results for Wordle
  * @param {string} username - Username
  * @returns {Array} Recent results
  */
@@ -511,7 +511,7 @@ function getGame2RecentResultsForUser(username) {
 }
 
 /**
- * Saves recent results for Game 2
+ * Saves recent results for Wordle
  * @param {string} username - Username
  * @param {Array} results - Results array
  */
@@ -529,3 +529,4 @@ if (_bootstrapUser && _bootstrapUser !== "Guest") {
     ensureGame1DefaultsForUser(_bootstrapUser);
     ensureGame2DefaultsForUser(_bootstrapUser);
 }
+
