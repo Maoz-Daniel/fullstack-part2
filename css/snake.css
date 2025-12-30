@@ -344,7 +344,7 @@ body {
     width: min(100%, 400px);
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    padding: 20px;
+    padding: 30px;
     box-sizing: border-box;
 }
 
