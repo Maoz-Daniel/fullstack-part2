@@ -7,42 +7,42 @@
    PROFILE CONTAINER & HEADER
    ============================================================================ */
 .profile-container {
-    max-width: 1200px;
+    max-width: 60em;
     margin: 0 auto;
-    padding: 48px 20px;
+    padding: 2.375em 1em;
 }
 
 .profile-header {
     background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(244, 246, 255, 0.92));
-    border-radius: 20px;
-    padding: 36px 40px;
-    margin-bottom: 32px;
+    border-radius: 1em;
+    padding: 1.8125em 2em;
+    margin-bottom: 1.625em;
     display: flex;
     align-items: center;
-    gap: 32px;
-    box-shadow: 0 18px 40px rgba(8, 10, 18, 0.18);
-    border: 1px solid rgba(102, 126, 234, 0.08);
+    gap: 1.625em;
+    box-shadow: 0 0.875em 2em rgba(8, 10, 18, 0.18);
+    border: 0.0625em solid rgba(102, 126, 234, 0.08);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .profile-header:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 22px 50px rgba(8, 10, 18, 0.22);
+    transform: translateY(-0.125em);
+    box-shadow: 0 1.125em 2.5em rgba(8, 10, 18, 0.22);
 }
 
 /* Profile avatar */
 .profile-avatar-large {
-    width: 120px;
-    height: 120px;
+    width: 4em;
+    height: 4em;
     border-radius: 50%;
     background: linear-gradient(135deg, #7b8cff 0%, #6a4fb1 55%, #4a2e7a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #fff;
-    box-shadow: 0 8px 22px rgba(60, 70, 140, 0.45);
+    box-shadow: 0 0.375em 1.125em rgba(60, 70, 140, 0.45);
     flex-shrink: 0;
 }
 
@@ -52,54 +52,54 @@
 }
 
 .profile-username {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: #667eea;
-    margin-bottom: 10px;
+    margin-bottom: 0.5em;
 }
 
 .profile-email {
-    font-size: 1.1rem;
+    font-size: 0.88rem;
     color: #666;
-    margin-bottom: 15px;
+    margin-bottom: 0.75em;
 }
 
 /* Profile actions */
 .profile-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.625em;
 }
 
 .control-row {
     display: flex;
-    gap: 10px;
+    gap: 0.5em;
     flex-wrap: wrap;
 }
 
 .control-row input {
     flex: 1;
-    min-width: 200px;
+    min-width: 10em;
 }
 
 input[type="text"] {
     background: rgba(255,255,255,0.9);
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 1rem;
+    border: 0.0625em solid rgba(0,0,0,0.1);
+    border-radius: 0.5em;
+    padding: 0.5em 0.625em;
+    font-size: 0.8rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input[type="text"]:focus {
     outline: none;
     border-color: rgba(102, 126, 234, 0.6);
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    box-shadow: 0 0 0 0.1875em rgba(102, 126, 234, 0.15);
 }
 
 /* Profile meta info */
 .profile-meta {
     display: flex;
-    gap: 24px;
+    gap: 1.5em;
     flex-wrap: wrap;
 }
 
@@ -118,35 +118,35 @@ input[type="text"]:focus {
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-    margin-bottom: 34px;
+    gap: 1.375em;
+    margin-bottom: 2.125em;
 }
 
 .stat-card {
     background: rgba(255,255,255,0.95);
-    border-radius: 15px;
-    padding: 30px 26px;
+    border-radius: 0.9375em;
+    padding: 1.875em 1.625em;
     text-align: center;
-    box-shadow: 0 12px 28px rgba(8, 10, 18, 0.14);
-    border: 1px solid rgba(102, 126, 234, 0.08);
+    box-shadow: 0 0.75em 1.75em rgba(8, 10, 18, 0.14);
+    border: 0.0625em solid rgba(102, 126, 234, 0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 30px rgba(8, 10, 18, 0.18);
+    transform: translateY(-0.375em);
+    box-shadow: 0 1em 1.875em rgba(8, 10, 18, 0.18);
 }
 
 .stat-icon {
-    font-size: 3.4rem;
-    margin-bottom: 14px;
+    font-size: 1.5rem;
+    margin-bottom: 0.5em;
 }
 
 .stat-icon svg {
     stroke: #667eea;
     transition: all 0.3s ease;
-    width: 38px;
-    height: 38px;
+    width: 1.5em;
+    height: 1.5em;
 }
 
 .stat-card:hover .stat-icon svg {
@@ -158,7 +158,7 @@ input[type="text"]:focus {
     font-size: 2.5rem;
     font-weight: 800;
     color: #5f6fd6;
-    margin-bottom: 12px;
+    margin-bottom: 0.75em;
 }
 
 .stat-card .stat-value#totalSessionsCard {
@@ -175,38 +175,38 @@ input[type="text"]:focus {
    ============================================================================ */
 .achievements-section {
     background: rgba(255,255,255,0.95);
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-radius: 1.25em;
+    padding: 1.875em;
+    margin-bottom: 1.875em;
+    box-shadow: 0 0.625em 1.875em rgba(0,0,0,0.2);
 }
 
 .section-title {
     font-size: 2rem;
     color: #667eea;
-    margin-bottom: 22px;
+    margin-bottom: 1.375em;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.625em;
 }
 
 .achievements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(12.5em, 1fr));
+    gap: 1.25em;
 }
 
 .achievement-card {
     background: #f8f9fa;
-    border-radius: 15px;
-    padding: 20px;
+    border-radius: 0.9375em;
+    padding: 1.25em;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .achievement-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(8, 10, 18, 0.12);
+    transform: translateY(-0.25em);
+    box-shadow: 0 0.75em 1.5em rgba(8, 10, 18, 0.12);
 }
 
 .achievement-card.unlocked {
@@ -220,13 +220,13 @@ input[type="text"]:focus {
 }
 
 .achievement-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
+    font-size: 2rem;
+    margin-bottom: 0.5em;
 }
 
 .achievement-name {
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 0.3125em;
 }
 
 .achievement-description {
@@ -239,22 +239,22 @@ input[type="text"]:focus {
    ============================================================================ */
 .recent-games {
     background: rgba(255,255,255,0.95);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 12px 28px rgba(8, 10, 18, 0.18);
-    margin-bottom: 32px;
+    border-radius: 1.25em;
+    padding: 1.875em;
+    box-shadow: 0 0.75em 1.75em rgba(8, 10, 18, 0.18);
+    margin-bottom: 2em;
 }
 
 .games-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0.9375em;
 }
 
 .game-item {
     background: #f8f9fa;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 0.625em;
+    padding: 1.25em;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -262,14 +262,14 @@ input[type="text"]:focus {
 }
 
 .game-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateX(0.3125em);
+    box-shadow: 0 0.3125em 0.9375em rgba(0,0,0,0.1);
 }
 
 .game-item-info {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 0.9375em;
 }
 
 .game-item-icon {
@@ -278,7 +278,7 @@ input[type="text"]:focus {
 
 .game-item-details h4 {
     color: #667eea;
-    margin-bottom: 5px;
+    margin-bottom: 0.3125em;
 }
 
 .game-item-details p {
@@ -307,8 +307,8 @@ input[type="text"]:focus {
 .results-table th,
 .results-table td {
     text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75em;
+    border-bottom: 0.0625em solid #e5e7eb;
     color: #475569;
 }
 
@@ -316,7 +316,7 @@ input[type="text"]:focus {
     background: rgba(102, 126, 234, 0.08);
     font-weight: 700;
     color: #4c5fd1;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.0125em;
 }
 
 .results-table tbody tr:nth-child(even) {
@@ -340,14 +340,14 @@ input[type="text"]:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 72px;
-    padding: 4px 10px;
-    border-radius: 999px;
+    min-width: 4.5em;
+    padding: 0.25em 0.625em;
+    border-radius: 62.4375em;
     font-size: 0.8rem;
     font-weight: 700;
     color: #1f2937;
     background: rgba(99, 102, 241, 0.12);
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    border: 0.0625em solid rgba(99, 102, 241, 0.2);
 }
 
 .difficulty-badge.difficulty-easy {
@@ -373,8 +373,8 @@ input[type="text"]:focus {
 }
 
 .profile-actions .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(8, 10, 18, 0.12);
+    transform: translateY(-0.125em);
+    box-shadow: 0 0.625em 1.25em rgba(8, 10, 18, 0.12);
 }
 
 .profile-actions .btn.danger {
@@ -392,17 +392,17 @@ input[type="text"]:focus {
    ============================================================================ */
 .toast-notification {
     position: fixed;
-    bottom: 20px;
+    bottom: 1.25em;
     left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    padding: 15px 30px;
-    border-radius: 10px;
+    transform: translateX(-50%) translateY(6.25em);
+    padding: 0.9375em 1.875em;
+    border-radius: 0.625em;
     color: #fff;
     font-weight: 600;
     z-index: 9999;
     opacity: 0;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 0.3125em 1.25em rgba(0,0,0,0.3);
 }
 
 .toast-notification.show {
@@ -417,27 +417,27 @@ input[type="text"]:focus {
 /* ============================================================================
    PROFILE PAGE RESPONSIVE
    ============================================================================ */
-@media (max-width: 968px) {
+@media (max-width: 60.5em) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48em) {
     .profile-container {
-        padding: 20px 15px;
+        padding: 1.25em 0.9375em;
     }
     
     .profile-header {
         flex-direction: column;
         text-align: center;
-        padding: 25px 20px;
-        gap: 20px;
+        padding: 1.5625em 1.25em;
+        gap: 1.25em;
     }
     
     .profile-avatar-large {
-        width: 80px;
-        height: 80px;
+        width: 5em;
+        height: 5em;
         font-size: 2rem;
     }
     
@@ -451,7 +451,7 @@ input[type="text"]:focus {
     
     .profile-meta {
         justify-content: center;
-        gap: 15px;
+        gap: 0.9375em;
         flex-direction: column;
     }
     
@@ -474,11 +474,11 @@ input[type="text"]:focus {
     
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 0.9375em;
     }
     
     .stat-card {
-        padding: 20px;
+        padding: 1.25em;
     }
     
     .stat-card .stat-value {
@@ -491,8 +491,8 @@ input[type="text"]:focus {
     
     .achievements-section,
     .recent-games {
-        padding: 20px 15px;
-        border-radius: 15px;
+        padding: 1.25em 0.9375em;
+        border-radius: 0.9375em;
     }
     
     .section-title {
@@ -501,11 +501,11 @@ input[type="text"]:focus {
     
     .achievements-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 0.75em;
     }
     
     .achievement-card {
-        padding: 15px 10px;
+        padding: 0.9375em 0.625em;
     }
     
     .achievement-icon {
@@ -523,8 +523,8 @@ input[type="text"]:focus {
     .game-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
-        padding: 15px;
+        gap: 0.625em;
+        padding: 0.9375em;
     }
     
     .game-item-score {
@@ -533,30 +533,30 @@ input[type="text"]:focus {
     
     .results-table th,
     .results-table td {
-        padding: 8px 6px;
+        padding: 0.5em 0.375em;
         font-size: 0.85rem;
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40em) {
     .stats-grid {
         grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 25em) {
     .profile-container {
-        padding: 15px 10px;
+        padding: 0.9375em 0.625em;
     }
     
     .profile-header {
-        padding: 20px 15px;
-        border-radius: 15px;
+        padding: 1.25em 0.9375em;
+        border-radius: 0.9375em;
     }
     
     .profile-avatar-large {
-        width: 60px;
-        height: 60px;
+        width: 3.75em;
+        height: 3.75em;
         font-size: 1.5rem;
     }
     
@@ -569,7 +569,7 @@ input[type="text"]:focus {
     }
     
     .stat-card {
-        padding: 15px;
+        padding: 0.9375em;
     }
     
     .stat-card .stat-value {
@@ -582,16 +582,16 @@ input[type="text"]:focus {
     
     .achievements-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 0.5em;
     }
     
     .achievement-card {
-        padding: 12px 8px;
+        padding: 0.75em 0.5em;
     }
     
     .achievement-icon {
         font-size: 1.5rem;
-        margin-bottom: 5px;
+        margin-bottom: 0.3125em;
     }
     
     .achievement-name {

@@ -10,7 +10,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 1.25em;
 }
 
 /* ============================================================================
@@ -18,68 +18,68 @@ body {
    ============================================================================ */
 .login-container {
     background: rgba(255, 255, 255, 0.95);
-    padding: 50px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    padding: 2.5em;
+    border-radius: 1em;
+    box-shadow: 0 1em 3em rgba(0,0,0,0.3);
     width: 100%;
-    max-width: 450px;
+    max-width: 22.5em;
     animation: slideUp 0.6s ease-out;
 }
 
 /* Login header */
 .login-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 2em;
 }
 
 .login-header h1 {
     color: #667eea;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    letter-spacing: -0.5px;
+    font-size: 2rem;
+    margin-bottom: 0.5em;
+    letter-spacing: -0.025em;
     font-weight: 700;
 }
 
 .login-header p {
     color: #666;
-    font-size: 1.1rem;
+    font-size: 0.88rem;
 }
 
 /* ============================================================================
    FORM ELEMENTS
    ============================================================================ */
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 1.25em;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 0.375em;
     color: #333;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.8rem;
 }
 
 .form-group input {
     width: 100%;
-    padding: 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 1rem;
+    padding: 0.75em;
+    border: 0.125em solid #e0e0e0;
+    border-radius: 0.5em;
+    font-size: 0.8rem;
     transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 0.1875em rgba(102, 126, 234, 0.1);
 }
 
 /* Error messages */
 .error-message {
     color: #e74c3c;
     font-size: 0.9rem;
-    margin-top: 5px;
+    margin-top: 0.3125em;
     display: none;
 }
 
@@ -92,21 +92,21 @@ body {
    ============================================================================ */
 .btn-login {
     width: 100%;
-    padding: 15px;
+    padding: 0.75em;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
+    border-radius: 0.5em;
+    font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 10px;
+    margin-top: 0.625em;
 }
 
 .btn-login:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    transform: translateY(-0.125em);
+    box-shadow: 0 0.625em 1.5625em rgba(102, 126, 234, 0.3);
 }
 
 .btn-login:active {
@@ -118,7 +118,7 @@ body {
    ============================================================================ */
 .login-footer {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 1.875em;
     color: #666;
 }
 
@@ -135,7 +135,7 @@ body {
 .back-link {
     display: block;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 1.25em;
     color: #666;
     text-decoration: none;
 }
@@ -150,22 +150,22 @@ body {
 .password-strength {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 0.625em;
+    margin-top: 0.625em;
 }
 
 .strength-bar {
     flex: 1;
-    height: 8px;
+    height: 0.5em;
     background: #e0e0e0;
-    border-radius: 4px;
+    border-radius: 0.25em;
     overflow: hidden;
 }
 
 .strength-fill {
     height: 100%;
     width: 0%;
-    border-radius: 4px;
+    border-radius: 0.25em;
     transition: all 0.3s ease;
 }
 
@@ -177,7 +177,7 @@ body {
 .strength-text {
     font-size: 0.8rem;
     font-weight: 600;
-    min-width: 60px;
+    min-width: 3.75em;
     text-align: right;
 }
 
@@ -190,18 +190,18 @@ body {
    PASSWORD REQUIREMENTS LIST
    ============================================================================ */
 .password-requirements {
-    margin-top: 15px;
-    padding: 15px;
+    margin-top: 0.9375em;
+    padding: 0.9375em;
     background: #f8f9fa;
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
+    border-radius: 0.625em;
+    border: 0.0625em solid #e0e0e0;
 }
 
 .requirements-title {
     font-size: 0.85rem;
     font-weight: 600;
     color: #555;
-    margin-bottom: 10px;
+    margin-bottom: 0.625em;
 }
 
 .requirements-list {
@@ -213,16 +213,16 @@ body {
 .requirements-list li {
     font-size: 0.85rem;
     color: #666;
-    padding: 5px 0;
+    padding: 0.3125em 0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5em;
     transition: color 0.3s ease;
 }
 
 .requirements-list li .req-icon {
     font-weight: bold;
-    width: 16px;
+    width: 1em;
     text-align: center;
 }
 
@@ -237,7 +237,7 @@ body {
 body.dark-mode .login-container {
     background: rgba(17, 24, 39, 0.95);
     color: #e5e7eb;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 1.25em 3.75em rgba(0,0,0,0.5);
 }
 
 body.dark-mode .login-header h1,
@@ -252,7 +252,7 @@ body.dark-mode .back-link {
 body.dark-mode input {
     background: rgba(255,255,255,0.1);
     color: #e5e7eb;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 0.0625em solid rgba(255,255,255,0.2);
 }
 
 body.dark-mode .password-requirements {
@@ -278,7 +278,7 @@ body.dark-mode .strength-bar { background: rgba(255, 255, 255, 0.1); }
 @keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(1.875em);
     }
     to {
         opacity: 1;
@@ -289,18 +289,18 @@ body.dark-mode .strength-bar { background: rgba(255, 255, 255, 0.1); }
 /* ============================================================================
    LOGIN PAGE RESPONSIVE
    ============================================================================ */
-@media (max-width: 480px) {
+@media (max-width: 30em) {
     body {
-        padding: 15px;
+        padding: 0.9375em;
     }
     
     .login-container {
-        padding: 25px 20px;
-        border-radius: 15px;
+        padding: 1.5625em 1.25em;
+        border-radius: 0.9375em;
     }
     
     .login-header {
-        margin-bottom: 25px;
+        margin-bottom: 1.5625em;
     }
     
     .login-header h1 {
@@ -312,41 +312,41 @@ body.dark-mode .strength-bar { background: rgba(255, 255, 255, 0.1); }
     }
     
     .form-group {
-        margin-bottom: 18px;
+        margin-bottom: 1.125em;
     }
     
     .form-group label {
         font-size: 0.9rem;
-        margin-bottom: 6px;
+        margin-bottom: 0.375em;
     }
     
     .form-group input {
-        padding: 12px;
+        padding: 0.75em;
         font-size: 0.95rem;
     }
     
     .btn-login {
-        padding: 12px;
+        padding: 0.75em;
         font-size: 1rem;
     }
     
     .login-footer {
-        margin-top: 20px;
+        margin-top: 1.25em;
         font-size: 0.9rem;
     }
     
     .password-strength {
-        gap: 8px;
+        gap: 0.5em;
     }
     
     .strength-text {
-        min-width: 50px;
+        min-width: 3.125em;
         font-size: 0.75rem;
     }
     
     .password-requirements {
-        padding: 12px;
-        margin-top: 12px;
+        padding: 0.75em;
+        margin-top: 0.75em;
     }
     
     .requirements-title {
@@ -355,13 +355,13 @@ body.dark-mode .strength-bar { background: rgba(255, 255, 255, 0.1); }
     
     .requirements-list li {
         font-size: 0.8rem;
-        padding: 4px 0;
+        padding: 0.25em 0;
     }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 22.5em) {
     .login-container {
-        padding: 20px 15px;
+        padding: 1.25em 0.9375em;
     }
     
     .login-header h1 {

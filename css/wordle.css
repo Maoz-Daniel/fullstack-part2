@@ -18,34 +18,34 @@ body {
    GAME CONTAINER & HEADER
    ============================================================================ */
 .game-container {
-    max-width: 900px;
+    max-width: 45em;
     width: 100%;
     margin: 0 auto;
-    padding: 24px 20px 32px;
+    padding: 1.1875em 1em 1.625em;
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0.8125em;
     min-height: 0;
 }
 
 .game-header {
     text-align: center;
     flex-shrink: 0;
-    padding: 6px 0 4px;
+    padding: 0.3125em 0 0.1875em;
 }
 
 .game-header h1 {
-    font-size: 2rem;
-    margin-bottom: 6px;
+    font-size: 1.6rem;
+    margin-bottom: 0.3125em;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 0.5em;
 }
 
 .game-header p {
-    font-size: 1rem;
+    font-size: 0.8rem;
     opacity: 0.9;
 }
 
@@ -53,57 +53,57 @@ body {
    GAME CONTROLS & INFO
    ============================================================================ */
 .game-controls {
-    backdrop-filter: blur(10px);
-    padding: 6px 0;
+    backdrop-filter: blur(0.625em);
+    padding: 0.3125em 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 0.625em;
     flex-shrink: 0;
 }
 
 .game-info {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 0.625em;
 }
 
 .info-box {
     text-align: center;
     background: rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 10px 16px;
-    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 0.625em;
+    padding: 0.5em 0.8125em;
+    border: 0.0625em solid rgba(255,255,255,0.16);
 }
 
 .info-value {
-    font-size: 1.6rem;
+    font-size: 1.28rem;
     font-weight: 800;
 }
 
 .info-label {
-    font-size: 0.75rem;
+    font-size: 0.6rem;
     opacity: 0.8;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.025em;
 }
 
 .btn-new-game {
-    padding: 12px 24px;
+    padding: 0.625em 1.1875em;
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
     color: #fff;
     border: none;
-    border-radius: 25px;
-    font-size: 0.9rem;
+    border-radius: 1.25em;
+    font-size: 0.72rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .btn-new-game:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(102, 126, 234, 0.28);
+    transform: translateY(-0.125em);
+    box-shadow: 0 0.5em 1.125em rgba(102, 126, 234, 0.28);
 }
 
 /* ============================================================================
@@ -112,26 +112,26 @@ body {
 .wordle-board {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.3125em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    padding: 16px 0;
+    padding: 1em 0;
     background: rgba(32, 38, 82, 0.18);
-    border-radius: 18px;
+    border-radius: 1.125em;
 }
 
 .wordle-row {
     display: flex;
-    gap: 5px;
+    gap: 0.3125em;
     justify-content: center;
 }
 
 .wordle-cell {
-    width: 52px;
-    height: 52px;
-    border: 2px solid rgba(255,255,255,0.18);
-    border-radius: 8px;
+    width: 3.25em;
+    height: 3.25em;
+    border: 0.125em solid rgba(255,255,255,0.18);
+    border-radius: 0.5em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -180,17 +180,17 @@ body {
    ============================================================================ */
 .keyboard {
     background: rgba(32, 38, 82, 0.16);
-    padding: 12px 8px 8px;
-    border-radius: 18px;
+    padding: 0.75em 0.5em 0.5em;
+    border-radius: 1.125em;
     flex-shrink: 0;
     margin-top: auto;
 }
 
 .keyboard-row {
     display: flex;
-    gap: 5px;
+    gap: 0.3125em;
     justify-content: center;
-    margin-bottom: 6px;
+    margin-bottom: 0.375em;
 }
 
 .keyboard-row:last-child {
@@ -198,12 +198,12 @@ body {
 }
 
 .key {
-    min-width: 30px;
-    height: 50px;
-    padding: 0 8px;
+    min-width: 1.875em;
+    height: 3.125em;
+    padding: 0 0.5em;
     background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 8px;
+    border: 0.0625em solid rgba(255,255,255,0.2);
+    border-radius: 0.5em;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -213,7 +213,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 0.125em 0.375em rgba(15, 23, 42, 0.18);
 }
 
 .key:hover {
@@ -225,7 +225,7 @@ body {
 }
 
 .key.wide {
-    min-width: 50px;
+    min-width: 3.125em;
     font-size: 0.65rem;
 }
 
@@ -253,9 +253,9 @@ body {
    ============================================================================ */
 .message {
     text-align: center;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 8px;
+    padding: 0.9375em;
+    border-radius: 0.625em;
+    margin-top: 0.5em;
     font-weight: 600;
     font-size: 1.1rem;
     display: none;
@@ -300,37 +300,37 @@ body {
 
 .modal-content {
     background: #fff;
-    padding: 50px;
-    border-radius: 20px;
+    padding: 3.125em;
+    border-radius: 1.25em;
     text-align: center;
-    max-width: 500px;
+    max-width: 31.25em;
     animation: modalSlideUp 0.5s ease;
 }
 
 .modal-content h2 {
     color: #667eea;
     font-size: 2.5rem;
-    margin-bottom: 20px;
+    margin-bottom: 1.25em;
 }
 
 .modal-content p {
     color: #666;
     font-size: 1.2rem;
-    margin-bottom: 20px;
+    margin-bottom: 1.25em;
 }
 
 .word-reveal {
     font-size: 2.5rem;
     font-weight: 700;
     color: #667eea;
-    margin: 20px 0;
-    letter-spacing: 5px;
+    margin: 1.25em 0;
+    letter-spacing: 0.3125em;
 }
 
 .modal-stats {
     display: flex;
     justify-content: space-around;
-    margin: 30px 0;
+    margin: 1.875em 0;
 }
 
 .modal-stat {
@@ -346,19 +346,19 @@ body {
 .modal-stat-label {
     font-size: 0.9rem;
     color: #999;
-    margin-top: 5px;
+    margin-top: 0.3125em;
 }
 
 .modal-buttons {
     display: flex;
-    gap: 15px;
+    gap: 0.9375em;
     justify-content: center;
 }
 
 .btn-modal {
-    padding: 15px 30px;
+    padding: 0.9375em 1.875em;
     border: none;
-    border-radius: 25px;
+    border-radius: 1.5625em;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -396,27 +396,27 @@ body {
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-0.3125em); }
+    20%, 40%, 60%, 80% { transform: translateX(0.3125em); }
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
+    from { opacity: 0; transform: translateY(-1.25em); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(50px); }
+    from { opacity: 0; transform: translateY(3.125em); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================================
    WORDLE RESPONSIVE
    ============================================================================ */
-@media (max-width: 768px) {
+@media (max-width: 48em) {
     .game-container {
-        padding: 16px 14px 24px;
-        gap: 12px;
+        padding: 1em 0.875em 1.5em;
+        gap: 0.75em;
     }
 
     .game-header h1 {
@@ -428,84 +428,84 @@ body {
     }
 
     .wordle-cell {
-        width: 50px;
-        height: 50px;
+        width: 3.125em;
+        height: 3.125em;
         font-size: 1.6rem;
     }
     
     .wordle-row {
-        gap: 5px;
+        gap: 0.3125em;
     }
     
     .wordle-board {
-        gap: 5px;
-        padding: 8px 0;
+        gap: 0.3125em;
+        padding: 0.5em 0;
     }
     
     .key {
-        min-width: 28px;
-        height: 48px;
+        min-width: 1.75em;
+        height: 3em;
         font-size: 0.7rem;
-        padding: 0 5px;
+        padding: 0 0.3125em;
     }
     
     .key.wide {
-        min-width: 48px;
+        min-width: 3em;
         font-size: 0.6rem;
     }
     
     .keyboard-row {
-        gap: 4px;
+        gap: 0.25em;
     }
     
     .game-controls {
-        padding: 10px 12px;
+        padding: 0.625em 0.75em;
     }
 
     .game-info {
-        gap: 10px;
+        gap: 0.625em;
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 25em) {
     .wordle-cell {
-        width: 44px;
-        height: 44px;
+        width: 2.75em;
+        height: 2.75em;
         font-size: 1.4rem;
     }
     
     .wordle-row {
-        gap: 4px;
+        gap: 0.25em;
     }
     
     .wordle-board {
-        gap: 4px;
-        padding: 5px 0;
+        gap: 0.25em;
+        padding: 0.3125em 0;
     }
     
     .keyboard-row {
-        gap: 3px;
+        gap: 0.1875em;
     }
     
     .key {
-        min-width: 24px;
-        height: 44px;
+        min-width: 1.5em;
+        height: 2.75em;
         font-size: 0.65rem;
-        padding: 0 3px;
+        padding: 0 0.1875em;
     }
     
     .key.wide {
-        min-width: 40px;
+        min-width: 2.5em;
         font-size: 0.55rem;
     }
     
     .game-container {
-        padding: 10px 8px 16px;
-        gap: 8px;
+        padding: 0.625em 0.5em 1em;
+        gap: 0.5em;
     }
     
     .game-controls {
-        padding: 8px 10px;
+        padding: 0.5em 0.625em;
     }
     
     .info-value {
@@ -517,38 +517,38 @@ body {
     }
     
     .btn-new-game {
-        padding: 8px 14px;
+        padding: 0.5em 0.875em;
         font-size: 0.8rem;
     }
 }
 
-@media (max-height: 700px) {
+@media (max-height: 43.75em) {
     .wordle-cell {
-        width: 46px;
-        height: 46px;
+        width: 2.875em;
+        height: 2.875em;
         font-size: 1.5rem;
     }
     
     .wordle-board {
-        gap: 4px;
-        padding: 5px 0;
+        gap: 0.25em;
+        padding: 0.3125em 0;
     }
     
     .wordle-row {
-        gap: 4px;
+        gap: 0.25em;
     }
     
     .key {
-        height: 44px;
+        height: 2.75em;
     }
     
     .keyboard-row {
-        margin-bottom: 4px;
+        margin-bottom: 0.25em;
     }
     
     .game-container {
-        gap: 8px;
-        padding: 12px 15px 16px;
+        gap: 0.5em;
+        padding: 0.75em 0.9375em 1em;
     }
     
     .game-header h1 {
@@ -556,47 +556,47 @@ body {
     }
     
     .game-controls {
-        padding: 10px 12px;
+        padding: 0.625em 0.75em;
     }
 }
 
 /* Very small screens */
-@media (max-width: 360px), (max-height: 600px) {
+@media (max-width: 22.5em), (max-height: 37.5em) {
     .wordle-cell {
-        width: 40px;
-        height: 40px;
+        width: 2.5em;
+        height: 2.5em;
         font-size: 1.3rem;
     }
     
     .wordle-board {
-        gap: 3px;
-        padding: 4px 0;
+        gap: 0.1875em;
+        padding: 0.25em 0;
     }
     
     .wordle-row {
-        gap: 3px;
+        gap: 0.1875em;
     }
     
     .key {
-        min-width: 22px;
-        height: 40px;
+        min-width: 1.375em;
+        height: 2.5em;
         font-size: 0.6rem;
-        padding: 0 2px;
+        padding: 0 0.125em;
     }
     
     .key.wide {
-        min-width: 36px;
+        min-width: 2.25em;
         font-size: 0.5rem;
     }
     
     .keyboard-row {
-        gap: 2px;
-        margin-bottom: 3px;
+        gap: 0.125em;
+        margin-bottom: 0.1875em;
     }
     
     .game-container {
-        gap: 5px;
-        padding: 5px 5px 10px;
+        gap: 0.3125em;
+        padding: 0.3125em 0.3125em 0.625em;
     }
     
     .game-header h1 {
@@ -604,8 +604,8 @@ body {
     }
     
     .game-controls {
-        padding: 5px 8px;
-        gap: 8px;
+        padding: 0.3125em 0.5em;
+        gap: 0.5em;
     }
     
     .info-value {
@@ -613,7 +613,7 @@ body {
     }
     
     .btn-new-game {
-        padding: 6px 12px;
+        padding: 0.375em 0.75em;
         font-size: 0.75rem;
     }
 }
