@@ -37,6 +37,7 @@
         if (avatarEl) avatarEl.textContent = initial;
     }
 
+    
     /**
      * Renders game statistics for both games
      * @param {string} username - Current username

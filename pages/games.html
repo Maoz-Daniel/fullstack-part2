@@ -4,19 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+  
   <title>Games - FunZone</title>
   <!-- Global styles first, then page-specific -->
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../css/navbar.css">
   <link rel="stylesheet" href="../css/games.css">
-  
-  <script src="../js/storage.js"></script>
-  <script src="../js/auth-guard.js"></script>
-  <script src="../js/navbar-loader.js"></script>
 </head>
+
 <body>
   <!-- Navbar loaded dynamically -->
   <div id="navbar-placeholder"></div>
@@ -26,6 +21,7 @@
       <h1>Welcome back, <span id="welcomeUsername">Player</span>!</h1>
       <p>Choose a game and challenge yourself</p>
 
+      <!-- stats -->
       <div class="user-stats">
         <div class="stat-item">
           <span class="stat-value" id="totalGamesPlayed">0</span>
@@ -42,6 +38,7 @@
       </div>
     </div>
 
+    <!-- Games Grid -->
     <div class="games-grid">
       <div class="game-card" id="game1Card">
         <div class="game-media game-media--snake" aria-hidden="true"></div>
@@ -92,7 +89,7 @@
         </div>
         <button class="btn-play" onclick="window.location.href='wordle.html'">Play Now</button>
       </div>
-
+      <!-- Coming Soon Games -->
       <div class="game-card coming-soon">
         <span class="coming-soon-badge">Coming Soon</span>
         <div class="game-media game-media--target" aria-hidden="true"></div>
@@ -163,6 +160,10 @@
     </div>
   </div>
 
+  <!-- js files we need-->
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/navbar-loader.js"></script>
   <script src="../js/darkmode.js"></script>
   <script src="../js/page-transitions.js"></script>
   <script src="../js/games.js"></script>

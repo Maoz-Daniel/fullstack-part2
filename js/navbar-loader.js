@@ -44,7 +44,6 @@
 
         // Determine path prefix based on page location
         const isInPages = window.location.pathname.includes("/pages/");
-        const basePath = isInPages ? "../" : "";
         
         // Fix href paths based on current location
         let html = NAVBAR_HTML;

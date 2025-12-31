@@ -22,8 +22,8 @@
         const link = e.target.closest("a"); //
         
         if (!link) return;
-        if (link.target === "_blank") return; 
-        if (e.ctrlKey || e.metaKey) return; 
+        if (link.target === "_blank") return; // allow new tab
+        if (e.ctrlKey || e.metaKey) return; // allow new tab/window
         
         const href = link.getAttribute("href"); //get href
         if (!href) return;

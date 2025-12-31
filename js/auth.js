@@ -313,6 +313,7 @@ if (document.readyState === 'loading') {
         checkExistingSession();
         initLoginForm();
         initRegisterForm();
+
     });
 } else {
     // DOM already loaded

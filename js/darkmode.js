@@ -25,10 +25,7 @@
 
     darkModeToggle.addEventListener("click", toggleDarkMode); // attach click event
   }
-
-  /**
-   * Toggle dark mode state
-   */
+// toggle dark mode state
   function toggleDarkMode() {
     const body = document.body;
     const darkModeToggle = document.getElementById("darkModeToggle"); // button element

@@ -178,7 +178,7 @@ function spawnFood() { // place food in random position not occupied by snake
 
 function ensureFoodVisible() {
     if (!state.food) return spawnFood();
-    
+    // check if food is out of bounds or on invalid cell
     if (state.food.x < 0 || state.food.x >= CONFIG.gridSize ||
         state.food.y < 0 || state.food.y >= CONFIG.gridSize) {
         return spawnFood();
@@ -281,7 +281,7 @@ function updateBestDisplay() {
     if (els.bestPanel) els.bestPanel.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
 }
 
-function setDifficultyBadge(level) {
+function setDifficultyBadge(level) { // show label and color for current difficulty
     if (!els.diffEl) return;
     els.diffEl.textContent = DIFFICULTY[level]?.label || "Medium";
     els.diffEl.classList.remove("difficulty-easy", "difficulty-medium", "difficulty-hard");

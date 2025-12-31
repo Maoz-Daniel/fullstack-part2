@@ -74,9 +74,6 @@ function userKey(baseKey, username) {
     return `${baseKey}_${username}`;
 }
 
-// aliases for backward compatibility
-const getGame1Key = userKey;
-const getGame2Key = userKey;
 
 // ============================================================================
 // INITIALIZATION
@@ -109,7 +106,7 @@ function ensureGame1DefaultsForUser(username) {
         { key: GAME1_LS_KEYS.RECENT_RESULTS, value: [] },
         { key: GAME1_LS_KEYS.LAST_DIFFICULTY, value: "medium" }
     ];
-
+    // set defaults if not present for all keys in defaults
     defaults.forEach(({ key, value }) => {
         const fullKey = userKey(key, username);
         if (localStorage.getItem(fullKey) === null) {
@@ -132,7 +129,7 @@ function ensureGame2DefaultsForUser(username) {
         { key: GAME2_LS_KEYS.CURRENT_STREAK, value: 0 },
         { key: GAME2_LS_KEYS.BEST_STREAK, value: 0 }
     ];
-
+    // set defaults if not present for all keys in defaults
     defaults.forEach(({ key, value }) => {
         const fullKey = userKey(key, username);
         if (localStorage.getItem(fullKey) === null) {
@@ -298,7 +295,7 @@ function changeUsername(oldUsername, newUsername) {
         "profile_displayName",
         "profile_memberSince"
     ];
-    
+    // For each key, move data from old username to new username in localStorage
     keysToMigrate.forEach(baseKey => {
         const oldKey = userKey(baseKey, oldUsername);
         const newKey = userKey(baseKey, newUsername);

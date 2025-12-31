@@ -20,16 +20,12 @@
         return true;
     }
 
-    /**
-     * Shows page content (removes CSS visibility:hidden)
-     */
+    // Shows page content (removes CSS visibility:hidden)
     function showPage() {
         document.body.style.visibility = "visible";
     }
 
-    /**
-     * Hides page and redirects to login
-     */
+    // Hides page and redirects to login
     function hideAndRedirect() {
         document.body.style.visibility = "hidden";
         window.location.replace("login.html");
@@ -43,13 +39,8 @@
     });
 
     // Auth check on back/forward navigation (catches bfcache)
-    let pageShown = false;
     window.addEventListener("pageshow", (e) => {
-        if (!pageShown && !e.persisted) {
-            pageShown = true;
-            return;
-        }
-        if (!getCurrentSession()) {
+        if (!getCurrentSession() && e.persisted) {
             hideAndRedirect();
         }
     });

@@ -4,18 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+
   <title>Profile - FunZone</title>
   <!-- Global styles first, then page-specific -->
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../css/navbar.css">
   <link rel="stylesheet" href="../css/profile.css">
-  
-  <script src="../js/storage.js"></script>
-  <script src="../js/auth-guard.js"></script>
-  <script src="../js/navbar-loader.js"></script>
 </head>
 <body>
   <!-- Navbar loaded dynamically -->
@@ -43,7 +37,7 @@
         </div>
       </div>
     </section>
-
+    <!-- Stats Section -->
     <section class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon">
@@ -51,6 +45,7 @@
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
           </svg>
         </div>
+        <!--snake stats-->
         <div class="stat-value" id="best-game1">0</div>
         <div class="stat-label">Best score (Snake)</div>
       </div>
@@ -71,6 +66,8 @@
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
           </svg>
         </div>
+
+        <!--wordle stats-->
         <div class="stat-value" id="best-game2">0</div>
         <div class="stat-label">Best score (Wordle)</div>
       </div>
@@ -92,6 +89,8 @@
             <path d="M8 12h8M12 8v8"/>
           </svg>
         </div>
+
+        <!--general stats-->
         <div class="stat-value" id="games-played">0</div>
         <div class="stat-label">Games played</div>
       </div>
@@ -126,7 +125,10 @@
       </div>
     </section>
   </main>
-
+  <!-- js files we need-->
+  <script src="../js/storage.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/navbar-loader.js"></script>
   <script src="../js/darkmode.js"></script>
   <script src="../js/page-transitions.js"></script>
   <script src="../js/profile.js"></script>
