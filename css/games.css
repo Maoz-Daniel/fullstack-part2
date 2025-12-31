@@ -3,22 +3,25 @@
    Page-specific styles only (common styles in style.css)
    ============================================================================ */
 
+/* Auth Protection: Hide until JS validates session */
+body { visibility: hidden; }
+
 /* ============================================================================
    GAMES CONTAINER & WELCOME SECTION
    ============================================================================ */
 .games-container {
-    max-width: 60em;
+    max-width: min(60em, 95vw);
     margin: 0 auto;
-    padding: 2em 1em;
+    padding: clamp(1em, 3vw, 2em) clamp(0.75em, 2vw, 1.5em);
 }
 
 .welcome-section {
     text-align: center;
-    margin-bottom: 2.5em;
+    margin-bottom: clamp(1.5em, 4vw, 2.5em);
 }
 
 .welcome-section h1 {
-    font-size: 2.4rem;
+    font-size: clamp(1.5rem, 4vw, 2.4rem);
     margin-bottom: 0.5em;
 }
 
@@ -26,27 +29,27 @@
 .user-stats {
     display: flex;
     justify-content: center;
-    gap: 2em;
-    margin-top: 1.5em;
+    gap: clamp(0.75em, 2vw, 2em);
+    margin-top: clamp(1em, 2vw, 1.5em);
     flex-wrap: wrap;
 }
 
 .stat-item {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(0.625em);
-    padding: 1em 1.5em;
+    padding: clamp(0.75em, 2vw, 1em) clamp(1em, 2vw, 1.5em);
     border-radius: 0.75em;
     border: 0.0625em solid rgba(255,255,255,0.2);
 }
 
 .stat-value {
-    font-size: 1.6rem;
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
     font-weight: 700;
     display: block;
 }
 
 .stat-label {
-    font-size: 0.72rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.72rem);
     opacity: 0.8;
     margin-top: 0.25em;
 }
@@ -56,15 +59,15 @@
    ============================================================================ */
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
-    gap: 1.5em;
-    margin-top: 2em;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18em), 1fr));
+    gap: clamp(1em, 2vw, 1.5em);
+    margin-top: clamp(1.25em, 3vw, 2em);
 }
 
 .game-card {
     background: rgba(255,255,255,0.95);
     border-radius: 1em;
-    padding: 1.5em;
+    padding: clamp(1em, 2vw, 1.5em);
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -158,13 +161,13 @@
 
 .game-card h3 {
     color: #667eea;
-    font-size: 1.8rem;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
     margin-bottom: 0.9375em;
 }
 
 .game-card p {
     color: #666;
-    font-size: 1rem;
+    font-size: clamp(0.85rem, 2vw, 1rem);
     margin-bottom: 1.25em;
     line-height: 1.6;
 }
@@ -173,9 +176,9 @@
 .game-stats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1em;
-    margin-top: 1.25em;
-    padding-top: 1.25em;
+    gap: clamp(0.5em, 2vw, 1em);
+    margin-top: clamp(0.75em, 2vw, 1.25em);
+    padding-top: clamp(0.75em, 2vw, 1.25em);
     border-top: 0.125em solid #f0f0f0;
 }
 
@@ -184,13 +187,13 @@
 }
 
 .game-stat-value {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
     font-weight: 700;
     color: #667eea;
 }
 
 .game-stat-label {
-    font-size: 0.8rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
     color: #999;
     margin-top: 0.3125em;
 }

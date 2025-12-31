@@ -1,18 +1,17 @@
 /**
- * Leaderboard Module - FunZone Gaming Portal
- * @file leaderboard.js
- * @description Displays sorted leaderboard rankings for all games.
+ * Leaderboard Module
+ * @module leaderboard
+ * @description Displays sorted leaderboard rankings for all games
  * @requires storage.js
+ * @requires auth-guard.js
  */
 
 (function() {
     "use strict";
 
-    // ============================================================================
-    // DOM REFERENCES
-    // ============================================================================
-
+    /** @type {HTMLElement} Snake leaderboard container */
     const content1El = document.querySelector("#leaderboard1Content");
+    /** @type {HTMLElement} Wordle leaderboard container */
     const content2El = document.querySelector("#leaderboard2Content");
 
     // ============================================================================
@@ -204,11 +203,9 @@
             .join("");
     }
 
-    // ============================================================================
-    // INITIALIZATION
-    // ============================================================================
-
+    // Initialize on DOM ready (auth handled by auth-guard.js)
     document.addEventListener("DOMContentLoaded", () => {
+        if (!getCurrentSession()) return;
         renderGame1Leaderboard();
         renderGame2Leaderboard();
     });

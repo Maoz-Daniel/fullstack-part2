@@ -12,6 +12,7 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    visibility: hidden;
 }
 
 /* ============================================================================
@@ -198,8 +199,9 @@ body {
 }
 
 .key {
-    min-width: 1.875em;
-    height: 3.125em;
+    min-width: 2em;
+    max-width: 4em;
+    height: 3.8em;
     padding: 0 0.5em;
     background: rgba(255,255,255,0.18);
     border: 0.0625em solid rgba(255,255,255,0.2);
@@ -214,6 +216,7 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 0.125em 0.375em rgba(15, 23, 42, 0.18);
+    flex:1;
 }
 
 .key:hover {
@@ -225,6 +228,7 @@ body {
 }
 
 .key.wide {
+    flex:1.5;
     min-width: 3.125em;
     font-size: 0.65rem;
 }

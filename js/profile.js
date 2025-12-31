@@ -1,17 +1,15 @@
 /**
- * Profile Module - FunZone Gaming Portal
- * @file profile.js
- * @description Manages user profile, statistics display, and account settings.
+ * Profile Module
+ * @module profile
+ * @description Manages user profile, statistics display, and account settings
  * @requires storage.js
+ * @requires auth-guard.js
  */
 
 (function() {
     "use strict";
 
-    // ============================================================================
-    // DOM CACHE
-    // ============================================================================
-
+    /** @type {Object} DOM element cache */
     let els = {};
 
     /**
@@ -279,26 +277,18 @@
         showToast("All progress has been reset.", "info");
     }
 
-    // ============================================================================
-    // INITIALIZATION
-    // ============================================================================
-
+    // Initialize on DOM ready (auth handled by auth-guard.js)
     document.addEventListener("DOMContentLoaded", () => {
         initElements();
         
         const username = currentUsername();
-        if (username === "Guest") {
-            window.location.href = "login.html";
-            return;
-        }
+        if (username === "Guest" || !getCurrentSession()) return;
         
         ensureGame1DefaultsForUser(username);
         ensureGame2DefaultsForUser(username);
-        
         renderHeader(username);
         renderStats(username);
 
-        // Bind events
         els.saveBtn?.addEventListener("click", () => onChangeUsername(username));
         els.signOutBtn?.addEventListener("click", onSignOut);
         els.resetBtn?.addEventListener("click", resetProgress);

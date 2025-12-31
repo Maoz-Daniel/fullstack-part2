@@ -5,7 +5,7 @@
 
 /* --- Navbar Placeholder - Reserve space before load --- */
 #navbar-placeholder {
-    min-height: 5em; /* Matches navbar height */
+    min-height: clamp(3.5em, 8vw, 5em);
     background: transparent;
     backdrop-filter: blur(0.75em);
 }
@@ -20,23 +20,23 @@
     backdrop-filter: blur(0.875em);
     border-bottom: 0.0625em solid rgba(180, 184, 198, 0.45);
     box-shadow: 0 0.75em 1.875em rgba(6, 8, 16, 0.2);
-    padding: 1.125em 0;
+    padding: clamp(0.625em, 2vw, 1.125em) 0;
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 .nav-content {
-    max-width: 75em;
+    max-width: min(75em, 95vw);
     margin: 0 auto;
-    padding: 0 1.25em;
+    padding: 0 clamp(0.75em, 2vw, 1.25em);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .nav-brand {
-    font-size: 1.8rem;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
     font-weight: 800;
     text-decoration: none;
     letter-spacing: -0.0312em;
@@ -70,7 +70,7 @@
 
 .nav-menu {
     display: flex;
-    gap: 1.875em;
+    gap: clamp(0.5em, 2vw, 1.875em);
     align-items: center;
 }
 
@@ -78,9 +78,9 @@
     color: #fff;
     text-decoration: none;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
     transition: all 0.3s ease;
-    padding: 0.875em 1.25em;
+    padding: clamp(0.5em, 1.5vw, 0.875em) clamp(0.625em, 1.5vw, 1.25em);
     border-radius: 0.75em;
 }
 
@@ -92,31 +92,32 @@
 .user-info {
     display: flex;
     align-items: center;
-    gap: 0.9375em;
+    gap: clamp(0.5em, 1.5vw, 0.9375em);
 }
 
 .user-avatar {
-    width: 2.5em;
-    height: 2.5em;
+    width: clamp(2em, 4vw, 2.5em);
+    height: clamp(2em, 4vw, 2.5em);
     border-radius: 50%;
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
 }
 
 /* --- Navbar Buttons --- */
 .btn-darkmode {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     border: none;
-    padding: 0.625em 1.25em;
+    padding: clamp(0.4em, 1vw, 0.625em) clamp(0.75em, 2vw, 1.25em);
     border-radius: 1.25em;
     color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
 }
 
 .btn-darkmode:hover {
@@ -127,12 +128,13 @@
 .btn-logout {
     background: rgba(231, 76, 60, 0.8);
     border: none;
-    padding: 0.625em 1.25em;
+    padding: clamp(0.4em, 1vw, 0.625em) clamp(0.75em, 2vw, 1.25em);
     border-radius: 1.25em;
     color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
 }
 
 .btn-logout:hover {
@@ -142,12 +144,13 @@
 .btn-back {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
-    padding: 0.625em 1.25em;
+    padding: clamp(0.4em, 1vw, 0.625em) clamp(0.75em, 2vw, 1.25em);
     border-radius: 1.25em;
     color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
     text-decoration: none;
     display: none;
 }
@@ -168,15 +171,16 @@
     backdrop-filter: blur(0.875em);
     border-bottom: 0.0625em solid rgba(180, 184, 198, 0.45);
     box-shadow: 0 0.75em 1.875em rgba(6, 8, 16, 0.2);
-    padding: 1.125em 0;
+    padding: clamp(0.5em, 1.5vh, 0.875em) 0;
     position: sticky;
     top: 0;
     z-index: 1000;
+    flex-shrink: 0;
 }
 
 .game-nav .nav-actions {
     display: flex;
-    gap: 0.9375em;
+    gap: clamp(0.5em, 1.5vw, 0.9375em);
     align-items: center;
 }
 

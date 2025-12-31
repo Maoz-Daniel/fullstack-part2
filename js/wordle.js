@@ -1,15 +1,14 @@
 /**
- * Wordle Game - FunZone Gaming Portal
- * @file wordle.js
- * @description Word guessing game with statistics tracking.
+ * Wordle Game Module
+ * @module wordle
+ * @description Word guessing game with statistics tracking
  * @requires storage.js
+ * @requires auth-guard.js
  */
 
 "use strict";
 
-// ============================================================================
-// WORD LIST
-// ============================================================================
+/** @constant {string[]} Available 5-letter words */
 
 const WORDS = [
     "about", "above", "abuse", "actor", "acute", "admit", "adopt", "adult", "after", "again",
@@ -617,11 +616,11 @@ function initEvents() {
     els.againBtn.addEventListener("click", startNewGame);
 }
 
-// ============================================================================
-// INITIALIZATION
-// ============================================================================
-
+/**
+ * Initializes the Wordle game (auth handled by auth-guard.js)
+ */
 function init() {
+    if (!getCurrentSession()) return;
     ensureGame2DefaultsForUser(username);
     initElements();
     initEvents();

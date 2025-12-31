@@ -178,21 +178,26 @@
     }
 
     /**
-     * Initialize logout button in navbar
+     * Initialize logout button in navbar.
+     * Uses window.location.replace() instead of .href to prevent
+     * the user from using the back button to return to protected pages.
+     * The replace() method replaces the current history entry,
+     * so the protected page won't be in the browser's history stack.
      */
     function initLogoutButton() {
         const logoutBtn = document.getElementById("logoutBtn");
         if (!logoutBtn) return;
 
         logoutBtn.addEventListener("click", function() {
-            // Check if logout function exists from storage.js
+            // Clear the session from storage
             if (typeof clearCurrentSession === "function") {
                 clearCurrentSession();
             } else {
                 // Fallback: clear session manually
                 sessionStorage.removeItem("currentSession");
             }
-            window.location.href = "login.html";
+            // Use replace() to prevent back-button returning to protected page
+            window.location.replace("login.html");
         });
     }
 

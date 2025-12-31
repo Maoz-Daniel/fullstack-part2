@@ -3,14 +3,14 @@
  * @file page-transitions.js
  */
 
-"use strict";
+"use strict"; // all variables must be declared with var, let, or const
 
 (function() {
-    /**
-     * Initialize page transitions
-     */
+    
+    // initialize page transition handlers
     function init() {
-        // Intercept all internal link clicks
+
+        // intercept all internal link clicks
         document.addEventListener("click", handleLinkClick);
     }
 
@@ -19,30 +19,30 @@
      * @param {Event} e - Click event
      */
     function handleLinkClick(e) {
-        const link = e.target.closest("a");
+        const link = e.target.closest("a"); //
         
         if (!link) return;
-        if (link.target === "_blank") return;
-        if (e.ctrlKey || e.metaKey) return;
+        if (link.target === "_blank") return; 
+        if (e.ctrlKey || e.metaKey) return; 
         
-        const href = link.getAttribute("href");
+        const href = link.getAttribute("href"); //get href
         if (!href) return;
-        if (href.startsWith("#") || href.startsWith("javascript:")) return;
+        if (href.startsWith("#") || href.startsWith("javascript:")) return; // ignore anchors and JS links
         if (href.startsWith("http") && !href.includes(window.location.host)) return;
 
-        // Prevent default navigation
+        // prevent default navigation
         e.preventDefault();
 
-        // Animate out
+        // animate out
         document.body.classList.add("page-exit");
 
-        // Navigate after animation completes
+        // navigate after animation completes
         setTimeout(() => {
             window.location.href = href;
         }, 200);
     }
 
-    // Initialize when DOM is ready
+    // initialize when DOM is ready
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {

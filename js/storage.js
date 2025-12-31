@@ -12,7 +12,7 @@
 // CONFIGURATION
 // ============================================================================
 
-/** Storage keys for Snake (Snake) */
+//storage keys for Snake 
 const GAME1_LS_KEYS = Object.freeze({ 
     BEST_SCORE: "game1_bestScore",
     TOTAL_POINTS: "game1_totalPoints",
@@ -23,7 +23,7 @@ const GAME1_LS_KEYS = Object.freeze({
     LAST_DIFFICULTY: "game1_lastDifficulty"
 });
 
-/** Storage keys for Wordle (Wordle) */
+//storage keys for Wordle
 const GAME2_LS_KEYS = Object.freeze({
     BEST_SCORE: "game2_bestScore",
     TOTAL_POINTS: "game2_totalPoints",
@@ -35,7 +35,7 @@ const GAME2_LS_KEYS = Object.freeze({
     BEST_STREAK: "game2_bestStreak"
 });
 
-/** Core storage keys */
+// general storage keys
 const STORAGE_KEYS = Object.freeze({
     USERS: "gameHub_users",
     SESSIONS: "gameHub_sessions",
@@ -48,12 +48,7 @@ const STORAGE_KEYS = Object.freeze({
 // UTILITY FUNCTIONS
 // ============================================================================
 
-/**
- * Safely reads and parses JSON from localStorage
- * @param {string} key - Storage key
- * @param {*} fallback - Default value if key doesn't exist
- * @returns {*} Parsed value or fallback
- */
+//safely reads and parses JSON from localStorage
 function readJson(key, fallback = null) {
     try {
         const raw = localStorage.getItem(key);
@@ -65,11 +60,7 @@ function readJson(key, fallback = null) {
     }
 }
 
-/**
- * Writes a value to localStorage as JSON
- * @param {string} key - Storage key
- * @param {*} value - Value to store
- */
+//writes a value to localStorage as JSON
 function writeJson(key, value) {
     try {
         localStorage.setItem(key, JSON.stringify(value)); // parse to JSON
@@ -78,17 +69,12 @@ function writeJson(key, value) {
     }
 }
 
-/**
- * Creates a user-specific storage key
- * @param {string} baseKey - Base key name
- * @param {string} username - Username
- * @returns {string} User-specific key
- */
+// constructs a per-user storage key
 function userKey(baseKey, username) {
     return `${baseKey}_${username}`;
 }
 
-// Aliases for backward compatibility
+// aliases for backward compatibility
 const getGame1Key = userKey;
 const getGame2Key = userKey;
 
@@ -96,9 +82,8 @@ const getGame2Key = userKey;
 // INITIALIZATION
 // ============================================================================
 
-/**
- * Initializes storage structure if not present
- */
+
+// ensures core storage keys exist
 function initializeStorage() {
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) { // if no users key then set it to empty array
         writeJson(STORAGE_KEYS.USERS, []); 
@@ -111,10 +96,7 @@ function initializeStorage() {
     }
 }
 
-/**
- * Ensures default Snake stats exist for a user
- * @param {string} username - Username
- */
+// ensures default Snake stats exist for a user
 function ensureGame1DefaultsForUser(username) {
     if (!username) return;
     
@@ -136,10 +118,7 @@ function ensureGame1DefaultsForUser(username) {
     });
 }
 
-/**
- * Ensures default Wordle stats exist for a user
- * @param {string} username - Username
- */
+// ensures default Wordle stats exist for a user
 function ensureGame2DefaultsForUser(username) {
     if (!username) return;
     
@@ -166,20 +145,13 @@ function ensureGame2DefaultsForUser(username) {
 // SESSION MANAGEMENT
 // ============================================================================
 
-/**
- * Gets the currently active username
- * @returns {string} Username or "Guest"
- */
+// gets the active username from the current session
 function getActiveUsername() {
     const session = getCurrentSession();
     return session?.username || "Guest";
 }
 
-/**
- * Creates a new session for a user (uses sessionStorage)
- * @param {string} username - Username
- * @returns {Object} Session object
- */
+// creates a new session for a user
 function createSession(username) {
     const session = {
         username,
@@ -189,7 +161,7 @@ function createSession(username) {
     
     sessionStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
     
-    // Add to session history
+    // add to session history
     const sessions = getAllSessions();
     sessions.push(session);
     writeJson(STORAGE_KEYS.SESSIONS, sessions);
@@ -217,17 +189,12 @@ function getCurrentSession() {
     }
 }
 
-/**
- * Clears the current session
- */
+// clears the current session
 function clearCurrentSession() {
     sessionStorage.removeItem(STORAGE_KEYS.CURRENT_SESSION);
 }
 
-/**
- * Gets all session history
- * @returns {Array} Sessions array
- */
+// gets all past sessions
 function getAllSessions() {
     return readJson(STORAGE_KEYS.SESSIONS, []);
 }
@@ -236,29 +203,20 @@ function getAllSessions() {
 // USER MANAGEMENT
 // ============================================================================
 
-/**
- * Gets all registered users
- * @returns {Array} Users array
- */
+
+// gets all users
 function getAllUsers() {
     return readJson(STORAGE_KEYS.USERS, []);
 }
 
-/**
- * Saves a new user
- * @param {Object} user - User object
- */
+// saves a new user
 function saveUser(user) {
     const users = getAllUsers();
     users.push(user);
     writeJson(STORAGE_KEYS.USERS, users);
 }
 
-/**
- * Finds a user by username
- * @param {string} username - Username to find
- * @returns {Object|undefined} User or undefined
- */
+// gets a user by username
 function getUserByUsername(username) {
     return getAllUsers().find(u => u.username === username);
 }
@@ -279,14 +237,9 @@ function updateUser(username, updates) {
     return true;
 }
 
-/**
- * changes username across all stored data
- * @param {string} oldUsername  current username
- * @param {string} newUsername  new username
- * @returns {Object} result with success and message
- */
+// changes a user's username and migrates all related data
 function changeUsername(oldUsername, newUsername) {
-    newUsername = (newUsername || "").trim();
+    newUsername = (newUsername || "").trim(); // .trim is to avoid leading/trailing spaces
     
     if (!newUsername) {
         return { success: false, message: "username cannot be empty" };
@@ -301,7 +254,7 @@ function changeUsername(oldUsername, newUsername) {
         return { success: false, message: "username already taken" };
     }
     
-    // Update users list
+    // update users list
     const users = getAllUsers();
     const userIndex = users.findIndex(u => u.username === oldUsername);
     if (userIndex !== -1) {
@@ -309,14 +262,14 @@ function changeUsername(oldUsername, newUsername) {
         writeJson(STORAGE_KEYS.USERS, users);
     }
     
-    // Update current session
+    // update current session
     const session = getCurrentSession();
     if (session?.username === oldUsername) {
         session.username = newUsername;
         sessionStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
     }
     
-    // Update leaderboard scores
+    // update the name to the new name in the leaderboard scores 
     const scores = getAllScores();
     let updated = false;
     scores.forEach(s => {
@@ -327,7 +280,7 @@ function changeUsername(oldUsername, newUsername) {
     });
     if (updated) writeJson(STORAGE_KEYS.SCORES, scores);
     
-    // Update sessions history
+    // update the name to the new name in the sessions history
     const sessions = getAllSessions();
     updated = false;
     sessions.forEach(s => {
@@ -338,9 +291,9 @@ function changeUsername(oldUsername, newUsername) {
     });
     if (updated) writeJson(STORAGE_KEYS.SESSIONS, sessions);
     
-    // Migrate per-user keys
+    // migrate per-user keys
     const keysToMigrate = [
-        ...Object.values(GAME1_LS_KEYS),
+        ...Object.values(GAME1_LS_KEYS), 
         ...Object.values(GAME2_LS_KEYS),
         "profile_displayName",
         "profile_memberSince"
@@ -363,39 +316,25 @@ function changeUsername(oldUsername, newUsername) {
 // SCORE MANAGEMENT
 // ============================================================================
 
-/**
- * Gets all scores
- * @returns {Array} Scores array
- */
+
+// gets all scores
 function getAllScores() {
     return readJson(STORAGE_KEYS.SCORES, []);
 }
 
-/**
- * Saves a score entry
- * @param {Object} scoreData - Score data
- */
+// saves a new score entry
 function saveScore(scoreData) {
     const scores = getAllScores();
     scores.push({ ...scoreData, timestamp: new Date().toISOString() });
     writeJson(STORAGE_KEYS.SCORES, scores);
 }
 
-/**
- * Gets scores for a specific user
- * @param {string} username - Username
- * @returns {Array} User's scores
- */
+// gets scores for a specific user
 function getUserScores(username) {
     return getAllScores().filter(s => s.username === username);
 }
 
-/**
- * Gets top scores for a game
- * @param {string} gameName - Game name
- * @param {number} limit - Max results
- * @returns {Array} Top scores
- */
+// gets top scores for a specific game
 function getTopScores(gameName, limit = 10) {
     return getAllScores()
         .filter(s => s.game === gameName)
@@ -407,36 +346,20 @@ function getTopScores(gameName, limit = 10) {
 // GAME STAT HELPERS
 // ============================================================================
 
-/**
- * Gets a numeric stat for Snake
- * @param {string} baseKey - Key from GAME1_LS_KEYS
- * @param {string} username - Username
- * @param {number} fallback - Default value
- * @returns {number} Stat value
- */
+
+// gets a numeric stat for Snake
 function getGame1NumberForUser(baseKey, username, fallback = 0) {
     const val = readJson(userKey(baseKey, username), fallback);
     const num = Number(val);
     return Number.isNaN(num) ? fallback : num;
 }
 
-/**
- * Sets a numeric stat for Snake
- * @param {string} baseKey - Key from GAME1_LS_KEYS
- * @param {string} username - Username
- * @param {number} value - Value to set
- */
+// sets a numeric stat for Snake
 function setGame1NumberForUser(baseKey, username, value) {
     writeJson(userKey(baseKey, username), value);
 }
 
-/**
- * Increments a numeric stat for Snake
- * @param {string} baseKey - Key from GAME1_LS_KEYS
- * @param {string} username - Username
- * @param {number} amount - Amount to add
- * @returns {number} New value
- */
+// increments a number of plays for Snake game
 function incrementGame1NumberForUser(baseKey, username, amount = 1) {
     const current = getGame1NumberForUser(baseKey, username, 0);
     const next = current + amount;
@@ -444,55 +367,30 @@ function incrementGame1NumberForUser(baseKey, username, amount = 1) {
     return next;
 }
 
-/**
- * Gets recent results for Snake
- * @param {string} username - Username
- * @returns {Array} Recent results
- */
+// gets recent results for Snake
 function getGame1RecentResultsForUser(username) {
     const results = readJson(userKey(GAME1_LS_KEYS.RECENT_RESULTS, username), []);
     return Array.isArray(results) ? results : [];
 }
 
-/**
- * Saves recent results for Snake
- * @param {string} username - Username
- * @param {Array} results - Results array
- */
+// saves recent results for Snake
 function saveGame1RecentResultsForUser(username, results) {
     writeJson(userKey(GAME1_LS_KEYS.RECENT_RESULTS, username), results);
 }
 
-/**
- * Gets a numeric stat for Wordle
- * @param {string} baseKey - Key from GAME2_LS_KEYS
- * @param {string} username - Username
- * @param {number} fallback - Default value
- * @returns {number} Stat value
- */
+// gets a numeric stat for Wordle
 function getGame2NumberForUser(baseKey, username, fallback = 0) {
     const val = readJson(userKey(baseKey, username), fallback);
     const num = Number(val);
     return Number.isNaN(num) ? fallback : num;
 }
 
-/**
- * Sets a numeric stat for Wordle
- * @param {string} baseKey - Key from GAME2_LS_KEYS
- * @param {string} username - Username
- * @param {number} value - Value to set
- */
+// sets a numeric stat for Wordle
 function setGame2NumberForUser(baseKey, username, value) {
     writeJson(userKey(baseKey, username), value);
 }
 
-/**
- * Increments a numeric stat for Wordle
- * @param {string} baseKey - Key from GAME2_LS_KEYS
- * @param {string} username - Username
- * @param {number} amount - Amount to add
- * @returns {number} New value
- */
+// increments a number of plays for Wordle game
 function incrementGame2NumberForUser(baseKey, username, amount = 1) {
     const current = getGame2NumberForUser(baseKey, username, 0);
     const next = current + amount;
@@ -500,21 +398,13 @@ function incrementGame2NumberForUser(baseKey, username, amount = 1) {
     return next;
 }
 
-/**
- * Gets recent results for Wordle
- * @param {string} username - Username
- * @returns {Array} Recent results
- */
+// gets recent results for Wordle
 function getGame2RecentResultsForUser(username) {
     const results = readJson(userKey(GAME2_LS_KEYS.RECENT_RESULTS, username), []);
     return Array.isArray(results) ? results : [];
 }
 
-/**
- * Saves recent results for Wordle
- * @param {string} username - Username
- * @param {Array} results - Results array
- */
+// saves recent results for Wordle
 function saveGame2RecentResultsForUser(username, results) {
     writeJson(userKey(GAME2_LS_KEYS.RECENT_RESULTS, username), results);
 }

@@ -10,6 +10,15 @@
     box-sizing: border-box;
 }
 
+/* --- Root Variables for Responsive Scaling --- */
+:root {
+    --base-font: clamp(14px, 1.5vw, 16px);
+}
+
+html {
+    font-size: var(--base-font);
+}
+
 /* --- Base Body Styles --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -129,9 +138,9 @@ body.dark-mode {
 
 /* Landing page container */
 .landing-container {
-    max-width: 75em;
+    max-width: min(75em, 95vw);
     margin: 0 auto;
-    padding: 1.25em;
+    padding: clamp(0.75em, 2vw, 1.25em);
 }
 
 /* Hero section - main landing area */
@@ -140,17 +149,19 @@ body.dark-mode {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 3.75em;
-    padding: 2.5em 0;
+    gap: clamp(1.5em, 5vw, 3.75em);
+    padding: clamp(1.25em, 4vw, 2.5em) 0;
+    flex-wrap: wrap;
 }
 
 .hero-content {
     flex: 1;
+    min-width: min(100%, 20em);
     animation: slideInLeft 0.8s ease-out;
 }
 
 .hero-title {
-    font-size: 4rem;
+    font-size: clamp(2rem, 6vw, 4rem);
     font-weight: 800;
     margin-bottom: 1.25em;
     letter-spacing: -0.0625em;
@@ -163,20 +174,21 @@ body.dark-mode {
 }
 
 .hero-subtitle {
-    font-size: 1.5rem;
-    margin-bottom: 2.5em;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    margin-bottom: clamp(1.5em, 4vw, 2.5em);
     opacity: 0.9;
 }
 
 .hero-buttons {
     display: flex;
-    gap: 1.25em;
+    gap: clamp(0.75em, 2vw, 1.25em);
+    flex-wrap: wrap;
 }
 
 /* Landing page button overrides */
 .landing-container .btn {
-    padding: 0.9375em 2.5em;
-    font-size: 1.1rem;
+    padding: clamp(0.625em, 2vw, 0.9375em) clamp(1.25em, 4vw, 2.5em);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
     text-decoration: none;
     border-radius: 3.125em;
 }
@@ -243,27 +255,27 @@ body.dark-mode {
 
 /* Features section */
 .features-section {
-    padding: 3.75em 0;
+    padding: clamp(2em, 5vw, 3.75em) 0;
     animation: fadeIn 1s ease-out;
 }
 
 .features-section h2 {
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3.125em;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin-bottom: clamp(1.5em, 4vw, 3.125em);
 }
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(17.5em, 1fr));
-    gap: 1.875em;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15em), 1fr));
+    gap: clamp(1em, 3vw, 1.875em);
 }
 
 /* Feature cards */
 .feature-card {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(0.625em);
-    padding: 2.5em;
+    padding: clamp(1.5em, 4vw, 2.5em);
     border-radius: 1.25em;
     text-align: center;
     transition: all 0.3s ease;

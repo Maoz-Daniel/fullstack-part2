@@ -1,14 +1,14 @@
 /**
- * snake Game - FunZone Gaming Portal
- * @file snake.js
+ * Snake Game Module
+ * @module snake
+ * @description Classic snake game with difficulty levels and score tracking
  * @requires storage.js
+ * @requires auth-guard.js
  */
 
 "use strict";
 
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
+/** @constant {Object} Difficulty settings */
 
 const DIFFICULTY = Object.freeze({
     easy: { speed: 150, wallsKill: false, multiplier: 1, label: "Easy" },
@@ -246,7 +246,7 @@ function render() {
     }
     
     // Render food
-    if (state.food && state.cells[state.food.y]?.[state.food.x]) {
+    if (state.food && state.cells[state.food.y]?.[state.food.x]) { // ensure food position is valid
         const foodCell = state.cells[state.food.y][state.food.x];
         foodCell.classList.add("food");
     }
@@ -271,7 +271,7 @@ function render() {
 // UI UPDATES
 // ============================================================================
 
-function updateDisplays() {
+function updateDisplays() { 
     if (els.scoreEl) els.scoreEl.textContent = state.score; 
     if (els.lengthEl) els.lengthEl.textContent = state.snake.length;
     if (els.bestEl) els.bestEl.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
@@ -292,7 +292,7 @@ function setDifficultyBadge(level) {
 // GAME FLOW
 // ============================================================================
 
-function sleep(ms) {
+function sleep(ms) { 
     return new Promise(r => setTimeout(r, ms)); 
 }
 
@@ -385,7 +385,7 @@ function endGame() {
         state.sessionStarted = false;
     }
     
-    addRecent({
+    addRecent({ 
         game: "Snake",
         score: state.score,
         date: new Date().toISOString(),
@@ -499,11 +499,11 @@ function loadLastDifficulty() {
     });
 }
 
-// ============================================================================
-// INITIALIZATION
-// ============================================================================
-
+/**
+ * Initializes the Snake game (auth handled by auth-guard.js)
+ */
 function init() {
+    if (!getCurrentSession()) return;
     ensureGame1DefaultsForUser(username);
     initElements();
     initEvents();
@@ -512,4 +512,4 @@ function init() {
     setDifficultyBadge(state.difficulty);
 }
 
-document.addEventListener("DOMContentLoaded", init); // when DOM is ready, initialize
+document.addEventListener("DOMContentLoaded", init);

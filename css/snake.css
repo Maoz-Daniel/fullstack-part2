@@ -7,9 +7,10 @@
    SNAKE BODY OVERRIDE
    ============================================================================ */
 body {
+    visibility: hidden; /* Auth Protection: Hide until JS validates session */
     height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -18,13 +19,15 @@ body {
    GAME CONTAINER & HEADER
    ============================================================================ */
 .game-container {
-    max-width: 55em;
+    max-width: min(55em, 95vw);
     margin: 0 auto;
-    padding: 1.1875em 1em 1.625em;
+    padding: clamp(0.4em, 1vh, 0.75em) clamp(0.5em, 2vw, 1em);
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: calc(100vh - 4em); /* Account for navbar */
+    height: calc(100dvh - 4em);
 }
 
 .game-shell {
@@ -33,26 +36,29 @@ body {
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.08);
     border: 0.0625em solid rgba(255, 255, 255, 0.18);
-    border-radius: 1.1875em;
-    padding: 1.1875em;
+    border-radius: 1em;
+    padding: clamp(0.5em, 1.5vh, 1em);
     box-shadow: 0 0.875em 2em rgba(8, 10, 18, 0.2);
     display: flex;
     flex-direction: column;
-    gap: 0.8125em;
+    gap: clamp(0.3em, 1vh, 0.6em);
     overflow: hidden;
+    flex: 1;
+    min-height: 0;
 }
 
 .game-header {
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 0.875em;
-    padding: 0.875em 1em;
+    border-radius: 0.75em;
+    padding: clamp(0.3em, 1vh, 0.6em) clamp(0.5em, 2vw, 1em);
     border: 0.0625em solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
 }
 
 .game-header h1 {
-    font-size: 1.68rem;
-    margin-bottom: 0.3125em;
+    font-size: clamp(1rem, 2.5vh, 1.5rem);
+    margin-bottom: 0.2em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,7 +66,7 @@ body {
 }
 
 .game-header p {
-    font-size: 0.84rem;
+    font-size: clamp(0.6rem, 1.2vh, 0.75rem);
     opacity: 0.9;
 }
 
@@ -69,37 +75,38 @@ body {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(0.625em);
     border-radius: 0.75em;
-    padding: 1em;
+    padding: clamp(0.4em, 1.5vh, 0.75em);
     text-align: center;
     border: 0.0625em solid rgba(255, 255, 255, 0.2);
     animation: fadeIn 0.5s ease;
+    flex-shrink: 0;
 }
 
 .difficulty-panel h2 {
-    font-size: 1.12rem;
-    margin-bottom: 0.375em;
+    font-size: clamp(0.8rem, 2vh, 1rem);
+    margin-bottom: 0.25em;
 }
 
 .difficulty-description {
     opacity: 0.8;
-    margin-bottom: 0.75em;
-    font-size: 0.72rem;
+    margin-bottom: 0.5em;
+    font-size: clamp(0.55rem, 1.2vh, 0.65rem);
 }
 
 .difficulty-options {
     display: flex;
-    gap: 0.5em;
+    gap: clamp(0.25em, 0.8vw, 0.4em);
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 0.75em;
+    margin-bottom: 0.5em;
 }
 
 .difficulty-btn {
     background: rgba(255, 255, 255, 0.15);
     border: 0.125em solid rgba(255, 255, 255, 0.3);
     border-radius: 0.625em;
-    padding: 0.75em 0.9375em;
-    min-width: 6.25em;
+    padding: clamp(0.5em, 1.5vw, 0.75em) clamp(0.5em, 1.5vw, 0.9375em);
+    min-width: clamp(4.5em, 12vw, 6.25em);
     cursor: pointer;
     transition: all 0.3s ease;
     color: #fff;
@@ -268,7 +275,8 @@ body {
 .game-info {
     display: none;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.75em;
+    gap: clamp(0.3em, 1vw, 0.5em);
+    flex-shrink: 0;
 }
 
 .game-info.active {
@@ -278,23 +286,23 @@ body {
 .info-item {
     text-align: center;
     background: rgba(255, 255, 255, 0.12);
-    border-radius: 0.875em;
-    padding: 0.75em 1em;
+    border-radius: 0.6em;
+    padding: clamp(0.3em, 1vh, 0.5em) clamp(0.4em, 1vw, 0.75em);
     border: 0.0625em solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 0.5em 1.125em rgba(8, 10, 18, 0.12);
 }
 
 .info-label {
     display: block;
-    font-size: 0.7rem;
+    font-size: clamp(0.5rem, 1.2vh, 0.65rem);
     opacity: 0.8;
-    margin-bottom: 0.375em;
+    margin-bottom: 0.2em;
     text-transform: uppercase;
     letter-spacing: 0.0312em;
 }
 
 .info-value {
-    font-size: 1.6rem;
+    font-size: clamp(1rem, 2.5vh, 1.4rem);
     font-weight: 800;
 }
 
@@ -323,11 +331,13 @@ body {
     display: none;
     justify-content: center;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 1.25em;
-    padding: 1em;
+    border-radius: 1em;
+    padding: clamp(0.4em, 1vh, 0.75em);
     border: 0.0625em solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 1em 1.875em rgba(8, 10, 18, 0.2);
     width: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .game-area-wrapper.active {
@@ -338,14 +348,16 @@ body {
 .game-board {
     display: grid;
     background: rgba(0, 0, 0, 0.4);
-    border-radius: 0.875em;
+    border-radius: 0.75em;
     border: 0.125em solid rgba(255, 255, 255, 0.25);
     box-shadow: 0 0.5em 1.625em rgba(0, 0, 0, 0.35);
-    width: min(100%, 25em);
+    width: min(100%, 45vh);
+    max-height: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    padding: 1.875em;
+    padding: clamp(0.5em, 2vh, 1.5em);
     box-sizing: border-box;
+    margin: auto;
 }
 
 /* Grid Cells */
@@ -504,37 +516,37 @@ body {
 
 .game-over-content {
     background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-    padding: 3.125em;
-    border-radius: 1.5625em;
+    padding: clamp(1.2em, 3vh, 2em);
+    border-radius: 1em;
     text-align: center;
-    max-width: 28.125em;
+    max-width: min(22em, 90vw);
     width: 90%;
     animation: modalSlideUp 0.5s ease;
 }
 
 .game-over-icon {
-    font-size: 5rem;
-    margin-bottom: 0.9375em;
+    font-size: clamp(2rem, 6vh, 3.5rem);
+    margin-bottom: 0.5em;
 }
 
 .game-over-content h2 {
     color: #333;
-    font-size: 2.5rem;
-    margin-bottom: 1.5625em;
+    font-size: clamp(1.2rem, 3.5vh, 1.8rem);
+    margin-bottom: 0.8em;
 }
 
 .final-stats {
     background: #f8f8f8;
-    border-radius: 0.9375em;
-    padding: 1.25em;
-    margin-bottom: 1.25em;
+    border-radius: 0.75em;
+    padding: clamp(0.6em, 1.5vh, 1em);
+    margin-bottom: clamp(0.6em, 1.5vh, 1em);
 }
 
 .stat-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.625em 0;
+    padding: clamp(0.3em, 0.8vh, 0.5em) 0;
     border-bottom: 0.0625em solid #e0e0e0;
 }
 
@@ -544,28 +556,28 @@ body {
 
 .stat-row .stat-label {
     color: #666;
-    font-size: 1rem;
+    font-size: clamp(0.7rem, 1.8vh, 0.9rem);
 }
 
 .stat-row .stat-value {
     color: #333;
-    font-size: 1.3rem;
+    font-size: clamp(0.85rem, 2vh, 1.1rem);
     font-weight: 700;
 }
 
 .stat-row .stat-value.highlight {
     color: #667eea;
-    font-size: 1.8rem;
+    font-size: clamp(1rem, 2.5vh, 1.4rem);
 }
 
 .new-record {
     background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
     color: #333;
-    padding: 0.9375em 1.875em;
-    border-radius: 3.125em;
-    font-size: 1.2rem;
+    padding: clamp(0.5em, 1.2vh, 0.75em) clamp(1em, 3vw, 1.5em);
+    border-radius: 2em;
+    font-size: clamp(0.75rem, 1.8vh, 0.95rem);
     font-weight: 700;
-    margin-bottom: 1.25em;
+    margin-bottom: clamp(0.6em, 1.5vh, 1em);
     animation: pulse 1s ease-in-out infinite;
 }
 
@@ -580,7 +592,7 @@ body {
 
 .game-over-buttons {
     display: flex;
-    gap: 0.9375em;
+    gap: clamp(0.5em, 1.5vw, 0.8em);
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -588,16 +600,16 @@ body {
 .btn-play-again {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
-    padding: 0.9375em 2.1875em;
-    border-radius: 3.125em;
+    padding: clamp(0.5em, 1.2vh, 0.75em) clamp(1em, 3vw, 1.5em);
+    border-radius: 2em;
     color: #fff;
-    font-size: 1.1rem;
+    font-size: clamp(0.75rem, 1.8vh, 0.95rem);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.5em;
+    gap: 0.4em;
 }
 
 .btn-play-again:hover {
@@ -608,10 +620,10 @@ body {
 .btn-menu {
     background: #e0e0e0;
     border: none;
-    padding: 0.9375em 2.1875em;
-    border-radius: 3.125em;
+    padding: clamp(0.5em, 1.2vh, 0.75em) clamp(1em, 3vw, 1.5em);
+    border-radius: 2em;
     color: #666;
-    font-size: 1.1rem;
+    font-size: clamp(0.75rem, 1.8vh, 0.95rem);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;

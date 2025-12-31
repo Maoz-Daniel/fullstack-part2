@@ -5,7 +5,7 @@
  * @requires storage.js
  */
 
-"use strict";
+"use strict"; // all variables must be declared with var, let, or const
 
 // ============================================================================
 // CONFIGURATION
@@ -22,11 +22,8 @@ const AUTH_CONFIG = {
 // UTILITY FUNCTIONS
 // ============================================================================
 
-/**
- * shows an error message in the specified element
- * @param {HTMLElement} element - error display element
- * @param {string} message - error message
- */
+
+//displays an error message in the specified element
 function showError(element, message) {
     if (!element) return;
     element.textContent = message;
@@ -42,11 +39,7 @@ function clearAllErrors() {
     });
 }
 
-/**
- * gets a lockout key for a username
- * @param {string} username - username
- * @returns {Object} keys for failed attempts and lockout time
- */
+//returns lockout storage keys for a given username
 function getLockoutKeys(username) {
     return {
         attempts: `failedAttempts_${username}`,
@@ -59,11 +52,15 @@ function getLockoutKeys(username) {
 // ============================================================================
 
 
-//redirects to games page if already logged in
+/**
+ * Redirects already-logged-in users away from the login page.
+ * This prevents logged-in users from seeing the login form.
+ * Uses replace() to avoid adding unnecessary entries to browser history.
+ */
 function checkExistingSession() {
     const session = getCurrentSession();
     if (session && window.location.pathname.includes("login.html")) {
-        window.location.href = "games.html";
+        window.location.replace("games.html");
     }
 }
 
@@ -71,11 +68,7 @@ function checkExistingSession() {
 // PASSWORD VALIDATION
 // ============================================================================
 
-/**
- * checks password against requirements
- * @param {string} password - password to check
- * @returns {Object} requirements status and strength
- */
+// checks password against requirements and returns results
 function checkPasswordRequirements(password) {
     const requirements = {
         length: password.length >= AUTH_CONFIG.MIN_PASSWORD_LENGTH,
@@ -170,17 +163,20 @@ function initLoginForm() {
             return;
         }
         
-        // successful login
+        // Successful login - clear any lockout data
         localStorage.removeItem(keys.attempts);
         localStorage.removeItem(keys.lockout);
         
+        // Update user's login statistics
         updateUser(username, {
             lastLogin: new Date().toISOString(),
             totalLogins: (user.totalLogins || 0) + 1
         });
         
+        // Create session and redirect to games page
+        // Using replace() prevents the login page from being in browser history
         createSession(username);
-        window.location.href = "games.html";
+        window.location.replace("games.html");
     });
 }
 
@@ -208,7 +204,7 @@ function initRegisterForm() {
     const reqSpecial = document.getElementById("req-special");
     
     
-    //Updates password strength UI
+    //updates password strength UI 
     function updatePasswordUI() {
         const password = passwordInput.value;
         const { requirements, strength } = checkPasswordRequirements(password);
@@ -219,7 +215,7 @@ function initRegisterForm() {
         updateRequirement(reqNumber, requirements.number);
         updateRequirement(reqSpecial, requirements.special);
         
-        if (strengthFill && strengthText) {
+        if (strengthFill && strengthText) { // if elements exist
             if (password.length === 0) {
                 strengthFill.className = "strength-fill";
                 strengthText.className = "strength-text";
@@ -227,7 +223,7 @@ function initRegisterForm() {
             } else {
                 strengthFill.className = `strength-fill ${strength}`;
                 strengthText.className = `strength-text ${strength}`;
-                strengthText.textContent = strength.charAt(0).toUpperCase() + strength.slice(1);
+                strengthText.textContent = strength.charAt(0).toUpperCase() + strength.slice(1); // capitalize first letter
             }
         }
     }
@@ -295,7 +291,7 @@ function initRegisterForm() {
         });
         
         createSession(username);
-        window.location.href = "games.html";
+        window.location.replace("games.html");
     });
 }
 
@@ -303,6 +299,24 @@ function initRegisterForm() {
 // INITIALIZATION
 // ============================================================================
 
-checkExistingSession();
-initLoginForm();
-initRegisterForm();
+/**
+ * Wait for DOM to be ready before initializing auth functionality.
+ * This prevents race conditions where auth checks might run before
+ * the session is fully established during redirects.
+ * 
+ * checkExistingSession: Redirects logged-in users away from login page
+ * initLoginForm: Sets up login form validation and submission
+ * initRegisterForm: Sets up registration form validation and submission
+ */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        checkExistingSession();
+        initLoginForm();
+        initRegisterForm();
+    });
+} else {
+    // DOM already loaded
+    checkExistingSession();
+    initLoginForm();
+    initRegisterForm();
+}

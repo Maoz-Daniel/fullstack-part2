@@ -2,34 +2,28 @@
 // Purpose: Handle dark mode state and persistence
 
 (function () {
-  "use strict";
+  "use strict"; // all variables must be declared with var, let, or const
 
   const DARK_LABEL = "Dark mode";
   const LIGHT_LABEL = "Light mode";
 
-  /**
-   * Apply dark mode state from localStorage (runs immediately)
-   * This ensures dark mode is applied before page renders
-   */
+  // apply dark mode state from localStorage
   function applyDarkModeState() {
     const darkModeEnabled = localStorage.getItem("darkMode") === "true";
     if (darkModeEnabled) {
-      document.body.classList.add("dark-mode");
+      document.body.classList.add("dark-mode"); // Apply dark mode class in body
     }
   }
 
-  /**
-   * Initialize dark mode toggle button
-   * Called after DOM is ready
-   */
+  // initialize dark mode toggle button
   function initDarkMode() {
-    const darkModeToggle = document.getElementById("darkModeToggle");
+    const darkModeToggle = document.getElementById("darkModeToggle"); // button element
     if (!darkModeToggle) return;
 
-    const isDark = document.body.classList.contains("dark-mode");
+    const isDark = document.body.classList.contains("dark-mode"); // current state
     darkModeToggle.textContent = isDark ? LIGHT_LABEL : DARK_LABEL;
 
-    darkModeToggle.addEventListener("click", toggleDarkMode);
+    darkModeToggle.addEventListener("click", toggleDarkMode); // attach click event
   }
 
   /**
@@ -37,23 +31,23 @@
    */
   function toggleDarkMode() {
     const body = document.body;
-    const darkModeToggle = document.getElementById("darkModeToggle");
+    const darkModeToggle = document.getElementById("darkModeToggle"); // button element
 
     body.classList.toggle("dark-mode");
-    const isDark = body.classList.contains("dark-mode");
+    const isDark = body.classList.contains("dark-mode"); // new state
 
     localStorage.setItem("darkMode", isDark);
     if (darkModeToggle) {
-      darkModeToggle.textContent = isDark ? LIGHT_LABEL : DARK_LABEL;
+      darkModeToggle.textContent = isDark ? LIGHT_LABEL : DARK_LABEL; // update button label
     }
   }
 
-  // Apply dark mode immediately (prevents flash)
+  // apply dark mode immediately for each page load
   applyDarkModeState();
 
-  // Initialize button on page load (for pages without navbar-loader)
+  // initialize button on page load (for pages without navbar-loader)
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initDarkMode);
+    document.addEventListener("DOMContentLoaded", initDarkMode); //
   } else {
     initDarkMode();
   }

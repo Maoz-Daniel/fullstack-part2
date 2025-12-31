@@ -3,28 +3,31 @@
    Page-specific styles only (common styles in style.css)
    ============================================================================ */
 
+/* Auth Protection: Hide until JS validates session */
+body { visibility: hidden; }
+
 /* ============================================================================
    LEADERBOARD CONTAINER & HEADER
    ============================================================================ */
 .leaderboard-container {
-    max-width: 60em;
+    max-width: min(60em, 95vw);
     margin: 0 auto;
-    padding: 2.375em 1em;
+    padding: clamp(1em, 3vw, 2.375em) clamp(0.75em, 2vw, 1.5em);
 }
 
 .page-header {
     text-align: center;
-    margin-bottom: 2.8125em;
+    margin-bottom: clamp(1.5em, 4vw, 2.8125em);
 }
 
 .page-header h1 {
-    font-size: 2.56rem;
+    font-size: clamp(1.5rem, 5vw, 2.56rem);
     margin-bottom: 0.625em;
     letter-spacing: -0.025em;
 }
 
 .page-header p {
-    font-size: 1rem;
+    font-size: clamp(0.85rem, 2vw, 1rem);
     opacity: 0.9;
 }
 
@@ -111,17 +114,19 @@
    ============================================================================ */
 .leaderboard-table {
     width: 100%;
+    overflow-x: auto;
 }
 
 .leaderboard-table-header {
     display: grid;
-    grid-template-columns: 5em 1fr 9.375em 9.375em 9.375em;
-    padding: 1em 1.375em;
+    grid-template-columns: clamp(3em, 8vw, 5em) 1fr clamp(5em, 12vw, 9.375em) clamp(5em, 12vw, 9.375em) clamp(5em, 12vw, 9.375em);
+    padding: clamp(0.625em, 2vw, 1em) clamp(0.75em, 2vw, 1.375em);
     background: rgba(102, 126, 234, 0.1);
     border-radius: 0.75em;
     margin-bottom: 0.75em;
     font-weight: 700;
     color: #666;
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
 }
 
 .leaderboard-table-header div:nth-child(1) {
@@ -136,14 +141,15 @@
 
 .leaderboard-row {
     display: grid;
-    grid-template-columns: 5em 1fr 9.375em 9.375em 9.375em;
-    padding: 1.25em 1.375em;
+    grid-template-columns: clamp(3em, 8vw, 5em) 1fr clamp(5em, 12vw, 9.375em) clamp(5em, 12vw, 9.375em) clamp(5em, 12vw, 9.375em);
+    padding: clamp(0.75em, 2vw, 1.25em) clamp(0.75em, 2vw, 1.375em);
     background: #fff;
     border-radius: 0.875em;
     margin-bottom: 0.75em;
     transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.2s ease;
     border: 0.125em solid transparent;
     align-items: center;
+    font-size: clamp(0.75rem, 1.5vw, 0.95rem);
 }
 
 .leaderboard-row:hover {
