@@ -248,32 +248,56 @@ function initElements() {
 // ============================================================================
 
 const username = getActiveUsername();
-
+/**
+ *  Generates a game-specific key for local storage by combining the base key with the username.
+ * @param {*} base - The base key to combine with the username.
+ * @returns {string} - The combined key for local storage.
+ */
 function gameKey(base) {
     return userKey(base, username);
 }
-
+/**
+ *  Loads a numeric statistic from local storage, returning a fallback value if not found or invalid.
+ * @param {*} key - The key of the statistic to load.
+ * @param {*} fallback - The fallback value to return if the statistic is not found or invalid.
+ * @returns  {number} - The loaded statistic or the fallback value.
+ */
 function loadStat(key, fallback = 0) {
     const val = readJson(gameKey(key), fallback);
     const num = Number(val);
     return Number.isNaN(num) ? fallback : num;
 }
-
+/**
+ *  Saves a statistic to local storage.
+ * @param {*} key - The key of the statistic to save.
+ * @param {*} value - The value of the statistic to save.
+ */
 function saveStat(key, value) {
     writeJson(gameKey(key), value);
 }
-
+/**
+ *  Increments a numeric statistic in local storage by a specified amount.
+ * @param {*} key - The key of the statistic to increment.
+ * @param {*} amount - The amount to increment the statistic by (default is 1).
+ * @returns {number} - The new value of the statistic after incrementing.
+ */
 function incrementStat(key, amount = 1) {
     const next = loadStat(key, 0) + amount;
     saveStat(key, next);
     return next;
 }
-
+/**
+ *  Retrieves the recent game results from local storage.
+ * @returns {Array} - An array of recent game result entries.
+ */
 function getRecent() {
     const data = readJson(gameKey(GAME2_LS_KEYS.RECENT_RESULTS), []);
     return Array.isArray(data) ? data : [];
 }
-
+/**
+ *  Adds a new entry to the recent game results in local storage.
+ * @param {*} entry - The game result entry to add.
+ */
 function addRecent(entry) {
     const updated = [entry, ...getRecent()].slice(0, 5);
     writeJson(gameKey(GAME2_LS_KEYS.RECENT_RESULTS), updated);
@@ -282,15 +306,25 @@ function addRecent(entry) {
 // ============================================================================
 // WORD FUNCTIONS
 // ============================================================================
-
+/**
+ *  Selects a random word from the WORDS array and returns it in uppercase.
+ * @returns {string} - The selected word in uppercase.
+ */
 function selectWord() {
     return WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
 }
-
+/**
+ *  Checks if a given word is valid by verifying its presence in the WORDS array.
+ * @param {*} word - The word to validate.
+ * @returns {boolean} - True if the word is valid, false otherwise.
+ */
 function isValidWord(word) {
     return WORDS.includes(word.toLowerCase());
 }
-
+/**
+ *  Retrieves the current word being formed based on the current row in the game state.
+ * @returns {string} - The current word.
+ */
 function getCurrentWord() {
     return state.board[state.row].map(c => c.letter).join(""); 
 }
@@ -298,7 +332,9 @@ function getCurrentWord() {
 // ============================================================================
 // BOARD & KEYBOARD
 // ============================================================================
-
+/**
+ * Creates the Wordle game board with rows and cells.
+ */
 function createBoard() {
     els.board.innerHTML = "";
     state.board = [];
@@ -322,7 +358,9 @@ function createBoard() {
         state.board.push(rowData);
     }
 }
-
+/**
+ * Creates the on-screen keyboard for the Wordle game.
+ */
 function createKeyboard() {
     els.keyboard.innerHTML = "";
     
@@ -344,7 +382,12 @@ function createKeyboard() {
     });
 }
 
-
+/**
+ *  Updates a specific tile on the board with a letter.
+ * @param {*} row - row index
+ * @param {*} col - column index
+ * @param {*} letter - letter to place
+ */
 function updateTile(row, col, letter) { 
     const tile = document.querySelector(`.wordle-cell[data-row="${row}"][data-col="${col}"]`);
     if (tile) {
@@ -353,7 +396,12 @@ function updateTile(row, col, letter) {
     }
     state.board[row][col].letter = letter;
 }
-
+/**
+ *  Updates the state and appearance of a keyboard key.
+ * @param {*} letter - the letter/key to update
+ * @param {*} newState - the new state ("correct", "present", "absent")
+ * @returns 
+ */
 function updateKeyboardKey(letter, newState) { // updates key color/state
     const key = document.querySelector(`.key[data-key="${letter}"]`); // find key button
     if (!key) return;
@@ -370,7 +418,10 @@ function updateKeyboardKey(letter, newState) { // updates key color/state
 // ============================================================================
 // GAME LOGIC
 // ============================================================================
-
+/**
+ *  Handles key inputs for the Wordle game.
+ * @param {*} key - the key that was pressed
+ */
 function handleKey(key) {
     if (state.gameOver || state.revealing) return;
     
@@ -382,19 +433,26 @@ function handleKey(key) {
         addLetter(key);
     }
 }
-
+/**
+ *  Adds a letter to the current tile in the game board.
+ * @param {*} letter - the letter to add
+ */
 function addLetter(letter) {
     if (state.tile >= CONFIG.wordLength) return;
     updateTile(state.row, state.tile, letter);
     state.tile++;
 }
-
+/**
+ *  Deletes the last letter from the current tile in the game board.
+ */
 function deleteLetter() {
     if (state.tile <= 0) return; 
     state.tile--;
     updateTile(state.row, state.tile, "");
 }
-
+/**
+ *  Submits the current guess and evaluates it. 
+ */
 function submitGuess() {
     const guess = getCurrentWord();
     
@@ -419,7 +477,11 @@ function submitGuess() {
     state.guessed.push(guess);
     revealWord(guess);
 }
-
+/**
+ *  Evaluates a guess against the target word and returns the result for each letter.
+ * @param {*} guess - the guessed word
+ * @returns {Array} - array of results for each letter ("correct", "present", "absent")
+ */
 function evaluateGuess(guess) {
     const results = new Array(CONFIG.wordLength).fill("absent"); // fisrst, all absent
     const targetLetters = state.target.split("");
@@ -445,7 +507,10 @@ function evaluateGuess(guess) {
     
     return results;
 }
-
+/**
+ *  Reveals the guessed word on the board with animations and updates the game state.
+ * @param {*} guess - the guessed word
+ */
 function revealWord(guess) {
     state.revealing = true;
     const results = evaluateGuess(guess);
@@ -476,7 +541,10 @@ function revealWord(guess) {
         }
     }, CONFIG.wordLength * CONFIG.flipDelay + 500);
 }
-
+/**
+ *  Applies a shake animation to the specified row to indicate an error.
+ * @param {*} rowIndex - the index of the row to shake
+ */
 function shakeRow(rowIndex) {
     const row = document.querySelector(`.wordle-row[data-row="${rowIndex}"]`);
     row.classList.add("shake");
@@ -486,7 +554,9 @@ function shakeRow(rowIndex) {
 // ============================================================================
 // WIN/LOSS HANDLING
 // ============================================================================
-
+/**
+ * Handles the win condition, updating the game state and displaying messages.
+ */
 function handleWin() {
     state.gameOver = true;
     state.won = true;
@@ -499,7 +569,9 @@ function handleWin() {
     
     setTimeout(() => showGameOver(true), 1500);
 }
-
+/**
+ * Handles the loss condition, updating the game state and displaying messages.
+ */
 function handleLoss() {
     state.gameOver = true;
     state.won = false;
@@ -509,7 +581,11 @@ function handleLoss() {
     
     setTimeout(() => showGameOver(false), 2000);
 }
-
+/**
+ *  Updates the player's statistics based on the game outcome.
+ * @param {*} won - whether the player won
+ * @param {*} score - the score achieved
+ */
 function updateStats(won, score) {
     incrementStat(GAME2_LS_KEYS.GAMES_PLAYED);
     incrementStat(GAME2_LS_KEYS.SESSIONS);
@@ -538,7 +614,10 @@ function updateStats(won, score) {
         difficulty: won ? `${state.row + 1}/6` : "X/6"
     });
 }
-
+/**
+ *  Displays the game over modal with results.
+ * @param {*} won - whether the player won
+ */
 function showGameOver(won) {
     const title = document.getElementById("modalTitle");
     const message = document.getElementById("modalMessage");
@@ -562,17 +641,27 @@ function showGameOver(won) {
 // ============================================================================
 // UI HELPERS
 // ============================================================================
-
+/**
+ *  Displays a temporary message to the player.
+ * @param {*} text - the message text
+ * @param {*} type - the message type ("info", "success", "error")
+ * @param {*} duration - how long to show the message (in ms)
+ */
 function showMessage(text, type = "info", duration = 2000) {
     els.message.textContent = text;
     els.message.className = `message show ${type}`;
     setTimeout(() => els.message.classList.remove("show"), duration);
 }
 
+/**
+ * Updates the attempts display in the UI.
+ */
 function updateAttempts() {
     els.attempts.textContent = `${state.row}/${CONFIG.maxAttempts}`;
 }
-
+/**
+ * Updates the current streak display in the UI.
+ */
 function updateStreak() {
     els.streak.textContent = loadStat(GAME2_LS_KEYS.CURRENT_STREAK, 0);
 }
@@ -580,7 +669,9 @@ function updateStreak() {
 // ============================================================================
 // GAME CONTROL
 // ============================================================================
-
+/**
+ * Starts a new game by resetting the state and initializing the board and keyboard.
+ */
 function startNewGame() {
     state.target = selectWord();
     state.row = 0;
@@ -602,7 +693,9 @@ function startNewGame() {
 // ============================================================================
 // EVENT BINDING
 // ============================================================================
-
+/**
+ * Initializes event listeners for keyboard input and buttons.
+ */
 function initEvents() {
     document.addEventListener("keydown", (e) => {
         if (e.ctrlKey || e.altKey || e.metaKey) return;
@@ -626,5 +719,5 @@ function init() {
     initEvents();
     startNewGame();
 }
-
+// Start the game when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", init);

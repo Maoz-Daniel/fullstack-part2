@@ -15,26 +15,26 @@ const DIFFICULTY = Object.freeze({
     medium: { speed: 100, wallsKill: true, multiplier: 2, label: "Medium" },
     hard: { speed: 70, wallsKill: true, multiplier: 3, label: "Hard" }
 });
-
+/** @constant {Object} Local storage keys for Snake game statistics */
 const CONFIG = Object.freeze({
     gridSize: 20,
     boardSize: 400,
     initialLength: 3
 });
-
+/** @constant {Object} Local storage keys for Snake game statistics */
 const DIRECTIONS = Object.freeze({
     up: { x: 0, y: -1 },
     down: { x: 0, y: 1 },
     left: { x: -1, y: 0 },
     right: { x: 1, y: 0 }
 });
-
+/** @constant {Object} Opposite directions for snake movement */
 const OPPOSITES = Object.freeze({ up: "down", down: "up", left: "right", right: "left" });
 
 // ============================================================================
 // GAME STATE
 // ============================================================================
-
+/** @constant {Object} Current game state */
 const state = {
     running: false,
     paused: false,
@@ -54,8 +54,10 @@ const state = {
 // DOM CACHE
 // ============================================================================
 
-let els = {}; 
-
+let els = {}; // cached DOM elements
+/**
+ * Initializes and caches DOM elements for later use.
+ */
 function initElements() {
     els = {
         diffPanel: document.getElementById("difficultyPanel"), // difficulty selection panel
@@ -82,33 +84,57 @@ function initElements() {
 // ============================================================================
 
 const username = getActiveUsername();
-
+/**
+ *  Generates a storage key specific to the current user.
+ * @param {*} base - base key
+ * @returns {string} user-specific storage key
+ */
 function gameKey(base) {
     return userKey(base, username);
 }
-
+/**
+ *  Loads a numeric statistic for the current user.
+ * @param {*} key - statistic key
+ * @param {*} fallback - fallback value if not found
+ * @returns {number} loaded statistic or fallback
+ */
 function loadStat(key, fallback = 0) {
     const val = readJson(gameKey(key), fallback);
     const num = Number(val);
     return Number.isNaN(num) ? fallback : num;
 }
-
+/**
+ *  Saves a numeric statistic for the current user.
+ * @param {*} key - statistic key
+ * @param {*} value - value to save
+ */
 function saveStat(key, value) {
     writeJson(gameKey(key), value);
 }
-
+/**
+ *  Increments a numeric statistic for the current user.
+ * @param {*} key - statistic key
+ * @param {*} amount - amount to increment by
+ * @returns  {number}- new statistic value
+ */
 function incrementStat(key, amount = 1) {
     const next = loadStat(key, 0) + amount;
     saveStat(key, next);
     return next;
 }
-
+/**
+ *  Retrieves recent game results for the current user.
+ * @returns {Array} recent game results
+ */
 function getRecent() { // recent game results
     const data = readJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), []);
     return Array.isArray(data) ? data : [];
 }
-
-function addRecent(entry) { // add a recent game result
+/**
+ *  Adds a new entry to the recent game results for the current user.
+ * @param {*} entry - new game result entry
+ */
+function addRecent(entry) { 
     const updated = [entry, ...getRecent()].slice(0, 5); // keep only last 5
     writeJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), updated);
 }
@@ -116,7 +142,9 @@ function addRecent(entry) { // add a recent game result
 // ============================================================================
 // GRID CREATION (DOM-based)
 // ============================================================================
-
+/**
+ * Creates the game grid in the DOM and initializes cell references.
+ */
 function createGrid() {
     const board = els.board;
     board.innerHTML = "";
@@ -141,7 +169,10 @@ function createGrid() {
 // ============================================================================
 // SNAKE & FOOD
 // ============================================================================
-
+/**
+ *  Creates the initial snake positioned at the center of the grid.
+ * @returns {Array} initial snake segments
+ */
 function createSnake() {
     const snake = [];
 
@@ -154,7 +185,10 @@ function createSnake() {
     }
     return snake;
 }
-
+/**
+ *  Gets a list of empty cells not occupied by the snake.
+ * @returns  {Array} list of empty cell coordinates
+ */
 function getEmptyCells() {
     const occupied = new Set(state.snake.map(s => `${s.x},${s.y}`));
     const empty = [];
@@ -165,8 +199,11 @@ function getEmptyCells() {
     }
     return empty;
 }
-
-function spawnFood() { // place food in random position not occupied by snake
+/**
+ *  Spawns food in a random empty cell.
+ * @returns {boolean} true if food spawned successfully, false otherwise
+ */
+function spawnFood() { 
     const empty = getEmptyCells();
     if (empty.length === 0) {
         state.food = null;
@@ -175,7 +212,10 @@ function spawnFood() { // place food in random position not occupied by snake
     state.food = empty[Math.floor(Math.random() * empty.length)];
     return true;
 }
-
+/**
+ *  Ensures the food is visible and valid; respawns if not.
+ * @returns {boolean} true if food is visible or successfully respawned, false otherwise
+ */
 function ensureFoodVisible() {
     if (!state.food) return spawnFood();
     // check if food is out of bounds or on invalid cell
@@ -234,7 +274,9 @@ function moveSnake() {
 // ============================================================================
 // RENDERING (DOM-based)
 // ============================================================================
-
+/**
+ *  Renders the current game state to the DOM.
+ */
 function render() {
     // Clear all cells
     for (let y = 0; y < CONFIG.gridSize; y++) {
@@ -270,17 +312,24 @@ function render() {
 // ============================================================================
 // UI UPDATES
 // ============================================================================
-
+/**
+ * Updates score, length, and best score displays.
+ */
 function updateDisplays() { 
     if (els.scoreEl) els.scoreEl.textContent = state.score; 
     if (els.lengthEl) els.lengthEl.textContent = state.snake.length;
     if (els.bestEl) els.bestEl.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
 }
-
+/**
+ * Updates the best score display in the game over panel.
+ */
 function updateBestDisplay() {
     if (els.bestPanel) els.bestPanel.textContent = loadStat(GAME1_LS_KEYS.BEST_SCORE, 0);
 }
-
+/**
+ *  Sets the difficulty badge label and color.
+ * @param {*} level - difficulty level
+ */
 function setDifficultyBadge(level) { // show label and color for current difficulty
     if (!els.diffEl) return;
     els.diffEl.textContent = DIFFICULTY[level]?.label || "Medium";
@@ -291,11 +340,17 @@ function setDifficultyBadge(level) { // show label and color for current difficu
 // ============================================================================
 // GAME FLOW
 // ============================================================================
-
+/**
+ *  Sleeps for a specified duration.
+ * @param {*} ms - duration in milliseconds
+ * @returns {Promise} promise that resolves after the duration
+ */
 function sleep(ms) { 
     return new Promise(r => setTimeout(r, ms)); 
 }
-
+/**
+ * Displays a countdown before the game starts.
+ */
 async function showCountdown() {
     els.countdown.classList.add("active");
     for (let i = 3; i > 0; i--) {
@@ -308,7 +363,10 @@ async function showCountdown() {
     }
     els.countdown.classList.remove("active");
 }
-
+/**
+ *  Starts the Snake game.
+ * @returns {Promise<void>} resolves when the game has started
+ */
 async function startGame() {
     if (state.running) return;
     
@@ -333,7 +391,9 @@ async function startGame() {
     
     state.loopId = setInterval(gameLoop, DIFFICULTY[state.difficulty].speed);
 }
-
+/**
+ *  Main game loop, called on each tick.
+ */
 function gameLoop() {
     if (!state.running || state.paused) return;
     if (!ensureFoodVisible()) {
@@ -346,7 +406,9 @@ function gameLoop() {
     }
     render();
 }
-
+/**
+ * Resets the game state to initial values.
+ */
 function resetState() {
     state.score = 0;
     state.snake = [];
@@ -362,7 +424,9 @@ function resetState() {
         state.loopId = null;
     }
 }
-
+/**
+ * Ends the current game and updates statistics.
+ */
 function endGame() {
     state.running = false;
     if (state.loopId) {
@@ -394,7 +458,9 @@ function endGame() {
     
     showGameOver();
 }
-
+/**
+ * Displays the game over panel with final statistics.
+ */
 function showGameOver() {
     // populate game over panel
     document.getElementById("finalScore").textContent = state.score;
@@ -409,6 +475,9 @@ function showGameOver() {
     els.gameOver.classList.add("active");
 }
 
+/**
+ * Restarts the game and returns to the difficulty selection screen.
+ */
 function restartGame() {
 
     // reset and go back to difficulty selection
@@ -420,7 +489,9 @@ function restartGame() {
     updateBestDisplay();
     resetState();
 }
-
+/**
+ * Toggles the paused state of the game.
+ */
 function togglePause() {
     state.paused = !state.paused;
     if (state.paused) {
@@ -435,7 +506,10 @@ function togglePause() {
 // ============================================================================
 // INPUT HANDLING
 // ============================================================================
-
+/**
+ *  Handles keydown events for controlling the snake and pausing the game.
+ * @param {*} e - keyboard event
+ */
 function handleKeyDown(e) {
     const keyMap = {
         ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
@@ -452,7 +526,10 @@ function handleKeyDown(e) {
         togglePause();
     }
 }
-
+/**
+ *  Changes the snake's direction if valid.
+ * @param {*} newDir - new direction
+ */
 function changeDir(newDir) {
     if (!state.running || state.paused) return; 
     if (newDir !== OPPOSITES[state.dir]) { // prevent reversing into self
@@ -463,7 +540,9 @@ function changeDir(newDir) {
 // ============================================================================
 // EVENT BINDING
 // ============================================================================
-
+/**
+ * Initializes event listeners for game controls.
+ */
 function initEvents() {
     //  listen for difficulty selection, if chosen, set active and update state
     document.querySelectorAll(".difficulty-btn").forEach(btn => {
@@ -487,7 +566,9 @@ function initEvents() {
     //     });
     // });
 }
-
+/**
+ * Loads the last selected difficulty from storage and updates the UI.
+ */
 function loadLastDifficulty() {
     const last = readJson(gameKey(GAME1_LS_KEYS.LAST_DIFFICULTY), "medium");
     document.querySelectorAll(".difficulty-btn").forEach(btn => {
@@ -511,5 +592,5 @@ function init() {
     updateBestDisplay();
     setDifficultyBadge(state.difficulty);
 }
-
+// Start the game when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", init);
