@@ -275,6 +275,7 @@ function loadStat(key, fallback = 0) {
 function saveStat(key, value) {
     writeJson(gameKey(key), value);
 }
+
 /**
  *  Increments a numeric statistic in local storage by a specified amount.
  * @param {*} key - The key of the statistic to increment.
@@ -286,6 +287,7 @@ function incrementStat(key, amount = 1) {
     saveStat(key, next);
     return next;
 }
+
 /**
  *  Retrieves the recent game results from local storage.
  * @returns {Array} - An array of recent game result entries.
@@ -294,6 +296,7 @@ function getRecent() {
     const data = readJson(gameKey(GAME2_LS_KEYS.RECENT_RESULTS), []);
     return Array.isArray(data) ? data : [];
 }
+
 /**
  *  Adds a new entry to the recent game results in local storage.
  * @param {*} entry - The game result entry to add.
@@ -306,6 +309,7 @@ function addRecent(entry) {
 // ============================================================================
 // WORD FUNCTIONS
 // ============================================================================
+
 /**
  *  Selects a random word from the WORDS array and returns it in uppercase.
  * @returns {string} - The selected word in uppercase.
@@ -313,6 +317,7 @@ function addRecent(entry) {
 function selectWord() {
     return WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
 }
+
 /**
  *  Checks if a given word is valid by verifying its presence in the WORDS array.
  * @param {*} word - The word to validate.
@@ -321,6 +326,7 @@ function selectWord() {
 function isValidWord(word) {
     return WORDS.includes(word.toLowerCase());
 }
+
 /**
  *  Retrieves the current word being formed based on the current row in the game state.
  * @returns {string} - The current word.
@@ -332,6 +338,7 @@ function getCurrentWord() {
 // ============================================================================
 // BOARD & KEYBOARD
 // ============================================================================
+
 /**
  * Creates the Wordle game board with rows and cells.
  */
@@ -358,6 +365,7 @@ function createBoard() {
         state.board.push(rowData);
     }
 }
+
 /**
  * Creates the on-screen keyboard for the Wordle game.
  */
@@ -396,6 +404,7 @@ function updateTile(row, col, letter) {
     }
     state.board[row][col].letter = letter;
 }
+
 /**
  *  Updates the state and appearance of a keyboard key.
  * @param {*} letter - the letter/key to update
@@ -418,6 +427,7 @@ function updateKeyboardKey(letter, newState) { // updates key color/state
 // ============================================================================
 // GAME LOGIC
 // ============================================================================
+
 /**
  *  Handles key inputs for the Wordle game.
  * @param {*} key - the key that was pressed
@@ -433,6 +443,7 @@ function handleKey(key) {
         addLetter(key);
     }
 }
+
 /**
  *  Adds a letter to the current tile in the game board.
  * @param {*} letter - the letter to add
@@ -442,6 +453,7 @@ function addLetter(letter) {
     updateTile(state.row, state.tile, letter);
     state.tile++;
 }
+
 /**
  *  Deletes the last letter from the current tile in the game board.
  */
@@ -450,6 +462,7 @@ function deleteLetter() {
     state.tile--;
     updateTile(state.row, state.tile, "");
 }
+
 /**
  *  Submits the current guess and evaluates it. 
  */
@@ -477,6 +490,7 @@ function submitGuess() {
     state.guessed.push(guess);
     revealWord(guess);
 }
+
 /**
  *  Evaluates a guess against the target word and returns the result for each letter.
  * @param {*} guess - the guessed word
@@ -507,6 +521,7 @@ function evaluateGuess(guess) {
     
     return results;
 }
+
 /**
  *  Reveals the guessed word on the board with animations and updates the game state.
  * @param {*} guess - the guessed word
@@ -541,6 +556,7 @@ function revealWord(guess) {
         }
     }, CONFIG.wordLength * CONFIG.flipDelay + 500);
 }
+
 /**
  *  Applies a shake animation to the specified row to indicate an error.
  * @param {*} rowIndex - the index of the row to shake
@@ -551,9 +567,11 @@ function shakeRow(rowIndex) {
     setTimeout(() => row.classList.remove("shake"), CONFIG.shakeDelay);
 }
 
+
 // ============================================================================
 // WIN/LOSS HANDLING
 // ============================================================================
+
 /**
  * Handles the win condition, updating the game state and displaying messages.
  */
@@ -569,6 +587,7 @@ function handleWin() {
     
     setTimeout(() => showGameOver(true), 1500);
 }
+
 /**
  * Handles the loss condition, updating the game state and displaying messages.
  */
@@ -581,6 +600,7 @@ function handleLoss() {
     
     setTimeout(() => showGameOver(false), 2000);
 }
+
 /**
  *  Updates the player's statistics based on the game outcome.
  * @param {*} won - whether the player won
@@ -614,6 +634,7 @@ function updateStats(won, score) {
         difficulty: won ? `${state.row + 1}/6` : "X/6"
     });
 }
+
 /**
  *  Displays the game over modal with results.
  * @param {*} won - whether the player won
@@ -641,6 +662,7 @@ function showGameOver(won) {
 // ============================================================================
 // UI HELPERS
 // ============================================================================
+
 /**
  *  Displays a temporary message to the player.
  * @param {*} text - the message text
@@ -659,6 +681,7 @@ function showMessage(text, type = "info", duration = 2000) {
 function updateAttempts() {
     els.attempts.textContent = `${state.row}/${CONFIG.maxAttempts}`;
 }
+
 /**
  * Updates the current streak display in the UI.
  */
@@ -666,9 +689,11 @@ function updateStreak() {
     els.streak.textContent = loadStat(GAME2_LS_KEYS.CURRENT_STREAK, 0);
 }
 
+
 // ============================================================================
 // GAME CONTROL
 // ============================================================================
+
 /**
  * Starts a new game by resetting the state and initializing the board and keyboard.
  */
@@ -693,6 +718,7 @@ function startNewGame() {
 // ============================================================================
 // EVENT BINDING
 // ============================================================================
+
 /**
  * Initializes event listeners for keyboard input and buttons.
  */

@@ -351,18 +351,8 @@ function getGame1NumberForUser(baseKey, username, fallback = 0) {
     return Number.isNaN(num) ? fallback : num;
 }
 
-// sets a numeric stat for Snake
-function setGame1NumberForUser(baseKey, username, value) {
-    writeJson(userKey(baseKey, username), value);
-}
 
-// increments a number of plays for Snake game
-function incrementGame1NumberForUser(baseKey, username, amount = 1) {
-    const current = getGame1NumberForUser(baseKey, username, 0);
-    const next = current + amount;
-    setGame1NumberForUser(baseKey, username, next);
-    return next;
-}
+
 
 // gets recent results for Snake
 function getGame1RecentResultsForUser(username) {
@@ -370,10 +360,7 @@ function getGame1RecentResultsForUser(username) {
     return Array.isArray(results) ? results : [];
 }
 
-// saves recent results for Snake
-function saveGame1RecentResultsForUser(username, results) {
-    writeJson(userKey(GAME1_LS_KEYS.RECENT_RESULTS, username), results);
-}
+
 
 // gets a numeric stat for Wordle
 function getGame2NumberForUser(baseKey, username, fallback = 0) {
@@ -382,18 +369,8 @@ function getGame2NumberForUser(baseKey, username, fallback = 0) {
     return Number.isNaN(num) ? fallback : num;
 }
 
-// sets a numeric stat for Wordle
-function setGame2NumberForUser(baseKey, username, value) {
-    writeJson(userKey(baseKey, username), value);
-}
 
-// increments a number of plays for Wordle game
-function incrementGame2NumberForUser(baseKey, username, amount = 1) {
-    const current = getGame2NumberForUser(baseKey, username, 0);
-    const next = current + amount;
-    setGame2NumberForUser(baseKey, username, next);
-    return next;
-}
+
 
 // gets recent results for Wordle
 function getGame2RecentResultsForUser(username) {
@@ -401,10 +378,7 @@ function getGame2RecentResultsForUser(username) {
     return Array.isArray(results) ? results : [];
 }
 
-// saves recent results for Wordle
-function saveGame2RecentResultsForUser(username, results) {
-    writeJson(userKey(GAME2_LS_KEYS.RECENT_RESULTS, username), results);
-}
+
 
 // ============================================================================
 // AUTO-INITIALIZATION

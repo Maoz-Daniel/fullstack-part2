@@ -79,9 +79,11 @@ function initElements() {
     };
 }
 
+
 // ============================================================================
 // STORAGE HELPERS
 // ============================================================================
+
 
 const username = getActiveUsername();
 /**
@@ -92,6 +94,7 @@ const username = getActiveUsername();
 function gameKey(base) {
     return userKey(base, username);
 }
+
 /**
  *  Loads a numeric statistic for the current user.
  * @param {*} key - statistic key
@@ -103,6 +106,7 @@ function loadStat(key, fallback = 0) {
     const num = Number(val);
     return Number.isNaN(num) ? fallback : num;
 }
+
 /**
  *  Saves a numeric statistic for the current user.
  * @param {*} key - statistic key
@@ -111,6 +115,7 @@ function loadStat(key, fallback = 0) {
 function saveStat(key, value) {
     writeJson(gameKey(key), value);
 }
+
 /**
  *  Increments a numeric statistic for the current user.
  * @param {*} key - statistic key
@@ -122,6 +127,7 @@ function incrementStat(key, amount = 1) {
     saveStat(key, next);
     return next;
 }
+
 /**
  *  Retrieves recent game results for the current user.
  * @returns {Array} recent game results
@@ -130,6 +136,7 @@ function getRecent() { // recent game results
     const data = readJson(gameKey(GAME1_LS_KEYS.RECENT_RESULTS), []);
     return Array.isArray(data) ? data : [];
 }
+
 /**
  *  Adds a new entry to the recent game results for the current user.
  * @param {*} entry - new game result entry
@@ -142,6 +149,7 @@ function addRecent(entry) {
 // ============================================================================
 // GRID CREATION (DOM-based)
 // ============================================================================
+
 /**
  * Creates the game grid in the DOM and initializes cell references.
  */
@@ -169,6 +177,7 @@ function createGrid() {
 // ============================================================================
 // SNAKE & FOOD
 // ============================================================================
+
 /**
  *  Creates the initial snake positioned at the center of the grid.
  * @returns {Array} initial snake segments
@@ -185,6 +194,7 @@ function createSnake() {
     }
     return snake;
 }
+
 /**
  *  Gets a list of empty cells not occupied by the snake.
  * @returns  {Array} list of empty cell coordinates
@@ -199,6 +209,7 @@ function getEmptyCells() {
     }
     return empty;
 }
+
 /**
  *  Spawns food in a random empty cell.
  * @returns {boolean} true if food spawned successfully, false otherwise
@@ -212,6 +223,7 @@ function spawnFood() {
     state.food = empty[Math.floor(Math.random() * empty.length)];
     return true;
 }
+
 /**
  *  Ensures the food is visible and valid; respawns if not.
  * @returns {boolean} true if food is visible or successfully respawned, false otherwise
